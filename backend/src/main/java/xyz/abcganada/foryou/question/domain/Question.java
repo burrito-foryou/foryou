@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import xyz.abcganada.foryou.global.common.BaseEntity;
 import xyz.abcganada.foryou.member.domain.Member;
 
-// TODO: 의존성 때문에 만들어 놓은 임시파일 현민님의 파일로 교체 예정
+// 의존성 때문에 만들어 놓은 임시파일 현민님의 파일로 교체 예정
 @Entity
 @Table(name = "questions")
 @Getter
