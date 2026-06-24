@@ -79,9 +79,7 @@ npm run dev
 ## 데이터베이스
 
 로컬 개발은 Docker Compose로 PostgreSQL 15를 실행하고 Flyway로 스키마를
-관리합니다. 자동화 테스트는 테스트 전용 H2를 사용합니다. 준비할 로컬 설정
-파일과 실행 방법은 [로컬 데이터베이스 개발 가이드](docs/local-database-guide.md)를
-참고합니다.
+관리합니다. 자동화 테스트는 테스트 전용 H2를 사용합니다.
 
 ## 브랜치 규칙
 
@@ -100,7 +98,7 @@ npm run dev
 커밋 메시지는 다음 형식을 사용합니다.
 
 ```text
-<type>: <변경 내용>
+<type>: WBS<작업번호 4자리> <작업 항목> <진행 상태>
 ```
 
 사용 가능한 `type`은 `feat`, `fix`, `refactor`, `test`, `docs`, `chore`입니다.
