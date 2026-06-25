@@ -35,3 +35,19 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+CLAUDE.md
+
+# Local backend environment
+backend/docker-compose.local.yml
+backend/src/main/resources/application-local.yaml
+
