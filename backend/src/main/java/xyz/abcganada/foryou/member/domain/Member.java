@@ -1,14 +1,14 @@
 package xyz.abcganada.foryou.member.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import xyz.abcganada.foryou.global.common.BaseEntity;
 
 @Entity
-@Table(name = "members")
 @Getter
+@Builder
+@Table(name = "members")
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
 
@@ -38,4 +38,14 @@ public class Member extends BaseEntity {
 
     @Column(name = "profile_image_url", length = 500)
     private String profileImageUrl;
+
+    public static Member create(String email, String encodedPassword, String nickname, AuthProvider provider) {
+        return Member.builder()
+            .email(email)
+            .password(encodedPassword)
+            .nickname(nickname)
+            .role(Role.USER)
+            .provider(provider)
+            .build();
+    }
 }
