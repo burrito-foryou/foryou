@@ -36,7 +36,7 @@ public class Answer extends BaseEntity {
     private String content;
 
     @Column(name = "like_count", nullable = false)
-    private int likeCount;
+    private Long likeCount;
 
     // boolean 필드는 Lombok @Getter가 isAccepted()로 자동 생성
     @Column(name = "is_accepted", nullable = false)

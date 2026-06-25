@@ -28,15 +28,11 @@ public class Question extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private QuestionStatus status;
-
     @Column(name = "view_count")
-    private int viewCount;
+    private Long viewCount;
 
     @Column(name = "like_count")
-    private int likeCount;
+    private Long likeCount;
 
     // 채택된 답변 ID (questions 테이블에 비정규화로 관리)
     @Column(name = "accepted_answer_id")
