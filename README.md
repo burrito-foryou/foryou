@@ -6,7 +6,7 @@ Spring Boot와 React로 구성된 웹 애플리케이션입니다.
 
 - Backend: Java 17, Spring Boot, Spring Web, Spring Data JPA, Gradle
 - Frontend: Node.js 22, React, Vite, Oxlint
-- Database: H2
+- Database: PostgreSQL 15, Flyway (테스트: H2)
 
 ## 프로젝트 구조
 
@@ -20,6 +20,7 @@ Spring Boot와 React로 구성된 웹 애플리케이션입니다.
 ## 사전 준비
 
 - JDK 17 이상
+- Docker Desktop
 - [nvm](https://github.com/nvm-sh/nvm) 또는 Node.js `22.12.0` 이상, `23.0.0` 미만
 
 Gradle과 프론트엔드 패키지 버전은 각각 Gradle Wrapper와
@@ -31,10 +32,12 @@ Gradle과 프론트엔드 패키지 버전은 각각 Gradle Wrapper와
 
 ```bash
 cd backend
-./gradlew bootRun
+docker compose -f docker-compose.local.yml up -d
+./gradlew bootRun --args='--spring.profiles.active=local'
 ```
 
 - 기본 주소: `http://localhost:8080`
+- 로컬 DB 설정: [로컬 데이터베이스 개발 가이드](docs/local-database-guide.md)
 - 테스트: `./gradlew test`
 - 전체 빌드: `./gradlew build`
 
@@ -75,11 +78,10 @@ npm run dev
 
 ## 데이터베이스
 
-현재는 개발 및 테스트용 H2 인메모리 데이터베이스를 사용합니다. 별도의 DB
-설치 없이 실행할 수 있지만 애플리케이션을 종료하면 데이터가 사라집니다.
-
-운영용 데이터베이스를 도입할 때는 접속 정보를 환경변수로 분리하고 로컬,
-테스트, 운영 프로필을 구분합니다.
+로컬 개발은 Docker Compose로 PostgreSQL 15를 실행하고 Flyway로 스키마를
+관리합니다. 자동화 테스트는 테스트 전용 H2를 사용합니다. 준비할 로컬 설정
+파일과 실행 방법은 [로컬 데이터베이스 개발 가이드](docs/local-database-guide.md)를
+참고합니다.
 
 ## 브랜치 규칙
 
