@@ -37,7 +37,6 @@ docker compose -f docker-compose.local.yml up -d
 ```
 
 - 기본 주소: `http://localhost:8080`
-- 로컬 DB 설정: [로컬 데이터베이스 개발 가이드](docs/local-database-guide.md)
 - 테스트: `./gradlew test`
 - 전체 빌드: `./gradlew build`
 

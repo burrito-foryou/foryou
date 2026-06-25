@@ -46,6 +46,11 @@ public class AuthService {
         return LoginResponse.of(accessToken);
     }
 
+    public void logout() {
+        // TODO refresh token 도입
+        // Stateless JWT 방식에서는 서버에서 별도 처리하지 않음.
+    }
+
     private Member findMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
             .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_LOGIN_CREDENTIALS));

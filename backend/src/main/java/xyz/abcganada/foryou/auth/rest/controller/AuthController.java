@@ -39,4 +39,11 @@ public class AuthController {
             .status(HttpStatus.OK)
             .body(ApiResponse.success(response, "로그인이 완료되었습니다."));
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        authService.logout();
+
+        return ResponseEntity.noContent().build();
+    }
 }
