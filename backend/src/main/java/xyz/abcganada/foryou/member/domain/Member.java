@@ -1,56 +1,34 @@
 package xyz.abcganada.foryou.member.domain;
 
 import jakarta.persistence.*;
-import lombok.Builder;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import xyz.abcganada.foryou.global.common.BaseEntity;
 
-import java.time.LocalDateTime;
-
-// TODO 추후 민기님 파일로 교체
+// 의존성 때문에 만들어 놓은 임시파일 민기님의 파일로 교체 예정
 @Entity
 @Table(name = "members")
 @Getter
-@Setter
-@NoArgsConstructor
-public class Member {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String password;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true, length = 50)
     private String nickname;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role role;
+    @Column(length = 20)
+    private String role;
 
-    @Column(name = "profile_image_url")
+    @Column(name = "profile_image_url", length = 500)
     private String profileImageUrl;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @Builder
-    public Member(String email, String password, String nickname, Role role, String profileImageUrl) {
-        this.email = email;
-        this.password = password;
-        this.nickname = nickname;
-        this.role = role;
-        this.profileImageUrl = profileImageUrl;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-
 }

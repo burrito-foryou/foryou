@@ -1,3 +1,23 @@
 spring:
   application:
     name: foryou
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:foryou}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
