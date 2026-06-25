@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import xyz.abcganada.foryou.auth.rest.request.LoginRequest;
+import xyz.abcganada.foryou.auth.rest.response.LoginResponse;
 import xyz.abcganada.foryou.auth.service.AuthService;
 import xyz.abcganada.foryou.global.response.ApiResponse;
 import xyz.abcganada.foryou.auth.rest.request.SignupRequest;
@@ -27,5 +29,14 @@ public class AuthController {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(ApiResponse.success(response, "회원가입이 완료되었습니다."));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
+        LoginResponse response = authService.login(request);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(ApiResponse.success(response, "로그인이 완료되었습니다."));
     }
 }
