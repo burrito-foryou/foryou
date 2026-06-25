@@ -7,6 +7,9 @@
 Thumbs.db
 Desktop.ini
 
+CLAUDE.md
+.idea
+
 # Local backend environment
 backend/docker-compose.local.yml
 backend/src/main/resources/application-local.yaml
