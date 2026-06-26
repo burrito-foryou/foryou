@@ -3,6 +3,8 @@ package xyz.abcganada.foryou.like.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import xyz.abcganada.foryou.global.exception.BusinessException;
+import xyz.abcganada.foryou.global.exception.ErrorCode;
 import xyz.abcganada.foryou.like.domain.Like;
 import xyz.abcganada.foryou.like.domain.TargetType;
 import xyz.abcganada.foryou.like.repository.LikeRepository;
@@ -20,11 +22,11 @@ public class LikeService {
     // 1. 좋아요 등록
     public void addLike(Long memberId, TargetType targetType, Long targetId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다")); // TODO Custom Exception 변경
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 중복 좋아요 여부 확인
         if (likeRepository.existsByMemberAndTargetTypeAndTargetId(member, targetType, targetId)) {
-            throw new RuntimeException("좋아요를 이미 누른 대상입니다"); // TODO Custom Exception 변경
+            throw new BusinessException(ErrorCode.LIKE_ALREADY_EXISTS);
         }
 
         likeRepository.save(Like.builder()
@@ -38,10 +40,10 @@ public class LikeService {
     // 2. 좋아요 취소
     public void cancelLike(Long memberId, TargetType targetType, Long targetId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다")); // TODO Custom Exception 변경
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
         Like like = likeRepository.findByMemberAndTargetTypeAndTargetId(member, targetType, targetId)
-                .orElseThrow(() -> new RuntimeException("좋아요를 찾을 수 없습니다")); // TODO Custom Exception 변경
+                .orElseThrow(() -> new BusinessException(ErrorCode.LIKE_NOT_FOUND)); // TODO Custom Exception 변경
 
         likeRepository.delete(like);
         decrementLikeCount(targetType, targetId);
@@ -71,7 +73,7 @@ public class LikeService {
     @Transactional(readOnly = true)
     public boolean isLiked(Long memberId, TargetType targetType, Long targetId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다")); // TODO Custom Exception 변경
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
         return likeRepository.existsByMemberAndTargetTypeAndTargetId(member, targetType, targetId);
     }
 
