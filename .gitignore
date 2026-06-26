@@ -14,3 +14,7 @@ CLAUDE.md
 backend/docker-compose.local.yml
 backend/src/main/resources/application-local.yaml
 /.idea/
+
+# Local Query Test
+/docs
+

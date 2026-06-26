@@ -1,15 +1,14 @@
 package xyz.abcganada.foryou.member.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import xyz.abcganada.foryou.global.common.BaseEntity;
 
-// 의존성 때문에 만들어 놓은 임시파일 민기님의 파일로 교체 예정
 @Entity
-@Table(name = "members")
 @Getter
+@Builder
+@Table(name = "members")
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
 
@@ -17,18 +16,36 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Column(nullable = false, unique = true, length = 255)
     private String email;
 
-    @Column(nullable = false, length = 255)
+    @Column(length = 255)
     private String password;
 
     @Column(nullable = false, unique = true, length = 50)
     private String nickname;
 
-    @Column(length = 20)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private Role role;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private AuthProvider provider;
+
+    @Column(name = "provider_id", length = 100)
+    private String providerId;
 
     @Column(name = "profile_image_url", length = 500)
     private String profileImageUrl;
+
+    public static Member create(String email, String encodedPassword, String nickname, AuthProvider provider) {
+        return Member.builder()
+            .email(email)
+            .password(encodedPassword)
+            .nickname(nickname)
+            .role(Role.USER)
+            .provider(provider)
+            .build();
+    }
 }

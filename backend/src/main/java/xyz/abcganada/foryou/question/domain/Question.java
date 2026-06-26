@@ -95,4 +95,9 @@ public class Question extends BaseEntity {
             this.status = QuestionStatus.ANSWERED;
         }
     }
+
+    // 작성자 여부 확인
+    public boolean isAuthor(Long memberId) {
+        return this.member.getId().equals(memberId);
+    }
 }
