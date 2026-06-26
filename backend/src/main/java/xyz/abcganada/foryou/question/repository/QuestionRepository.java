@@ -1,6 +1,5 @@
 package xyz.abcganada.foryou.question.repository;
 
-<<<<<<< HEAD
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,11 +30,3 @@ public interface QuestionRepository extends JpaRepository<Question, Long>, JpaSp
     Page<Question> findByTagNames(@Param("tagNames") List<String> tagNames, Pageable pageable);
 
 }
-=======
-import org.springframework.data.jpa.repository.JpaRepository;
-import xyz.abcganada.foryou.question.domain.Question;
-
-// 임시파일 현민님의 파일로 교체 예정
-public interface QuestionRepository extends JpaRepository<Question, Long> {
-}
->>>>>>> fdd9ae2262fd7de3b3c4af398dcdd8aff8ef436a

@@ -29,10 +29,6 @@ public class Question extends BaseEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private QuestionStatus status;
-
     @Column(name = "view_count", nullable = false)
     private long viewCount;
 
@@ -55,7 +51,6 @@ public class Question extends BaseEntity {
         this.member = member;
         this.title = title;
         this.content = content;
-        this.status = QuestionStatus.PENDING;
         this.viewCount = 0;
         this.likeCount = 0;
         this.tags = tags != null ? new ArrayList<>(tags) : new ArrayList<>();
@@ -86,14 +81,6 @@ public class Question extends BaseEntity {
     // 답변 채택
     public void accept(Long answerId) {
         this.acceptedAnswerId = answerId;
-        this.status = QuestionStatus.ACCEPTED;
-    }
-
-    // 첫 답변 등록 시 상태 변경
-    public void markAsAnswered() {
-        if (this.status == QuestionStatus.PENDING) {
-            this.status = QuestionStatus.ANSWERED;
-        }
     }
 
     // 작성자 여부 확인
