@@ -14,6 +14,13 @@ public enum ErrorCode {
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON_003", "요청한 리소스를 찾을 수 없습니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON_004", "서버 내부 오류가 발생했습니다."),
 
+    // member
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_001", "사용자를 찾을 수 없습니다."),
+
+    // like
+    LIKE_ALREADY_EXISTS(HttpStatus.CONFLICT, "LIKE_001", "좋아요를 이미 누른 대상입니다."),
+    LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "LIKE_002", "좋아요를 찾을 수 없습니다.");
+
     //answer
     ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "ANSWER_001", "답변을 찾을 수 없습니다."),
     ANSWER_FORBIDDEN(HttpStatus.FORBIDDEN, "ANSWER_002", "답변 작성자만 수정/삭제할 수 있습니다."),
