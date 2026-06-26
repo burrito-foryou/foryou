@@ -29,13 +29,25 @@ public class Question extends BaseEntity {
     private String content;
 
     @Column(name = "view_count")
-    private long viewCount;
+    private Long viewCount;
 
     @Column(name = "like_count")
-    private long likeCount;
+    private Long likeCount;
 
     // 채택된 답변 ID (questions 테이블에 비정규화로 관리)
+    // accepted_answer_id가 null이면 미채택, not null이면 채택 완료
     @Column(name = "accepted_answer_id")
     private Long acceptedAnswerId;
+
+    /**
+     * 답변 채택 시 채택 답변 ID를 기록한다.
+     */
+    public void accept(Long answerId) {
+        this.acceptedAnswerId = answerId;
+    }
+
+    public boolean isAuthor(Long memberId) {
+        return this.member.getId().equals(memberId);
+    }
 
 }
