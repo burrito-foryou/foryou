@@ -21,6 +21,10 @@ public enum ErrorCode {
     LIKE_ALREADY_EXISTS(HttpStatus.CONFLICT, "LIKE_001", "좋아요를 이미 누른 대상입니다."),
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "LIKE_002", "좋아요를 찾을 수 없습니다.");
 
+    //answer
+    ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "ANSWER_001", "답변을 찾을 수 없습니다."),
+    ANSWER_FORBIDDEN(HttpStatus.FORBIDDEN, "ANSWER_002", "답변 작성자만 수정/삭제할 수 있습니다."),
+    ANSWER_ALREADY_ACCEPTED(HttpStatus.BAD_REQUEST, "ANSWER_003", "이미 채택된 질문입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
