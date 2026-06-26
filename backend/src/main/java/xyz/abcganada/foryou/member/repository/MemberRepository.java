@@ -3,6 +3,10 @@ package xyz.abcganada.foryou.member.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import xyz.abcganada.foryou.member.domain.Member;
 
-// 의존성 때문에 만들어 놓은 임시파일 민기님의 파일로 교체 예정
+import java.util.Optional;
+
 public interface MemberRepository extends JpaRepository<Member, Long> {
+    boolean existsByEmail(String email);
+    boolean existsByNickname(String nickname);
+    Optional<Member> findByEmail(String email);
 }

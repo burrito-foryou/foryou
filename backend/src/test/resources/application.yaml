@@ -11,3 +11,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
+
+jwt:
+  secret: test-development-secret-key-for-foryou-jwt-token
+  access-token-expiration: 3600000
