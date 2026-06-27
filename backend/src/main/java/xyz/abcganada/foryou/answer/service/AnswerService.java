@@ -6,7 +6,10 @@ import org.springframework.transaction.annotation.Transactional;
 import xyz.abcganada.foryou.answer.domain.Answer;
 import xyz.abcganada.foryou.answer.repository.AnswerRepository;
 import xyz.abcganada.foryou.answer.rest.request.AnswerCreateRequest;
+import xyz.abcganada.foryou.answer.rest.request.AnswerUpdateRequest;
 import xyz.abcganada.foryou.answer.rest.response.AnswerResponse;
+
+import java.util.List;
 import xyz.abcganada.foryou.global.exception.BusinessException;
 import xyz.abcganada.foryou.global.exception.ErrorCode;
 import xyz.abcganada.foryou.member.domain.Member;
@@ -22,6 +25,44 @@ public class AnswerService {
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
     private final MemberRepository memberRepository;
+
+    // WBS0404: 답변 목록 조회
+    public List<AnswerResponse> getAnswers(Long questionId) {
+        if (!questionRepository.existsById(questionId)) {
+            throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
+        }
+        return answerRepository.findByQuestionIdOrderByAcceptedDescCreatedAtAsc(questionId)
+                .stream()
+                .map(AnswerResponse::from)
+                .toList();
+    }
+
+    // WBS0405: 답변 수정
+    @Transactional
+    public AnswerResponse update(Long answerId, Long memberId, AnswerUpdateRequest request) {
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
+
+        if (!answer.getMember().getId().equals(memberId)) {
+            throw new BusinessException(ErrorCode.ANSWER_FORBIDDEN);
+        }
+
+        answer.update(request.getGiftName(), request.getPriceRange(), request.getContent());
+        return AnswerResponse.from(answer);
+    }
+
+    // WBS0406: 답변 삭제
+    @Transactional
+    public void delete(Long answerId, Long memberId) {
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
+
+        if (!answer.getMember().getId().equals(memberId)) {
+            throw new BusinessException(ErrorCode.ANSWER_FORBIDDEN);
+        }
+
+        answerRepository.delete(answer);
+    }
 
     // WBS0403: 답변 등록
     @Transactional
