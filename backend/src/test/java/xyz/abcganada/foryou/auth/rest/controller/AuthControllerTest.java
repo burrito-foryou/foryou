@@ -10,11 +10,15 @@ import xyz.abcganada.foryou.auth.service.AuthService;
 import xyz.abcganada.foryou.common.RestControllerTest;
 import xyz.abcganada.foryou.global.exception.BusinessException;
 import xyz.abcganada.foryou.global.exception.ErrorCode;
+import xyz.abcganada.foryou.member.domain.AuthProvider;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -77,6 +81,42 @@ class AuthControllerTest extends RestControllerTest {
             .andExpect(jsonPath("$.success").value(false))
             .andExpect(jsonPath("$.code").value("COMMON_001"))
             .andExpect(jsonPath("$.message").value("잘못된 입력값입니다."));
+    }
+
+    @Test
+    @DisplayName("소셜 로그인 요청에 성공하면 200 응답을 반환한다")
+    void socialLogin() throws Exception {
+        // given
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("code", AuthFixture.OAUTH_CODE);
+
+        given(authService.socialLogin(eq(AuthProvider.KAKAO), eq(AuthFixture.OAUTH_CODE)))
+            .willReturn(AuthFixture.loginResponse());
+
+        // when & then
+        getRequest("/api/auth/login/kakao", params)
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.message").value("kakao 로그인이 완료되었습니다."))
+            .andExpect(jsonPath("$.data.accessToken").value(AuthFixture.ACCESS_TOKEN))
+            .andExpect(jsonPath("$.data.tokenType").value("Bearer"));
+
+        verify(authService).socialLogin(AuthProvider.KAKAO, AuthFixture.OAUTH_CODE);
+    }
+
+    @Test
+    @DisplayName("지원하지 않는 소셜 로그인 제공자이면 에러 응답을 반환한다")
+    void socialLoginWithUnsupportedProvider() throws Exception {
+        // given
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("code", AuthFixture.OAUTH_CODE);
+
+        // when & then
+        getRequest("/api/auth/login/foryou", params)
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.success").value(false))
+            .andExpect(jsonPath("$.code").value("AUTH_002"))
+            .andExpect(jsonPath("$.message").value("지원하지 않는 소셜 로그인 제공자입니다."));
     }
 
     @Test

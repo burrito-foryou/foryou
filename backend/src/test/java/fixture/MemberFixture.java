@@ -1,5 +1,6 @@
 package fixture;
 
+import xyz.abcganada.foryou.auth.oauth.OAuthUserInfo;
 import xyz.abcganada.foryou.member.domain.AuthProvider;
 import xyz.abcganada.foryou.member.domain.Member;
 import xyz.abcganada.foryou.member.domain.Role;
@@ -24,6 +25,17 @@ public class MemberFixture {
             .nickname(nickname)
             .role(Role.USER)
             .provider(AuthProvider.FORYOU)
+            .build();
+    }
+
+    public static Member socialMember(OAuthUserInfo userInfo) {
+        return Member.builder()
+            .id(MEMBER_ID)
+            .email(userInfo.email())
+            .nickname(userInfo.nickname())
+            .role(Role.USER)
+            .provider(userInfo.provider())
+            .providerId(userInfo.providerId())
             .build();
     }
 

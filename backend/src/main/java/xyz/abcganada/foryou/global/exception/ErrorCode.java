@@ -9,6 +9,11 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     //auth
     INVALID_LOGIN_CREDENTIALS(HttpStatus.UNAUTHORIZED, "AUTH_001", "이메일 또는 비밀번호가 올바르지 않습니다."),
+    UNSUPPORTED_OAUTH_PROVIDER(HttpStatus.BAD_REQUEST, "AUTH_002", "지원하지 않는 소셜 로그인 제공자입니다."),
+    OAUTH_CLIENT_NOT_CONFIGURED(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH_003", "소셜 로그인 설정이 올바르지 않습니다."),
+    OAUTH_TOKEN_REQUEST_FAILED(HttpStatus.UNAUTHORIZED, "AUTH_004", "소셜 로그인 토큰 요청에 실패했습니다."),
+    OAUTH_USER_INFO_REQUEST_FAILED(HttpStatus.UNAUTHORIZED, "AUTH_005", "소셜 사용자 정보 요청에 실패했습니다."),
+    OAUTH_USER_INFO_INVALID(HttpStatus.UNAUTHORIZED, "AUTH_006", "소셜 사용자 정보가 올바르지 않습니다."),
 
     //member
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "MEMBER_001", "이미 사용 중인 이메일입니다."),

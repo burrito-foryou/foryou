@@ -48,4 +48,14 @@ public class Member extends BaseEntity {
             .provider(provider)
             .build();
     }
+
+    public static Member createSocialMember(String email, String nickname, AuthProvider provider, String providerId) {
+        return Member.builder()
+            .email(email)
+            .nickname(nickname)
+            .role(Role.USER)
+            .provider(provider)
+            .providerId(providerId)
+            .build();
+    }
 }

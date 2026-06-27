@@ -12,10 +12,9 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
 
+  flyway:
+    enabled: false
+
 jwt:
   secret: test-development-secret-key-for-foryou-jwt-token
   access-token-expiration: 3600000
-
-  spring:
-    flyway:
-      enabled: false

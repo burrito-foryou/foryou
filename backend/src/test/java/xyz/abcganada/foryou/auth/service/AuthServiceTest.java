@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.springframework.dao.DataIntegrityViolationException;
+import xyz.abcganada.foryou.auth.oauth.OAuthClient;
+import xyz.abcganada.foryou.auth.oauth.OAuthUserInfo;
 import xyz.abcganada.foryou.auth.rest.request.LoginRequest;
 import xyz.abcganada.foryou.auth.rest.request.SignupRequest;
 import xyz.abcganada.foryou.auth.rest.response.LoginResponse;
@@ -24,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -31,6 +34,90 @@ class AuthServiceTest extends ServiceTest {
 
     @InjectMocks
     private AuthService authService;
+
+    @Test
+    @DisplayName("기존 소셜 회원이면 저장하지 않고 액세스 토큰을 반환한다")
+    void socialLoginWithExistingMember() {
+        // given
+        OAuthUserInfo userInfo = AuthFixture.kakaoUserInfo();
+        Member member = MemberFixture.socialMember(userInfo);
+        OAuthClient oAuthClient = mock(OAuthClient.class);
+
+        given(oAuthClientResolver.resolve(AuthProvider.KAKAO))
+            .willReturn(oAuthClient);
+        given(oAuthClient.getUserInfo(AuthFixture.OAUTH_CODE))
+            .willReturn(userInfo);
+        given(memberRepository.findByProviderAndProviderId(AuthProvider.KAKAO, userInfo.providerId()))
+            .willReturn(Optional.of(member));
+        given(jwtTokenProvider.generateAccessToken(member))
+            .willReturn(AuthFixture.ACCESS_TOKEN);
+
+        // when
+        LoginResponse response = authService.socialLogin(AuthProvider.KAKAO, AuthFixture.OAUTH_CODE);
+
+        // then
+        assertThat(response.accessToken()).isEqualTo(AuthFixture.ACCESS_TOKEN);
+        verify(memberRepository, never()).saveAndFlush(any());
+    }
+
+    @Test
+    @DisplayName("신규 소셜 회원이면 회원을 저장하고 액세스 토큰을 반환한다")
+    void socialLoginWithNewMember() {
+        // given
+        OAuthUserInfo userInfo = AuthFixture.googleUserInfo();
+        Member savedMember = MemberFixture.socialMember(userInfo);
+        OAuthClient oAuthClient = mock(OAuthClient.class);
+
+        given(oAuthClientResolver.resolve(AuthProvider.GOOGLE))
+            .willReturn(oAuthClient);
+        given(oAuthClient.getUserInfo(AuthFixture.OAUTH_CODE))
+            .willReturn(userInfo);
+        given(memberRepository.findByProviderAndProviderId(AuthProvider.GOOGLE, userInfo.providerId()))
+            .willReturn(Optional.empty());
+        given(memberRepository.saveAndFlush(any(Member.class)))
+            .willReturn(savedMember);
+        given(jwtTokenProvider.generateAccessToken(savedMember))
+            .willReturn(AuthFixture.ACCESS_TOKEN);
+
+        // when
+        LoginResponse response = authService.socialLogin(AuthProvider.GOOGLE, AuthFixture.OAUTH_CODE);
+
+        // then
+        assertThat(response.accessToken()).isEqualTo(AuthFixture.ACCESS_TOKEN);
+        assertThat(response.tokenType()).isEqualTo("Bearer");
+
+        ArgumentCaptor<Member> memberCaptor = ArgumentCaptor.forClass(Member.class);
+        verify(memberRepository).saveAndFlush(memberCaptor.capture());
+        Member newMember = memberCaptor.getValue();
+
+        assertThat(newMember.getEmail()).isEqualTo(userInfo.email());
+        assertThat(newMember.getNickname()).isEqualTo(userInfo.nickname());
+        assertThat(newMember.getProvider()).isEqualTo(AuthProvider.GOOGLE);
+        assertThat(newMember.getProviderId()).isEqualTo(userInfo.providerId());
+        assertThat(newMember.getRole()).isEqualTo(Role.USER);
+    }
+
+    @Test
+    @DisplayName("소셜 사용자 정보 조회에 실패하면 로그인을 실패한다")
+    void socialLoginWithOAuthFailure() {
+        // given
+        OAuthClient oAuthClient = mock(OAuthClient.class);
+
+        given(oAuthClientResolver.resolve(AuthProvider.KAKAO))
+            .willReturn(oAuthClient);
+        given(oAuthClient.getUserInfo(AuthFixture.OAUTH_CODE))
+            .willThrow(new BusinessException(ErrorCode.OAUTH_USER_INFO_REQUEST_FAILED));
+
+        // when & then
+        assertThatThrownBy(() -> authService.socialLogin(AuthProvider.KAKAO, AuthFixture.OAUTH_CODE))
+            .isInstanceOfSatisfying(BusinessException.class, exception ->
+                assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.OAUTH_USER_INFO_REQUEST_FAILED)
+            );
+
+        verify(memberRepository, never()).findByProviderAndProviderId(any(), any());
+        verify(memberRepository, never()).saveAndFlush(any());
+        verify(jwtTokenProvider, never()).generateAccessToken(any());
+    }
 
     @Test
     @DisplayName("로그인에 성공하면 액세스 토큰을 반환한다")

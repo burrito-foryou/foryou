@@ -5,7 +5,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import xyz.abcganada.foryou.auth.oauth.OAuthClientResolver;
 import xyz.abcganada.foryou.auth.rest.request.LoginRequest;
+import xyz.abcganada.foryou.auth.oauth.OAuthUserInfo;
 import xyz.abcganada.foryou.auth.rest.response.LoginResponse;
 import xyz.abcganada.foryou.global.exception.BusinessException;
 import xyz.abcganada.foryou.global.exception.ErrorCode;
@@ -22,8 +24,10 @@ import xyz.abcganada.foryou.auth.rest.response.SignupResponse;
 public class AuthService {
 
     private final MemberRepository memberRepository;
+
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final OAuthClientResolver oAuthClientResolver;
 
     public SignupResponse signup(SignupRequest request) {
         validateDuplicateEmail(request.email());
@@ -40,6 +44,18 @@ public class AuthService {
 
         validateForyouMember(member);
         validatePassword(request.password(), member);
+
+        String accessToken = jwtTokenProvider.generateAccessToken(member);
+
+        return LoginResponse.of(accessToken);
+    }
+
+    public LoginResponse socialLogin(AuthProvider provider, String code) {
+        OAuthUserInfo userInfo = oAuthClientResolver.resolve(provider).getUserInfo(code);
+
+        Member member = memberRepository
+            .findByProviderAndProviderId(provider, userInfo.providerId())
+            .orElseGet(() -> createSocialMember(userInfo));
 
         String accessToken = jwtTokenProvider.generateAccessToken(member);
 
@@ -70,6 +86,17 @@ public class AuthService {
             request.nickname(),
             AuthProvider.FORYOU
         );
+    }
+
+    private Member createSocialMember(OAuthUserInfo userInfo) {
+        Member member = Member.createSocialMember(
+            userInfo.email(),
+            userInfo.nickname(),
+            userInfo.provider(),
+            userInfo.providerId()
+        );
+
+        return saveMember(member);
     }
 
     private Member saveMember(Member member) {
