@@ -214,8 +214,6 @@ class AuthServiceTest extends ServiceTest {
 
         given(memberRepository.existsByEmail(request.email()))
             .willReturn(false);
-        given(memberRepository.existsByNickname(request.nickname()))
-            .willReturn(false);
         given(passwordEncoder.encode(request.password()))
             .willReturn(MemberFixture.ENCODED_PASSWORD);
         given(memberRepository.saveAndFlush(any(Member.class)))
@@ -253,28 +251,6 @@ class AuthServiceTest extends ServiceTest {
                 assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.DUPLICATE_EMAIL)
             );
 
-        verify(memberRepository, never()).existsByNickname(any());
-        verify(passwordEncoder, never()).encode(any());
-        verify(memberRepository, never()).saveAndFlush(any());
-    }
-
-    @Test
-    @DisplayName("이미 사용 중인 닉네임이면 회원가입에 실패한다")
-    void signupWithDuplicateNickname() {
-        // given
-        SignupRequest request = AuthFixture.signupRequest();
-
-        given(memberRepository.existsByEmail(request.email()))
-            .willReturn(false);
-        given(memberRepository.existsByNickname(request.nickname()))
-            .willReturn(true);
-
-        // when & then
-        assertThatThrownBy(() -> authService.signup(request))
-            .isInstanceOfSatisfying(BusinessException.class, exception ->
-                assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.DUPLICATE_NICKNAME)
-            );
-
         verify(passwordEncoder, never()).encode(any());
         verify(memberRepository, never()).saveAndFlush(any());
     }
@@ -286,8 +262,6 @@ class AuthServiceTest extends ServiceTest {
         SignupRequest request = AuthFixture.signupRequest();
 
         given(memberRepository.existsByEmail(request.email()))
-            .willReturn(false);
-        given(memberRepository.existsByNickname(request.nickname()))
             .willReturn(false);
         given(passwordEncoder.encode(request.password()))
             .willReturn(MemberFixture.ENCODED_PASSWORD);

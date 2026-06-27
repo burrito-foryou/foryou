@@ -9,7 +9,7 @@ public class MemberFixture {
 
     public static final Long MEMBER_ID = 1L;
     public static final String EMAIL = "test@example.com";
-    public static final String PASSWORD = "password123";
+    public static final String PASSWORD = "password123!";
     public static final String ENCODED_PASSWORD = "encoded-password";
     public static final String NICKNAME = "tester";
 
@@ -40,6 +40,6 @@ public class MemberFixture {
     }
 
     public static Member unsavedMember() {
-        return Member.create(EMAIL, ENCODED_PASSWORD, NICKNAME, AuthProvider.FORYOU);
+        return Member.createLocalMember(EMAIL, ENCODED_PASSWORD, NICKNAME);
     }
 }

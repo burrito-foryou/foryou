@@ -10,7 +10,7 @@ import xyz.abcganada.foryou.member.domain.AuthProvider;
 public class AuthFixture {
 
     public static final String EMAIL = "test@example.com";
-    public static final String PASSWORD = "password123";
+    public static final String PASSWORD = "password123!";
     public static final String NICKNAME = "tester";
     public static final String ACCESS_TOKEN = "access-token";
 

@@ -31,7 +31,6 @@ public class AuthService {
 
     public SignupResponse signup(SignupRequest request) {
         validateDuplicateEmail(request.email());
-        validateDuplicateNickname(request.nickname());
 
         Member member = createMember(request);
         Member savedMember = saveMember(member);
@@ -39,6 +38,7 @@ public class AuthService {
         return SignupResponse.from(savedMember);
     }
 
+    @Transactional(readOnly = true)
     public LoginResponse login(LoginRequest request) {
         Member member = findMemberByEmail(request.email());
 
@@ -55,7 +55,10 @@ public class AuthService {
 
         Member member = memberRepository
             .findByProviderAndProviderId(provider, userInfo.providerId())
-            .orElseGet(() -> createSocialMember(userInfo));
+            .orElseGet(() -> {
+                validateDuplicateEmail(userInfo.email());
+                return createSocialMember(userInfo);
+            });
 
         String accessToken = jwtTokenProvider.generateAccessToken(member);
 
@@ -80,11 +83,10 @@ public class AuthService {
     private Member createMember(SignupRequest request) {
         String encodedPassword = passwordEncoder.encode(request.password());
 
-        return Member.create(
+        return Member.createLocalMember(
             request.email(),
             encodedPassword,
-            request.nickname(),
-            AuthProvider.FORYOU
+            request.nickname()
         );
     }
 
@@ -116,12 +118,6 @@ public class AuthService {
     private void validateDuplicateEmail(String email) {
         if (memberRepository.existsByEmail(email)) {
             throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
-        }
-    }
-
-    private void validateDuplicateNickname(String nickname) {
-        if (memberRepository.existsByNickname(nickname)) {
-            throw new BusinessException(ErrorCode.DUPLICATE_NICKNAME);
         }
     }
 

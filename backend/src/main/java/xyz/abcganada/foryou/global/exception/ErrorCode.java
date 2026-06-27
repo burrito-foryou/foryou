@@ -17,7 +17,6 @@ public enum ErrorCode {
 
     //member
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "MEMBER_001", "이미 사용 중인 이메일입니다."),
-    DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "MEMBER_002", "이미 사용 중인 닉네임입니다."),
     DUPLICATE_MEMBER(HttpStatus.CONFLICT, "MEMBER_003", "이미 가입된 회원 정보입니다."),
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_004", "사용자를 찾을 수 없습니다.")
 ,
