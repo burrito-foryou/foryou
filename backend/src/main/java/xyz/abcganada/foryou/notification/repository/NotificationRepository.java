@@ -13,6 +13,13 @@ import java.util.List;
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
     // 사용자별 알림 목록 최신순 조회
+    @Query("""
+            select n
+                from Notification n
+                left join fetch n.sender
+                where n.receiver.id = :receiverId
+                order by n.createdAt desc
+            """)
     List<Notification> findByReceiverIdOrderByCreatedAtDesc(Long receiverId);
 
     // 알림 단건 읽음 처리
@@ -32,7 +39,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
         """)
     int markAllAsRead(@Param("receiverId") Long receiverId);
 
-    // 단건 삭제
+    // 알림 단건 삭제
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
             DELETE FROM Notification n
