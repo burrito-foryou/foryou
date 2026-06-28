@@ -25,28 +25,27 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     // 알림 단건 읽음 처리
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
-            UPDATE Notification n SET n.isRead = true
-                    WHERE n.id = :notificationId
-                    AND n.receiver.id = :receiverId
+            update Notification n set n.isRead = true
+                    where n.id = :notificationId
+                    and n.receiver.id = :receiverId
         """)
     int markAsRead(@Param("notificationId") Long notificationId, @Param("receiverId") Long receiverId);
 
     // 알림 전체 읽음 처리
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
-            UPDATE Notification n SET n.isRead = true 
-                    WHERE n.receiver.id = :receiverId AND n.isRead = false
+            update Notification n set n.isRead = true 
+                    where n.receiver.id = :receiverId and n.isRead = false
         """)
     int markAllAsRead(@Param("receiverId") Long receiverId);
 
     // 알림 단건 삭제
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
-            DELETE FROM Notification n
-                    WHERE n.id = :notificationId
-                    AND n.receiver.id = :receiverId
+            delete from Notification n
+                    where n.id = :notificationId
+                    and n.receiver.id = :receiverId
         """)
     int deleteByIdAndReceiverId(@Param("notificationId") Long notificationId, @Param("receiverId") Long receiverId);
-
 
 }
