@@ -48,4 +48,11 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
         """)
     int deleteByIdAndReceiverId(@Param("notificationId") Long notificationId, @Param("receiverId") Long receiverId);
 
+    // 알림 전체 삭제
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+            delete from Notification n
+                    where n.receiver.id = :receiverId
+        """)
+    int deleteByReceiverId(@Param("receiverId") Long receiverId);
 }

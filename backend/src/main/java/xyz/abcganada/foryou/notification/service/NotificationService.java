@@ -79,4 +79,11 @@ public class NotificationService {
         }
     }
 
+    // 6. 알림 전체 삭제
+    @Transactional
+    public void deleteAllNotifications(Long receiverId) {
+        int deleted = notificationRepository.deleteByReceiverId(receiverId);
+        log.info("{}개의 알림 삭제", deleted);
+    }
+
 }
