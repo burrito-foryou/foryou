@@ -11,6 +11,7 @@ import xyz.abcganada.foryou.notification.domain.Notification;
 import xyz.abcganada.foryou.notification.domain.NotificationType;
 import xyz.abcganada.foryou.notification.domain.TargetType;
 import xyz.abcganada.foryou.notification.repository.NotificationRepository;
+import xyz.abcganada.foryou.notification.rest.response.NotificationResponse;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ import java.util.List;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final NotificationSseService notificationSseService;
 
     // 1. 알림 생성
     @Transactional
@@ -38,7 +40,8 @@ public class NotificationService {
             return;
         }
 
-        notificationRepository.save(Notification.builder()
+        // DB에 알림 저장
+        Notification notification = notificationRepository.save(Notification.builder()
                 .receiver(receiver)
                 .sender(sender)
                 .type(type)
@@ -47,6 +50,11 @@ public class NotificationService {
                 .questionId(questionId)
                 .content(content)
                 .build());
+
+        // SSE로 알림 전송
+        // TODO DB 저장 -> SSE 전송 -> 트랜잭션 커밋 시 문제 발생 가능 : DB commit 성공 후 SSE send 되도록 개선 필요
+        notificationSseService.send(receiver.getId(),
+                NotificationResponse.from(notification));
     }
 
     // 2. 사용자별 알림 목록 최신순 조회
