@@ -29,4 +29,12 @@ public class NotificationController {
         return ResponseEntity.ok(ApiResponse.success(notifications));
     }
 
+    // 2. 단건 읽음 처리
+    @PatchMapping("/{notificationId}/read")
+    public ResponseEntity<ApiResponse<Void>> markAsRead(@PathVariable Long notificationId,
+                                                        @RequestParam Long receiverId) {
+        notificationService.markAsRead(notificationId, receiverId);
+        return ResponseEntity.ok(ApiResponse.successWithoutData("알림을 읽음 처리했습니다."));
+    }
+
 }
