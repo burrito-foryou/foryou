@@ -44,4 +44,19 @@ public class NotificationController {
         return ResponseEntity.ok(ApiResponse.successWithoutData("모든 알림을 읽음 처리했습니다."));
     }
 
+    // 4. 알림 단건 삭제
+    @DeleteMapping("/{notificationId}")
+    public ResponseEntity<ApiResponse<Void>> deleteNotification(@PathVariable Long notificationId,
+                                                                @RequestParam Long receiverId) {
+        notificationService.deleteNotification(notificationId, receiverId);
+        return ResponseEntity.ok(ApiResponse.successWithoutData("알림이 삭제되었습니다."));
+    }
+
+    // 5. 알림 전체 삭제
+    @DeleteMapping
+    public ResponseEntity<ApiResponse<Void>> deleteAllNotifications(@RequestParam Long receiverId) {
+        notificationService.deleteAllNotifications(receiverId);
+        return ResponseEntity.ok(ApiResponse.successWithoutData("모든 알림이 삭제되었습니다."));
+    }
+
 }
