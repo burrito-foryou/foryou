@@ -37,4 +37,11 @@ public class NotificationController {
         return ResponseEntity.ok(ApiResponse.successWithoutData("알림을 읽음 처리했습니다."));
     }
 
+    // 3. 전체 읽음 처리
+    @PatchMapping("/read-all")
+    public ResponseEntity<ApiResponse<Void>> markAllAsRead(@RequestParam Long receiverId) {
+        notificationService.markAllAsRead(receiverId);
+        return ResponseEntity.ok(ApiResponse.successWithoutData("모든 알림을 읽음 처리했습니다."));
+    }
+
 }
