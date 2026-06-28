@@ -1,0 +1,32 @@
+package xyz.abcganada.foryou.notification.rest.controller;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import xyz.abcganada.foryou.global.response.ApiResponse;
+import xyz.abcganada.foryou.notification.rest.response.NotificationResponse;
+import xyz.abcganada.foryou.notification.service.NotificationService;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/notifications")
+@RequiredArgsConstructor
+public class NotificationController {
+
+    private final NotificationService notificationService;
+
+    // TODO : 인증 구현 후 @RequestParam Long receiverId 교체
+    // 1. 내 알림 목록 조회
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<NotificationResponse>>> getNotifications(@RequestParam Long receiverId) {
+
+        List<NotificationResponse> notifications = notificationService.getNotifications(receiverId)
+                .stream()
+                .map(NotificationResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(ApiResponse.success(notifications));
+    }
+
+}
