@@ -69,7 +69,7 @@ public class Question extends BaseEntity {
     }
 
     // 조회수 증가
-    public vod incrementViewCount() {
+    public void incrementViewCount() {
         this.viewCount++;
     }
 
