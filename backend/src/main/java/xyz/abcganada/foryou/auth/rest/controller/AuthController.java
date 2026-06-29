@@ -4,16 +4,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import xyz.abcganada.foryou.auth.rest.request.LoginRequest;
 import xyz.abcganada.foryou.auth.rest.response.LoginResponse;
 import xyz.abcganada.foryou.auth.service.AuthService;
 import xyz.abcganada.foryou.global.response.ApiResponse;
 import xyz.abcganada.foryou.auth.rest.request.SignupRequest;
 import xyz.abcganada.foryou.auth.rest.response.SignupResponse;
+import xyz.abcganada.foryou.member.domain.AuthProvider;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,6 +36,18 @@ public class AuthController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(ApiResponse.success(response, "로그인이 완료되었습니다."));
+    }
+
+    @GetMapping("/login/{provider}")
+    public ResponseEntity<ApiResponse<LoginResponse>> login(
+        @PathVariable String provider,
+        @RequestParam String code
+    ) {
+        LoginResponse response = authService.socialLogin(AuthProvider.fromSocial(provider), code);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(ApiResponse.success(response, provider + " 로그인이 완료되었습니다."));
     }
 
     @PostMapping("/logout")

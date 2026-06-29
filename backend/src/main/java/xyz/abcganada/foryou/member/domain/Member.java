@@ -22,7 +22,7 @@ public class Member extends BaseEntity {
     @Column(length = 255)
     private String password;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(nullable = false, length = 50)
     private String nickname;
 
     @Enumerated(EnumType.STRING)
@@ -39,13 +39,23 @@ public class Member extends BaseEntity {
     @Column(name = "profile_image_url", length = 500)
     private String profileImageUrl;
 
-    public static Member create(String email, String encodedPassword, String nickname, AuthProvider provider) {
+    public static Member createLocalMember(String email, String encodedPassword, String nickname) {
         return Member.builder()
             .email(email)
             .password(encodedPassword)
             .nickname(nickname)
             .role(Role.USER)
+            .provider(AuthProvider.FORYOU)
+            .build();
+    }
+
+    public static Member createSocialMember(String email, String nickname, AuthProvider provider, String providerId) {
+        return Member.builder()
+            .email(email)
+            .nickname(nickname)
+            .role(Role.USER)
             .provider(provider)
+            .providerId(providerId)
             .build();
     }
 }

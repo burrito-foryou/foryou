@@ -5,7 +5,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import xyz.abcganada.foryou.auth.oauth.OAuthClientResolver;
 import xyz.abcganada.foryou.auth.rest.request.LoginRequest;
+import xyz.abcganada.foryou.auth.oauth.OAuthUserInfo;
 import xyz.abcganada.foryou.auth.rest.response.LoginResponse;
 import xyz.abcganada.foryou.global.exception.BusinessException;
 import xyz.abcganada.foryou.global.exception.ErrorCode;
@@ -22,12 +24,13 @@ import xyz.abcganada.foryou.auth.rest.response.SignupResponse;
 public class AuthService {
 
     private final MemberRepository memberRepository;
+
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final OAuthClientResolver oAuthClientResolver;
 
     public SignupResponse signup(SignupRequest request) {
         validateDuplicateEmail(request.email());
-        validateDuplicateNickname(request.nickname());
 
         Member member = createMember(request);
         Member savedMember = saveMember(member);
@@ -35,11 +38,27 @@ public class AuthService {
         return SignupResponse.from(savedMember);
     }
 
+    @Transactional(readOnly = true)
     public LoginResponse login(LoginRequest request) {
         Member member = findMemberByEmail(request.email());
 
         validateForyouMember(member);
         validatePassword(request.password(), member);
+
+        String accessToken = jwtTokenProvider.generateAccessToken(member);
+
+        return LoginResponse.of(accessToken);
+    }
+
+    public LoginResponse socialLogin(AuthProvider provider, String code) {
+        OAuthUserInfo userInfo = oAuthClientResolver.resolve(provider).getUserInfo(code);
+
+        Member member = memberRepository
+            .findByProviderAndProviderId(provider, userInfo.providerId())
+            .orElseGet(() -> {
+                validateDuplicateEmail(userInfo.email());
+                return createSocialMember(userInfo);
+            });
 
         String accessToken = jwtTokenProvider.generateAccessToken(member);
 
@@ -64,12 +83,22 @@ public class AuthService {
     private Member createMember(SignupRequest request) {
         String encodedPassword = passwordEncoder.encode(request.password());
 
-        return Member.create(
+        return Member.createLocalMember(
             request.email(),
             encodedPassword,
-            request.nickname(),
-            AuthProvider.FORYOU
+            request.nickname()
         );
+    }
+
+    private Member createSocialMember(OAuthUserInfo userInfo) {
+        Member member = Member.createSocialMember(
+            userInfo.email(),
+            userInfo.nickname(),
+            userInfo.provider(),
+            userInfo.providerId()
+        );
+
+        return saveMember(member);
     }
 
     private Member saveMember(Member member) {
@@ -89,12 +118,6 @@ public class AuthService {
     private void validateDuplicateEmail(String email) {
         if (memberRepository.existsByEmail(email)) {
             throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
-        }
-    }
-
-    private void validateDuplicateNickname(String nickname) {
-        if (memberRepository.existsByNickname(nickname)) {
-            throw new BusinessException(ErrorCode.DUPLICATE_NICKNAME);
         }
     }
 
