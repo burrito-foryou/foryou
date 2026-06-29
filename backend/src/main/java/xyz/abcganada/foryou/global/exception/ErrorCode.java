@@ -28,12 +28,15 @@ public enum ErrorCode {
 
     //answer
     ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "ANSWER_001", "답변을 찾을 수 없습니다."),
-    ANSWER_FORBIDDEN(HttpStatus.FORBIDDEN, "ANSWER_002", "답변 작성자만 수정/삭제할 수 있습니다."),
+    ANSWER_FORBIDDEN(HttpStatus.FORBIDDEN, "ANSWER_002", "접근 권한이 없습니다."),
     ANSWER_ALREADY_ACCEPTED(HttpStatus.BAD_REQUEST, "ANSWER_003", "이미 채택된 질문입니다."),
-
+  
     // question
     QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "QUESTION_001", "질문을 찾을 수 없습니다."),
-    QUESTION_FORBIDDEN(HttpStatus.FORBIDDEN, "QUESTION_002", "질문 작성자만 수정/삭제할 수 있습니다.");
+    QUESTION_FORBIDDEN(HttpStatus.FORBIDDEN, "QUESTION_002", "질문 작성자만 수정/삭제할 수 있습니다."),
+
+    // notification
+    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTIFICATION_001", "알림을 찾을 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

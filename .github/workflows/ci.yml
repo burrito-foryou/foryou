@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - dev
+      - main
+
+jobs:
+  # 백엔드
+  backend:
+    name: Backend Build
+    runs-on: ubuntu-latest
+
+    services:
+      # CI job 안에서만 사용하는 일회성 PostgreSQL 컨테이너입니다.
+      # 실제 개발/운영 DB 계정이 아니며 job이 끝나면 함께 삭제됩니다.
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: foryou_ci
+          POSTGRES_USER: ci_user
+          POSTGRES_PASSWORD: ci_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Create backend profile config files
+        env:
+          BACKEND_APPLICATION_CI_YAML: ${{ secrets.BACKEND_APPLICATION_CI_YAML }}
+          BACKEND_APPLICATION_JWT_YAML: ${{ secrets.BACKEND_APPLICATION_JWT_YAML }}
+          BACKEND_APPLICATION_OAUTH2_YAML: ${{ secrets.BACKEND_APPLICATION_OAUTH2_YAML }}
+        run: |
+          test -n "$BACKEND_APPLICATION_CI_YAML"
+          test -n "$BACKEND_APPLICATION_JWT_YAML"
+          test -n "$BACKEND_APPLICATION_OAUTH2_YAML"
+          printf '%s' "$BACKEND_APPLICATION_CI_YAML" > src/main/resources/application-ci.yaml
+          printf '%s' "$BACKEND_APPLICATION_JWT_YAML" > src/main/resources/application-jwt.yaml
+          printf '%s' "$BACKEND_APPLICATION_OAUTH2_YAML" > src/main/resources/application-oauth2.yaml
+
+      - name: Run backend build
+        env:
+          SPRING_PROFILES_ACTIVE: ci,jwt,oauth2
+        run: ./gradlew build
+
+  # 프론트엔드
+  frontend:
+    name: Frontend Lint and Build
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.12.0"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run frontend lint
+        run: npm run lint
+
+      - name: Run frontend build
+        run: npm run build
