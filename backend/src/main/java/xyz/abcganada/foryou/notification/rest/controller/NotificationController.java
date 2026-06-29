@@ -3,11 +3,14 @@ package xyz.abcganada.foryou.notification.rest.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import xyz.abcganada.foryou.global.response.ApiResponse;
 import xyz.abcganada.foryou.notification.rest.response.NotificationResponse;
 import xyz.abcganada.foryou.notification.service.NotificationService;
+import xyz.abcganada.foryou.notification.service.NotificationSseService;
 
 import java.util.List;
+import org.springframework.http.MediaType;
 
 @RestController
 @RequestMapping("/api/notifications")
@@ -15,6 +18,7 @@ import java.util.List;
 public class NotificationController {
 
     private final NotificationService notificationService;
+    private final NotificationSseService notificationSseService;
 
     // TODO : 인증 구현 후 @RequestParam Long receiverId 교체
     // 1. 내 알림 목록 조회
@@ -58,5 +62,12 @@ public class NotificationController {
         notificationService.deleteAllNotifications(receiverId);
         return ResponseEntity.ok(ApiResponse.successWithoutData("모든 알림이 삭제되었습니다."));
     }
+
+    // SSE 구독
+    @GetMapping(value = "/subscribe/{receiverId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter subscribe(@PathVariable Long receiverId) {
+        return notificationSseService.subscribe(receiverId);
+    }
+
 
 }
