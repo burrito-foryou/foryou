@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import xyz.abcganada.foryou.member.domain.AuthProvider;
 import xyz.abcganada.foryou.member.domain.Member;
 import xyz.abcganada.foryou.member.repository.MemberRepository;
 import xyz.abcganada.foryou.notification.domain.Notification;
@@ -41,11 +40,12 @@ class NotificationControllerTest {
     @BeforeEach
     void setUp() {
         notificationRepository.deleteAll();
+        memberRepository.deleteAll();
 
         Member receiver = memberRepository.save(
-                Member.create("receiver@test.com", null, "회원1", AuthProvider.FORYOU));
+                Member.createLocalMember("receiver@test.com", null, "회원1"));
         Member sender = memberRepository.save(
-                Member.create("sender@test.com", null, "회원2", AuthProvider.FORYOU));
+                Member.createLocalMember("sender@test.com", null, "회원2"));
 
         receiverId = receiver.getId();
 
