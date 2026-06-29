@@ -63,8 +63,8 @@ public class Notification {
         this.createdAt = LocalDateTime.now();
     }
 
-    // Service에서 직접 필드 변경 시 Setter 가능해야 함 - 어디서든 변경 가능
-    // Entity 메서드 사용 - setter 불필요
+    // 현재는 JPQL UPDATE로 읽음 처리하지만,
+    // 엔티티 기반 변경이 필요할 경우 사용할 메서드
     public void markAsRead() {
         this.isRead = true;
     }
