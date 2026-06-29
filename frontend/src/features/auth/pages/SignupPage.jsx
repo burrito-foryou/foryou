@@ -44,13 +44,10 @@ const SignupPage = () => {
         />
       )}
 
-      <div className="flex min-h-screen items-center justify-center bg-surface">
+      <div className="flex min-h-[calc(100vh-120px)] items-center justify-center bg-surface">
         <div className="w-full max-w-md rounded-lg border border-border bg-background p-10">
           <div className="mb-8 text-center">
-            <Link to={ROUTES.HOME}>
-              <p className="text-2xl font-bold text-primary">ForU</p>
-            </Link>
-            <p className="mt-1 text-lg font-bold text-text">회원가입</p>
+            <p className="text-lg font-bold text-text">회원가입</p>
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">

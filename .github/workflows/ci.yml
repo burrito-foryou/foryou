@@ -88,5 +88,12 @@ jobs:
       - name: Run frontend lint
         run: npm run lint
 
+      - name: Create frontend env file
+        env:
+          FRONTEND_ENV: ${{ secrets.FRONTEND_ENV }}
+        run: |
+          test -n "$FRONTEND_ENV"
+          printf '%s' "$FRONTEND_ENV" > .env
+
       - name: Run frontend build
         run: npm run build

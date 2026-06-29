@@ -12,6 +12,7 @@ const QuestionListPage = lazy(() => import("./features/question/pages/QuestionLi
 const QuestionDetailPage = lazy(() => import("./features/question/pages/QuestionDetailPage"));
 const QuestionWritePage = lazy(() => import("./features/question/pages/QuestionWritePage"));
 const NotificationPage = lazy(() => import("./features/notification/pages/NotificationPage"));
+const OAuthCallbackPage = lazy(() => import("./features/auth/pages/OAuthCallbackPage"));
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,7 @@ const router = createBrowserRouter([
       { path: ROUTES.HOME, element: <HomePage /> },
       { path: ROUTES.LOGIN, element: <LoginPage /> },
       { path: ROUTES.SIGNUP, element: <SignupPage /> },
+      { path: ROUTES.OAUTH_CALLBACK, element: <OAuthCallbackPage /> },
       { path: ROUTES.QUESTIONS, element: <QuestionListPage /> },
       { path: ROUTES.QUESTION_DETAIL, element: <QuestionDetailPage /> },
 

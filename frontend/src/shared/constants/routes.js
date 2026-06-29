@@ -3,6 +3,7 @@ export const ROUTES = {
 
   LOGIN: "/login",
   SIGNUP: "/signup",
+  OAUTH_CALLBACK: "/auth/callback/:provider",
 
   MY_PAGE: "/my",
 

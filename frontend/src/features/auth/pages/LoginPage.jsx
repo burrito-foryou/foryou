@@ -3,18 +3,16 @@ import { FcGoogle } from "react-icons/fc";
 import { RiKakaoTalkFill } from "react-icons/ri";
 import { ROUTES } from "../../../shared/constants/routes";
 import useLoginForm from "../hooks/useLoginForm";
+import { getOAuthUrl } from "../utils/oauthUrl";
 
 const LoginPage = () => {
   const { form, errors, handleChange, handleSubmit } = useLoginForm();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-surface">
+    <div className="flex min-h-[calc(100vh-120px)] items-center justify-center bg-surface">
       <div className="w-full max-w-md rounded-lg border border-border bg-background p-10">
         <div className="mb-8 text-center">
-          <Link to={ROUTES.HOME}>
-            <p className="text-2xl font-bold text-primary">ForU</p>
-          </Link>
-          <p className="mt-1 text-lg font-bold text-text">로그인</p>
+          <p className="text-lg font-bold text-text">로그인</p>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -73,11 +71,17 @@ const LoginPage = () => {
         </div>
 
         <div className="flex flex-col gap-3">
-          <button className="flex w-full items-center justify-center gap-2 rounded-md border border-border py-2 text-sm hover:bg-surface">
+          <button
+            onClick={() => (window.location.href = getOAuthUrl("google"))}
+            className="flex w-full items-center justify-center gap-2 rounded-md border border-border py-2 text-sm hover:bg-surface"
+          >
             <FcGoogle size={20} />
             구글로 로그인
           </button>
-          <button className="flex w-full items-center justify-center gap-2 rounded-md bg-[#FEE500] py-2 text-sm font-bold text-[#3C1E1E] hover:brightness-95">
+          <button
+            onClick={() => (window.location.href = getOAuthUrl("kakao"))}
+            className="flex w-full items-center justify-center gap-2 rounded-md bg-[#FEE500] py-2 text-sm font-bold text-[#3C1E1E] hover:brightness-95"
+          >
             <RiKakaoTalkFill size={20} />
             카카오로 로그인
           </button>
