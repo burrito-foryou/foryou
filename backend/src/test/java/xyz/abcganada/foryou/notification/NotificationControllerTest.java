@@ -7,13 +7,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import xyz.abcganada.foryou.member.domain.AuthProvider;
 import xyz.abcganada.foryou.member.domain.Member;
 import xyz.abcganada.foryou.member.repository.MemberRepository;
 import xyz.abcganada.foryou.notification.domain.Notification;
 import xyz.abcganada.foryou.notification.domain.NotificationType;
 import xyz.abcganada.foryou.notification.domain.TargetType;
 import xyz.abcganada.foryou.notification.repository.NotificationRepository;
+import xyz.abcganada.foryou.question.domain.Question;
+import xyz.abcganada.foryou.question.repository.QuestionRepository;
 
 import java.util.List;
 
@@ -34,6 +35,8 @@ class NotificationControllerTest {
     NotificationRepository notificationRepository;
     @Autowired
     MemberRepository memberRepository;
+    @Autowired
+    QuestionRepository questionRepository;
 
     private Long receiverId;
     private Long notification1Id;
@@ -41,11 +44,21 @@ class NotificationControllerTest {
     @BeforeEach
     void setUp() {
         notificationRepository.deleteAll();
+        questionRepository.deleteAll();
+        memberRepository.deleteAll();
 
         Member receiver = memberRepository.save(
-                Member.create("receiver@test.com", null, "회원1", AuthProvider.FORYOU));
+                Member.createLocalMember("receiver@test.com", null, "회원1"));
         Member sender = memberRepository.save(
-                Member.create("sender@test.com", null, "회원2", AuthProvider.FORYOU));
+                Member.createLocalMember("sender@test.com", null, "회원2"));
+
+        Question question = questionRepository.save(
+                Question.builder()
+                        .member(receiver)
+                        .title("테스트 질문")
+                        .content("테스트 질문 내용")
+                        .build()
+        );
 
         receiverId = receiver.getId();
 
@@ -56,7 +69,7 @@ class NotificationControllerTest {
                         .type(NotificationType.QUESTION_ANSWER_CREATED)
                         .targetType(TargetType.ANSWER)
                         .targetId(1L)
-                        .questionId(1L)
+                        .questionId(question.getId())
                         .content("회원2님이 회원님의 질문에 답변했습니다.")
                         .build()
         );
@@ -69,7 +82,7 @@ class NotificationControllerTest {
                         .type(NotificationType.QUESTION_COMMENT_CREATED)
                         .targetType(TargetType.COMMENT)
                         .targetId(2L)
-                        .questionId(1L)
+                        .questionId(question.getId())
                         .content("회원2님이 회원님의 질문에 댓글을 작성했습니다.")
                         .build()
         );
@@ -81,7 +94,7 @@ class NotificationControllerTest {
                         .type(NotificationType.ANSWER_COMMENT_CREATED)
                         .targetType(TargetType.COMMENT)
                         .targetId(1L)
-                        .questionId(1L)
+                        .questionId(question.getId())
                         .content("회원1님이 회원님의 답변에 댓글을 작성했습니다.")
                         .build()
         );
@@ -92,7 +105,7 @@ class NotificationControllerTest {
                         .type(NotificationType.ANSWER_ACCEPTED)
                         .targetType(TargetType.ANSWER)
                         .targetId(1L)          // answerId
-                        .questionId(1L)
+                        .questionId(question.getId())
                         .content("회원1님이 회원님의 답변을 채택했습니다.")
                         .build()
         );
