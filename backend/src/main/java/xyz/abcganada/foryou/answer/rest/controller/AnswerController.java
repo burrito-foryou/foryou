@@ -37,6 +37,15 @@ public class AnswerController {
         return ResponseEntity.ok(ApiResponse.success(response, "답변이 수정되었습니다."));
     }
 
+    // WBS0407/0408: 답변 채택
+    @PatchMapping("/api/answers/{answerId}/accept")
+    public ResponseEntity<ApiResponse<Void>> acceptAnswer(
+            @PathVariable Long answerId,
+            @RequestParam Long memberId) { // Security 구현 후 @AuthenticationPrincipal로 교체 예정
+        answerService.accept(answerId, memberId);
+        return ResponseEntity.ok(ApiResponse.successWithoutData("답변이 채택되었습니다."));
+    }
+
     // WBS0406: 답변 삭제
     @DeleteMapping("/api/answers/{answerId}")
     public ResponseEntity<Void> deleteAnswer(

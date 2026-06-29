@@ -47,4 +47,8 @@ public class Answer extends BaseEntity {
         this.priceRange = priceRange;
         this.content = content;
     }
+
+    public void accept() {
+        this.accepted = true;
+    }
 }

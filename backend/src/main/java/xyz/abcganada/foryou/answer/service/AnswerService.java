@@ -51,6 +51,31 @@ public class AnswerService {
         return AnswerResponse.from(answer);
     }
 
+    // WBS0407/0408: 답변 채택 및 질문 상태 변경
+    @Transactional
+    public void accept(Long answerId, Long memberId) {
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
+
+        Question question = answer.getQuestion();
+
+        // 질문 작성자만 채택 가능
+        if (!question.isAuthor(memberId)) {
+            throw new BusinessException(ErrorCode.ANSWER_FORBIDDEN);
+        }
+
+        // 이미 채택된 질문인지 확인
+        if (question.getAcceptedAnswerId() != null) {
+            throw new BusinessException(ErrorCode.ANSWER_ALREADY_ACCEPTED);
+        }
+
+        // WBS0407: 답변 채택 처리
+        answer.accept();
+
+        // WBS0408: 질문 채택 답변 ID 설정
+        question.accept(answerId);
+    }
+
     // WBS0406: 답변 삭제
     @Transactional
     public void delete(Long answerId, Long memberId) {
