@@ -9,10 +9,14 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     //auth
     INVALID_LOGIN_CREDENTIALS(HttpStatus.UNAUTHORIZED, "AUTH_001", "이메일 또는 비밀번호가 올바르지 않습니다."),
+    UNSUPPORTED_OAUTH_PROVIDER(HttpStatus.BAD_REQUEST, "AUTH_002", "지원하지 않는 소셜 로그인 제공자입니다."),
+    OAUTH_CLIENT_NOT_CONFIGURED(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH_003", "소셜 로그인 설정이 올바르지 않습니다."),
+    OAUTH_TOKEN_REQUEST_FAILED(HttpStatus.UNAUTHORIZED, "AUTH_004", "소셜 로그인 토큰 요청에 실패했습니다."),
+    OAUTH_USER_INFO_REQUEST_FAILED(HttpStatus.UNAUTHORIZED, "AUTH_005", "소셜 사용자 정보 요청에 실패했습니다."),
+    OAUTH_USER_INFO_INVALID(HttpStatus.UNAUTHORIZED, "AUTH_006", "소셜 사용자 정보가 올바르지 않습니다."),
 
     //member
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "MEMBER_001", "이미 사용 중인 이메일입니다."),
-    DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "MEMBER_002", "이미 사용 중인 닉네임입니다."),
     DUPLICATE_MEMBER(HttpStatus.CONFLICT, "MEMBER_003", "이미 가입된 회원 정보입니다."),
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_004", "사용자를 찾을 수 없습니다.")
 ,
@@ -29,7 +33,7 @@ public enum ErrorCode {
     //answer
     ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "ANSWER_001", "답변을 찾을 수 없습니다."),
     ANSWER_FORBIDDEN(HttpStatus.FORBIDDEN, "ANSWER_002", "접근 권한이 없습니다."),
-    ANSWER_ALREADY_ACCEPTED(HttpStatus.BAD_REQUEST, "ANSWER_003", "이미 채택된 질문입니다.");
+    ANSWER_ALREADY_ACCEPTED(HttpStatus.BAD_REQUEST, "ANSWER_003", "이미 채택된 질문입니다."),
 
     // notification
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTIFICATION_001", "알림을 찾을 수 없습니다.");
