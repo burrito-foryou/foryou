@@ -23,6 +23,8 @@ const router = createBrowserRouter([
     children: [
       // 비로그인 접근 가능
       { path: ROUTES.HOME, element: <HomePage /> },
+      { path: ROUTES.LOGIN, element: <LoginPage /> },
+      { path: ROUTES.SIGNUP, element: <SignupPage /> },
       { path: ROUTES.QUESTIONS, element: <QuestionListPage /> },
       { path: ROUTES.QUESTION_DETAIL, element: <QuestionDetailPage /> },
 
@@ -37,12 +39,10 @@ const router = createBrowserRouter([
       },
     ],
   },
-  { path: ROUTES.LOGIN, element: <LoginPage /> },
-  { path: ROUTES.SIGNUP, element: <SignupPage /> },
 ]);
 
 const RouterConfig = () => {
   return <RouterProvider router={router} />;
-}
+};
 
 export default RouterConfig;

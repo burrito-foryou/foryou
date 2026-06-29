@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
 import { ROUTES } from "../constants/routes";
-import { FiSearch, FiUser } from "react-icons/fi";
+import { FiSearch } from "react-icons/fi";
 import { RxHamburgerMenu } from "react-icons/rx";
+import useAuthStore from "../../features/auth/store/authStore";
 
 const Header = () => {
+  const token = useAuthStore((state) => state.token);
+  const nickname = useAuthStore((state) => state.nickname);
+
   return (
     <header className="border-b border-border px-6 py-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -22,11 +26,23 @@ const Header = () => {
           />
         </div>
 
-        {/* 아이콘 */}
+        {/* 우측 영역 */}
         <div className="order-2 flex items-center gap-4 sm:order-3">
-          <Link to={ROUTES.MY_PAGE}>
-            <FiUser size={22} className="text-gray-600" />
-          </Link>
+          {token ? (
+            <Link
+              to={ROUTES.MY_PAGE}
+              className="text-sm font-bold text-primary hover:underline"
+            >
+              {nickname ? `${nickname}님` : "마이페이지"}
+            </Link>
+          ) : (
+            <Link
+              to={ROUTES.LOGIN}
+              className="rounded-md bg-primary px-4 py-1.5 text-sm font-bold text-white hover:bg-primary-hover"
+            >
+              로그인
+            </Link>
+          )}
           <button>
             <RxHamburgerMenu size={22} className="text-gray-600" />
           </button>
