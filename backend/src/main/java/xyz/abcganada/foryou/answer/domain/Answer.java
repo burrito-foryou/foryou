@@ -41,4 +41,14 @@ public class Answer extends BaseEntity {
     // boolean 필드는 Lombok @Getter가 isAccepted()로 자동 생성
     @Column(name = "is_accepted", nullable = false)
     private boolean accepted;
+
+    public void update(String giftName, String priceRange, String content) {
+        this.giftName = giftName;
+        this.priceRange = priceRange;
+        this.content = content;
+    }
+
+    public void accept() {
+        this.accepted = true;
+    }
 }
