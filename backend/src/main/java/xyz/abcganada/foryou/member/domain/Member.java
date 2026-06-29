@@ -39,6 +39,14 @@ public class Member extends BaseEntity {
     @Column(name = "profile_image_url", length = 500)
     private String profileImageUrl;
 
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updateProfileImageUrl(String profileImageUrl) {
+        //TODO 사용자 이미지 변경
+    }
+
     public static Member createLocalMember(String email, String encodedPassword, String nickname) {
         return Member.builder()
             .email(email)
