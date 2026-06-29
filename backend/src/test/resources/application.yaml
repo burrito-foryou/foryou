@@ -12,9 +12,6 @@ spring:
   flyway:
     enabled: false
 
-  flyway:
-    enabled: false
-
 jwt:
   secret: test-development-secret-key-for-foryou-jwt-token
   access-token-expiration: 3600000
