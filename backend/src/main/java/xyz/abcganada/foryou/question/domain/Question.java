@@ -2,6 +2,7 @@ package xyz.abcganada.foryou.question.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Formula;
 import xyz.abcganada.foryou.global.common.BaseEntity;
 import xyz.abcganada.foryou.member.domain.Member;
 import xyz.abcganada.foryou.tag.Tag;
@@ -38,6 +39,10 @@ public class Question extends BaseEntity {
     @Column(name = "accepted_answer_id")
     private Long acceptedAnswerId;
 
+    // 답변 많은 순 정렬을 위한 답변 수 계산 필드
+    @Formula("(SELECT COUNT(a.id) FROM answers a WHERE a.question_id = id)")
+    private long answerCount;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "question_tags",
@@ -64,7 +69,7 @@ public class Question extends BaseEntity {
     }
 
     // 조회수 증가
-    public void incrementViewCount() {
+    public vod incrementViewCount() {
         this.viewCount++;
     }
 
