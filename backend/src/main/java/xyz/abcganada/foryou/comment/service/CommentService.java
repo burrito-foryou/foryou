@@ -8,6 +8,7 @@ import xyz.abcganada.foryou.answer.repository.AnswerRepository;
 import xyz.abcganada.foryou.comment.domain.Comment;
 import xyz.abcganada.foryou.comment.repository.CommentRepository;
 import xyz.abcganada.foryou.comment.rest.request.CommentCreateRequest;
+import xyz.abcganada.foryou.comment.rest.request.CommentUpdateRequest;
 import xyz.abcganada.foryou.comment.rest.response.CommentResponse;
 
 import java.util.List;
@@ -34,6 +35,33 @@ public class CommentService {
                 .stream()
                 .map(CommentResponse::from)
                 .toList();
+    }
+
+    // WBS0505: 댓글 수정
+    @Transactional
+    public CommentResponse update(Long commentId, Long memberId, CommentUpdateRequest request) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
+
+        if (!comment.getMember().getId().equals(memberId)) {
+            throw new BusinessException(ErrorCode.COMMENT_FORBIDDEN);
+        }
+
+        comment.update(request.getContent());
+        return CommentResponse.from(comment);
+    }
+
+    // WBS0506: 댓글 삭제
+    @Transactional
+    public void delete(Long commentId, Long memberId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
+
+        if (!comment.getMember().getId().equals(memberId)) {
+            throw new BusinessException(ErrorCode.COMMENT_FORBIDDEN);
+        }
+
+        commentRepository.delete(comment);
     }
 
     // WBS0503: 댓글 작성
