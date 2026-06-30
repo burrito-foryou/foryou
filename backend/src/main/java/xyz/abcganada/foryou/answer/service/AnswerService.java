@@ -110,4 +110,20 @@ public class AnswerService {
 
         return AnswerResponse.from(answerRepository.save(answer));
     }
+
+    // Like 증가
+    @Transactional
+    public void incrementLikeCount(Long answerId) {
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
+        answer.incrementLikeCount();
+    }
+
+    // Like 감소
+    @Transactional
+    public void decrementLikeCount(Long answerId) {
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
+        answer.decrementLikeCount();
+    }
 }

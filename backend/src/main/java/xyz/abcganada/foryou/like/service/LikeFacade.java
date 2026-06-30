@@ -20,7 +20,7 @@ public class LikeFacade {
         switch (targetType) {
             // TODO 각 Service 통해 like_count 증가
             // case QUESTION -> questionService.incrementLikeCount(targetId);
-            // case ANSWER -> answerService.incrementLikeCount(targetId);
+            case ANSWER -> answerService.incrementLikeCount(targetId);
             //case COMMENT -> commentService.incrementLikeCount(targetId);
         }
 
@@ -34,7 +34,7 @@ public class LikeFacade {
         switch (targetType) {
             // TODO 각 Service 통해 like_count 증가
             // case QUESTION ->
-            // case ANSWER -> answerService.decrementLikeCount(targetId);
+            case ANSWER -> answerService.decrementLikeCount(targetId);
             // case COMMENT ->
         }
 
