@@ -20,10 +20,7 @@ public class LikeService {
     private final MemberRepository memberRepository;
 
     // 1. 좋아요 등록
-    public void addLike(Long memberId, TargetType targetType, Long targetId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
-
+    public void addLike(Member member, TargetType targetType, Long targetId) {
         // 중복 좋아요 여부 확인
         if (likeRepository.existsByMemberAndTargetTypeAndTargetId(member, targetType, targetId)) {
             throw new BusinessException(ErrorCode.LIKE_ALREADY_EXISTS);

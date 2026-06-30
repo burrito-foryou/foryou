@@ -19,22 +19,17 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberInfoResponse getMemberInfo(Long memberId) {
-        Member member = findMemberById(memberId);
+        Member member = getMemberById(memberId);
         return MemberInfoResponse.from(member);
     }
 
     public MemberInfoResponse updateMemberNickname(Long memberId, MemberUpdateRequest request) {
-        Member member = findMemberById(memberId);
+        Member member = getMemberById(memberId);
         validateNicknameChanged(member, request.nickname());
 
         member.updateNickname(request.nickname());
 
         return MemberInfoResponse.from(member);
-    }
-
-    private Member findMemberById(Long memberId) {
-        return memberRepository.findById(memberId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     private void validateNicknameChanged(Member member, String nickname) {
@@ -43,8 +38,8 @@ public class MemberService {
         }
     }
 
-    // 알림 전송 위한 회원 조회
-    public Member getMember(Long memberId) {
+    // 알림 전송 위한 회원 조회 -> MemberInfoResponse
+    public Member getMemberById(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
     }

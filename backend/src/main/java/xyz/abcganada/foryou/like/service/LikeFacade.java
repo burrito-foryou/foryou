@@ -23,9 +23,10 @@ public class LikeFacade {
 
     @Transactional
     public void addLike(Long memberId, TargetType targetType, Long targetId) {
+        Member sender = memberService.getMemberById(memberId);
         // 1. 좋아요 등록 (DB 반영)
-        likeService.addLike(memberId, targetType, targetId); // TODO Member 같은 트랜잭션 안에 2번 조회 - 수정 필요
-        Member sender = memberService.getMember(memberId);
+        likeService.addLike(sender, targetType, targetId);
+
 
         switch (targetType) {
             // TODO 각 Service 통해 like_count 증가
