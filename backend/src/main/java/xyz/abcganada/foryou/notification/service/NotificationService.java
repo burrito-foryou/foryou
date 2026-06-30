@@ -6,10 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.abcganada.foryou.global.exception.BusinessException;
 import xyz.abcganada.foryou.global.exception.ErrorCode;
-import xyz.abcganada.foryou.member.domain.Member;
 import xyz.abcganada.foryou.notification.domain.Notification;
-import xyz.abcganada.foryou.notification.domain.NotificationType;
-import xyz.abcganada.foryou.notification.domain.TargetType;
 import xyz.abcganada.foryou.notification.repository.NotificationRepository;
 import xyz.abcganada.foryou.notification.rest.response.NotificationResponse;
 
@@ -26,37 +23,16 @@ public class NotificationService {
 
     // 1. 알림 생성
     @Transactional
-    public void createNotification(
-            Member receiver,
-            Member sender,
-            NotificationType type,
-            TargetType targetType,
-            Long targetId,
-            Long questionId
-    ) {
-        // 자기 자신에게는 알림 X
-        if (receiver.getId().equals(sender.getId())) {
-            return;
-        }
-
-        // 알림 메시지 조합
-        String content = type.buildContent(sender.getNickname());
+    public void saveAndSend(Notification notification) {
 
         // DB에 알림 저장
-        Notification notification = notificationRepository.save(Notification.builder()
-                .receiver(receiver)
-                .sender(sender)
-                .type(type)
-                .targetType(targetType)
-                .targetId(targetId)
-                .questionId(questionId)
-                .content(content)
-                .build());
+        Notification saved = notificationRepository.save(notification);
 
         // SSE로 알림 전송
         // TODO DB 저장 -> SSE 전송 -> 트랜잭션 커밋 시 문제 발생 가능 : DB commit 성공 후 SSE send 되도록 개선 필요
-        notificationSseService.send(receiver.getId(),
-                NotificationResponse.from(notification));
+        notificationSseService.send(
+                saved.getReceiver().getId(),
+                NotificationResponse.from(saved));
     }
 
     // 2. 사용자별 알림 목록 최신순 조회
