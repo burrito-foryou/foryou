@@ -41,7 +41,16 @@ public enum ErrorCode {
     QUESTION_FORBIDDEN(HttpStatus.FORBIDDEN, "QUESTION_002", "질문 작성자만 수정/삭제할 수 있습니다."),
 
     // notification
-    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTIFICATION_001", "알림을 찾을 수 없습니다.");
+    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTIFICATION_001", "알림을 찾을 수 없습니다."),
+
+    // image
+    IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "IMAGE_001", "이미지를 찾을 수 없습니다."),
+    INVALID_IMAGE_EXTENSION(HttpStatus.BAD_REQUEST, "IMAGE_002", "지원하지 않는 이미지 형식입니다."),
+    IMAGE_SIZE_EXCEEDED(HttpStatus.BAD_REQUEST, "IMAGE_003", "이미지 크기는 5MB를 초과할 수 없습니다."),
+    IMAGE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE_004", "이미지 업로드에 실패했습니다."),
+    IMAGE_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE_005", "이미지 삭제에 실패했습니다.");
+
+
 
     private final HttpStatus httpStatus;
     private final String code;
