@@ -61,7 +61,7 @@ public class QuestionController {
     }
 
     // 질문 수정
-    @PutMapping("/{questionId}")
+    @PatchMapping("/{questionId}")
     public ResponseEntity<ApiResponse<QuestionResponse>> updateQuestion(
             @PathVariable Long questionId,
             @RequestParam Long memberId, // Security 구현 후 @AuthenticationPrincipal로 교체 예정
