@@ -42,7 +42,7 @@ public class LikeService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
         Like like = likeRepository.findByMemberAndTargetTypeAndTargetId(member, targetType, targetId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.LIKE_NOT_FOUND)); // TODO Custom Exception 변경
+                .orElseThrow(() -> new BusinessException(ErrorCode.LIKE_NOT_FOUND));
 
         likeRepository.delete(like);
     }
