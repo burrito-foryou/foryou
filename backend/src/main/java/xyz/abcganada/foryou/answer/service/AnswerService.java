@@ -29,7 +29,7 @@ public class AnswerService {
     // WBS0404: 답변 목록 조회
     public List<AnswerResponse> getAnswers(Long questionId) {
         if (!questionRepository.existsById(questionId)) {
-            throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
+            throw new BusinessException(ErrorCode.QUESTION_NOT_FOUND);
         }
         return answerRepository.findByQuestionIdOrderByAcceptedDescCreatedAtAsc(questionId)
                 .stream()
@@ -93,10 +93,10 @@ public class AnswerService {
     @Transactional
     public AnswerResponse create(Long questionId, Long memberId, AnswerCreateRequest request) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
         Answer answer = Answer.builder()
                 .question(question)
