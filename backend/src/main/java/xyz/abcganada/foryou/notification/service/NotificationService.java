@@ -32,13 +32,15 @@ public class NotificationService {
             NotificationType type,
             TargetType targetType,
             Long targetId,
-            Long questionId,
-            String content
+            Long questionId
     ) {
         // 자기 자신에게는 알림 X
         if (receiver.getId().equals(sender.getId())) {
             return;
         }
+
+        // 알림 메시지 조합
+        String content = type.buildContent(sender.getNickname());
 
         // DB에 알림 저장
         Notification notification = notificationRepository.save(Notification.builder()
