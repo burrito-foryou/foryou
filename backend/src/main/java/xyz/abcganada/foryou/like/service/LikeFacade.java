@@ -7,9 +7,8 @@ import xyz.abcganada.foryou.answer.domain.Answer;
 import xyz.abcganada.foryou.answer.service.AnswerService;
 import xyz.abcganada.foryou.like.domain.TargetType;
 import xyz.abcganada.foryou.member.domain.Member;
-import xyz.abcganada.foryou.member.repository.MemberRepository;
 import xyz.abcganada.foryou.member.service.MemberService;
-import xyz.abcganada.foryou.notification.domain.NotificationType;
+import xyz.abcganada.foryou.notification.application.NotificationCreator;
 import xyz.abcganada.foryou.notification.service.NotificationService;
 
 @Service
@@ -19,6 +18,7 @@ public class LikeFacade {
     private final LikeService likeService;
     private final MemberService memberService;
     private final AnswerService answerService;
+    private final NotificationCreator notificationCreator;
     private final NotificationService notificationService;
 
     @Transactional
@@ -27,23 +27,17 @@ public class LikeFacade {
         // 1. 좋아요 등록 (DB 반영)
         likeService.addLike(sender, targetType, targetId);
 
-
         switch (targetType) {
             // TODO 각 Service 통해 like_count 증가
             // case QUESTION -> questionService.incrementLikeCount(targetId);
             case ANSWER -> {
                 // 좋아요 수 증가
                 answerService.incrementLikeCount(targetId);
+                // 도메인 조회 (notification 생성용)
                 Answer answer = answerService.getAnswer(targetId);
-
-                notificationService.createNotification(
-                        answer.getMember(),
-                        sender,
-                        NotificationType.ANSWER_LIKED,
-                        xyz.abcganada.foryou.notification.domain.TargetType.ANSWER,
-                        answer.getId(),
-                        answer.getQuestion().getId()
-                );
+                // notification 생성
+                notificationCreator.fromAnswerLiked(answer, sender)
+                        .ifPresent(notificationService::saveAndSend);
             }
             //case COMMENT -> commentService.incrementLikeCount(targetId);
         }
