@@ -1,9 +1,13 @@
 package xyz.abcganada.foryou.auth.rest.controller;
 
 import fixture.AuthFixture;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import xyz.abcganada.foryou.auth.rest.request.LoginRequest;
 import xyz.abcganada.foryou.auth.rest.request.SignupRequest;
 import xyz.abcganada.foryou.auth.service.AuthService;
@@ -15,22 +19,16 @@ import xyz.abcganada.foryou.member.domain.AuthProvider;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WebMvcTest(AuthController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class AuthControllerTest extends RestControllerTest {
 
+    @MockBean
     private AuthService authService;
-
-    @BeforeEach
-    void setUp() {
-        authService = mock(AuthService.class);
-        setupController(new AuthController(authService));
-    }
 
     @Test
     @DisplayName("로그인 요청에 성공하면 200 응답을 반환한다")

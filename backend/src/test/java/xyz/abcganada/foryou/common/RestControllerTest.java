@@ -1,32 +1,28 @@
 package xyz.abcganada.foryou.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.MultiValueMap;
-import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
-import xyz.abcganada.foryou.global.exception.GlobalExceptionHandler;
+import xyz.abcganada.foryou.global.security.jwt.JwtTokenProvider;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
+@AutoConfigureMockMvc(addFilters = false)
 public abstract class RestControllerTest {
 
+    @Autowired
     protected MockMvc mockMvc;
-    protected ObjectMapper objectMapper = new ObjectMapper();
 
-    protected void setupController(Object controller) {
-        mockMvc = MockMvcBuilders
-            .standaloneSetup(controller)
-            .setControllerAdvice(new GlobalExceptionHandler())
-            .setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver())
-            .build();
-    }
+    @Autowired
+    protected ObjectMapper objectMapper;
+
+    @MockBean
+    protected JwtTokenProvider jwtTokenProvider;
 
     protected ResultActions getRequest(String url, Object... uriVariables) throws Exception {
         return mockMvc.perform(get(url, uriVariables)

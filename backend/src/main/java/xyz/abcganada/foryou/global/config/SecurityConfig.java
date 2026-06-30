@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/signup").permitAll()
                 .requestMatchers("/api/auth/login", "/api/auth/login/*").permitAll()
                 .requestMatchers("/api/auth/logout").authenticated()
+                .requestMatchers("/api/members/me").authenticated()
                 .anyRequest().permitAll()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

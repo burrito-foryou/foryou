@@ -17,9 +17,10 @@ public enum ErrorCode {
 
     //member
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "MEMBER_001", "이미 사용 중인 이메일입니다."),
+    SAME_NICKNAME(HttpStatus.BAD_REQUEST, "MEMBER_002", "현재 닉네임과 동일한 닉네임입니다."),
     DUPLICATE_MEMBER(HttpStatus.CONFLICT, "MEMBER_003", "이미 가입된 회원 정보입니다."),
-    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_004", "사용자를 찾을 수 없습니다.")
-,
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_004", "사용자를 찾을 수 없습니다."),
+
     //common
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "COMMON_001", "잘못된 입력값입니다."),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "COMMON_002", "지원하지 않는 HTTP 메서드입니다."),
@@ -34,7 +35,7 @@ public enum ErrorCode {
     ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "ANSWER_001", "답변을 찾을 수 없습니다."),
     ANSWER_FORBIDDEN(HttpStatus.FORBIDDEN, "ANSWER_002", "접근 권한이 없습니다."),
     ANSWER_ALREADY_ACCEPTED(HttpStatus.BAD_REQUEST, "ANSWER_003", "이미 채택된 질문입니다."),
-  
+
     // question
     QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "QUESTION_001", "질문을 찾을 수 없습니다."),
     QUESTION_FORBIDDEN(HttpStatus.FORBIDDEN, "QUESTION_002", "질문 작성자만 수정/삭제할 수 있습니다."),
