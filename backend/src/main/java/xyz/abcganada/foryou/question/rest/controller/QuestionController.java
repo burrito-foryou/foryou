@@ -10,6 +10,7 @@ import xyz.abcganada.foryou.global.response.ApiResponse;
 import xyz.abcganada.foryou.question.rest.request.QuestionCreateRequest;
 import xyz.abcganada.foryou.question.rest.response.QuestionResponse;
 import xyz.abcganada.foryou.question.rest.response.QuestionDetailResponse;
+import xyz.abcganada.foryou.question.rest.request.QuestionUpdateRequest;
 import xyz.abcganada.foryou.question.service.QuestionService;
 
 @RestController
@@ -57,5 +58,26 @@ public class QuestionController {
     ) {
         QuestionDetailResponse response = questionService.getDetail(questionId);
         return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    // 질문 수정
+    @PutMapping("/{questionId}")
+    public ResponseEntity<ApiResponse<QuestionResponse>> updateQuestion(
+            @PathVariable Long questionId,
+            @RequestParam Long memberId, // Security 구현 후 @AuthenticationPrincipal로 교체 예정
+            @RequestBody @Valid QuestionUpdateRequest request
+    ) {
+        QuestionResponse response = questionService.update(questionId, memberId, request);
+        return ResponseEntity.ok(ApiResponse.success(response, "질문이 수정되었습니다."));
+    }
+
+    // 질문 삭제
+    @DeleteMapping("/{questionId}")
+    public ResponseEntity<Void> deleteQuestion(
+            @PathVariable Long questionId,
+            @RequestParam Long memberId // Security 구현 후 @AuthenticationPrincipal로 교체 예정
+    ) {
+        questionService.delete(questionId, memberId);
+        return ResponseEntity.noContent().build();
     }
 }
