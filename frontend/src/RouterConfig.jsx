@@ -12,6 +12,7 @@ const QuestionListPage = lazy(() => import("./features/question/pages/QuestionLi
 const QuestionDetailPage = lazy(() => import("./features/question/pages/QuestionDetailPage"));
 const QuestionWritePage = lazy(() => import("./features/question/pages/QuestionWritePage"));
 const NotificationPage = lazy(() => import("./features/notification/pages/NotificationPage"));
+const OAuthCallbackPage = lazy(() => import("./features/auth/pages/OAuthCallbackPage"));
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,9 @@ const router = createBrowserRouter([
     children: [
       // 비로그인 접근 가능
       { path: ROUTES.HOME, element: <HomePage /> },
+      { path: ROUTES.LOGIN, element: <LoginPage /> },
+      { path: ROUTES.SIGNUP, element: <SignupPage /> },
+      { path: ROUTES.OAUTH_CALLBACK, element: <OAuthCallbackPage /> },
       { path: ROUTES.QUESTIONS, element: <QuestionListPage /> },
       { path: ROUTES.QUESTION_DETAIL, element: <QuestionDetailPage /> },
 
@@ -37,12 +41,10 @@ const router = createBrowserRouter([
       },
     ],
   },
-  { path: ROUTES.LOGIN, element: <LoginPage /> },
-  { path: ROUTES.SIGNUP, element: <SignupPage /> },
 ]);
 
 const RouterConfig = () => {
   return <RouterProvider router={router} />;
-}
+};
 
 export default RouterConfig;

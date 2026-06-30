@@ -1,17 +1,32 @@
 import { create } from "zustand";
 
-const useAuthStore = create((set) => ({
-  token: localStorage.getItem("token") ?? null,
-  user: null,
+const decodeJwt = (token) => {
+  try {
+    const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    const json = new TextDecoder().decode(
+      Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)),
+    );
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+};
 
-  setAuth: (token, user) => {
+const storedToken = localStorage.getItem("token");
+
+const useAuthStore = create((set) => ({
+  token: storedToken ?? null,
+  nickname: storedToken ? (decodeJwt(storedToken)?.nickname ?? null) : null,
+
+  setAuth: (token) => {
+    const nickname = decodeJwt(token)?.nickname ?? null;
     localStorage.setItem("token", token);
-    set({ token, user });
+    set({ token, nickname });
   },
 
   clearAuth: () => {
     localStorage.removeItem("token");
-    set({ token: null, user: null });
+    set({ token: null, nickname: null });
   },
 }));
 

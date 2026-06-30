@@ -13,6 +13,10 @@ CLAUDE.md
 # Local backend environment
 backend/docker-compose.local.yml
 backend/src/main/resources/application-local.yaml
+backend/src/main/resources/application-oauth2.yaml
+
+# Local frontend environment
+frontend/.env
 /.idea/
 
 # Local Query Test
