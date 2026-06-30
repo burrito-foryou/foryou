@@ -42,4 +42,10 @@ public class MemberService {
             throw new BusinessException(ErrorCode.SAME_NICKNAME);
         }
     }
+
+    // 알림 전송 위한 회원 조회
+    public Member getMember(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+    }
 }
