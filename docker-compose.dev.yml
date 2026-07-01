@@ -20,7 +20,7 @@ services:
   backend:
     image: ghcr.io/burrito-foryou/foryou-backend:dev
     environment:
-      SPRING_PROFILES_ACTIVE: dev,jwt,oauth2
+      SPRING_PROFILES_ACTIVE: dev,jwt,oauth2,image
     depends_on:
       - postgres
     restart: unless-stopped
