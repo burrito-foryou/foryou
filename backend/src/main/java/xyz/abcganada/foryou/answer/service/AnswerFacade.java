@@ -1,9 +1,12 @@
 package xyz.abcganada.foryou.answer.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.abcganada.foryou.answer.domain.Answer;
+import xyz.abcganada.foryou.answer.event.AnswerCreatedEvent;
 import xyz.abcganada.foryou.answer.rest.request.AnswerCreateRequest;
 import xyz.abcganada.foryou.answer.rest.response.AnswerResponse;
 import xyz.abcganada.foryou.member.domain.Member;
@@ -17,13 +20,14 @@ public class AnswerFacade {
     private final AnswerService answerService;
     private final NotificationCreator notificationCreator;
     private final NotificationService notificationService;
+    private final ApplicationEventPublisher eventPublisher;
 
+    //@Async
     @Transactional
     public AnswerResponse create(Long questionId, Long memberId, AnswerCreateRequest request) {
         Answer answer = answerService.create(questionId, memberId, request);
 
-        notificationCreator.fromQuestionAnswerCreated(answer, answer.getMember())
-                .ifPresent(notificationService::saveAndSend);
+        eventPublisher.publishEvent(new AnswerCreatedEvent(answer.getId()));
 
         return AnswerResponse.from(answer);
     }

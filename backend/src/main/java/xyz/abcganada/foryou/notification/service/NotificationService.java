@@ -3,6 +3,7 @@ package xyz.abcganada.foryou.notification.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.abcganada.foryou.global.exception.BusinessException;
 import xyz.abcganada.foryou.global.exception.ErrorCode;
@@ -22,7 +23,7 @@ public class NotificationService {
     private final NotificationSseService notificationSseService;
 
     // 1. 알림 생성
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveAndSend(Notification notification) {
 
         // DB에 알림 저장
