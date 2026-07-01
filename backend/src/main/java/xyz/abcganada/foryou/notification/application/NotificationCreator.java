@@ -15,6 +15,40 @@ import java.util.Optional;
 @Component
 public class NotificationCreator {
 
+    // 질문에 답변
+    public Optional<Notification> fromQuestionAnswerCreated(Answer answer, Member sender) {
+        return Notification.create(
+                answer.getQuestion().getMember(),
+                sender,
+                NotificationType.QUESTION_ANSWER_CREATED,
+                TargetType.ANSWER,
+                answer.getId(),
+                answer.getQuestion().getId()
+        );
+    }
+
+    // 질문에 댓글
+    public Optional<Notification> fromQuestionCommentCreated(Comment comment, Member sender) {
+        return null;
+    }
+
+    // 답변에 댓글
+    public Optional<Notification> fromAnswerCommentCreated(Comment comment, Member sender) {
+        return null;
+    }
+
+    // 답변 채택
+    public Optional<Notification> fromAnswerAccepted(Answer answer, Member sender) {
+        return Notification.create(
+                answer.getMember(),
+                sender,
+                NotificationType.ANSWER_ACCEPTED,
+                TargetType.ANSWER,
+                answer.getId(),
+                answer.getQuestion().getId()
+        );
+    }
+
     public Optional<Notification> fromQuestionLiked(Question question, Member sender) {
         return Notification.create(
                 question.getMember(),
