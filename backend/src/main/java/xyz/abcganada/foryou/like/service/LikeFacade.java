@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.abcganada.foryou.answer.domain.Answer;
 import xyz.abcganada.foryou.answer.service.AnswerService;
+import xyz.abcganada.foryou.comment.domain.Comment;
+import xyz.abcganada.foryou.comment.service.CommentService;
 import xyz.abcganada.foryou.like.domain.TargetType;
 import xyz.abcganada.foryou.member.domain.Member;
 import xyz.abcganada.foryou.member.service.MemberService;
@@ -21,6 +23,7 @@ public class LikeFacade {
     private final MemberService memberService;
     private final QuestionService questionService;
     private final AnswerService answerService;
+    private final CommentService commentService;
     private final NotificationCreator notificationCreator;
     private final NotificationService notificationService;
 
@@ -31,7 +34,6 @@ public class LikeFacade {
         likeService.addLike(sender, targetType, targetId);
 
         switch (targetType) {
-            // TODO 각 Service 통해 like_count 증가
             case QUESTION -> {
                 questionService.incrementLikeCount(targetId);
                 Question question = questionService.getQuestion(targetId);
@@ -47,7 +49,13 @@ public class LikeFacade {
                 notificationCreator.fromAnswerLiked(answer, sender)
                         .ifPresent(notificationService::saveAndSend);
             }
-            //case COMMENT -> commentService.incrementLikeCount(targetId);
+            case COMMENT -> {
+                commentService.incrementLikeCount(targetId); //여기서도 위아래 두번 동일 조회 발생
+                Comment comment = commentService.getComment(targetId);
+                notificationCreator.fromCommentLiked(comment, sender)
+                        .ifPresent(notificationService::saveAndSend);
+
+            }
         }
 
     }
@@ -57,10 +65,9 @@ public class LikeFacade {
         likeService.cancelLike(memberId, targetType, targetId);
 
         switch (targetType) {
-            // TODO 각 Service 통해 like_count 감소
             case QUESTION -> questionService.decrementLikeCount(targetId);
             case ANSWER -> answerService.decrementLikeCount(targetId);
-            // case COMMENT ->
+            case COMMENT -> commentService.decrementLikeCount(targetId);
         }
 
     }

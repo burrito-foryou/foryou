@@ -2,6 +2,7 @@ package xyz.abcganada.foryou.notification.application;
 
 import org.springframework.stereotype.Component;
 import xyz.abcganada.foryou.answer.domain.Answer;
+import xyz.abcganada.foryou.comment.domain.Comment;
 import xyz.abcganada.foryou.member.domain.Member;
 import xyz.abcganada.foryou.notification.domain.Notification;
 import xyz.abcganada.foryou.notification.domain.NotificationType;
@@ -33,6 +34,17 @@ public class NotificationCreator {
                 TargetType.ANSWER,
                 answer.getId(),
                 answer.getQuestion().getId()
+        );
+    }
+
+    public Optional<Notification> fromCommentLiked(Comment comment, Member sender) {
+        return Notification.create(
+                comment.getMember(),
+                sender,
+                NotificationType.COMMENT_LIKED,
+                TargetType.COMMENT,
+                comment.getId(),
+                comment.getAnswer().getQuestion().getId()
         );
     }
 

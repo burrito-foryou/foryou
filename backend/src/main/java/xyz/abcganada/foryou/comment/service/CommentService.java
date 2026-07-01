@@ -16,6 +16,7 @@ import xyz.abcganada.foryou.global.exception.BusinessException;
 import xyz.abcganada.foryou.global.exception.ErrorCode;
 import xyz.abcganada.foryou.member.domain.Member;
 import xyz.abcganada.foryou.member.repository.MemberRepository;
+import xyz.abcganada.foryou.question.domain.Question;
 
 @Service
 @RequiredArgsConstructor
@@ -82,4 +83,27 @@ public class CommentService {
 
         return CommentResponse.from(commentRepository.save(comment));
     }
+
+    // WBS0608: Like 증가
+    @Transactional
+    public void incrementLikeCount(Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
+        comment.incrementLikeCount();
+    }
+
+    // WBS0608: Like 감소
+    @Transactional
+    public void decrementLikeCount(Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
+        comment.decrementLikeCount();
+    }
+
+    // 댓글 조회 - 알림 생성 위한 단순 조회
+    public Comment getComment(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
+    }
+
 }
