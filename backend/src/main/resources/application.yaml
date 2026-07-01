@@ -10,6 +10,12 @@ spring:
       max-file-size: 5MB
       max-request-size: 10MB
 
+logging:
+  level:
+    root: INFO
+    xyz.abcganada.foryou.auth: DEBUG
+    xyz.abcganada.foryou.member: DEBUG
+
 image:
   upload:
     path: /tmp/foryou/images
