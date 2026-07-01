@@ -31,4 +31,8 @@ public class Comment extends BaseEntity {
 
     @Column(name = "like_count", nullable = false)
     private Long likeCount;
+
+    public void update(String content) {
+        this.content = content;
+    }
 }

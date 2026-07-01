@@ -16,6 +16,7 @@ import xyz.abcganada.foryou.question.domain.Question;
 import xyz.abcganada.foryou.question.rest.request.QuestionCreateRequest;
 import xyz.abcganada.foryou.question.rest.response.QuestionResponse;
 import xyz.abcganada.foryou.question.rest.response.QuestionDetailResponse;
+import xyz.abcganada.foryou.question.rest.request.QuestionUpdateRequest;
 import xyz.abcganada.foryou.question.repository.QuestionRepository;
 import xyz.abcganada.foryou.question.repository.QuestionSpecification;
 import xyz.abcganada.foryou.tag.Tag;
@@ -116,6 +117,43 @@ public class QuestionService {
         question.incrementViewCount();
 
         return QuestionDetailResponse.from(question);
+    }
+
+    // 질문 수정
+    @Transactional
+    public QuestionResponse update(Long questionId, Long memberId, QuestionUpdateRequest request) {
+        // 질문 조회
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
+
+        // 작성자 권한 검증
+        if (!question.isAuthor(memberId)) {
+            throw new BusinessException(ErrorCode.QUESTION_FORBIDDEN);
+        }
+
+        // 태그 조회
+        List<Tag> tags = new ArrayList<>();
+        if (request.getTagIds() != null && !request.getTagIds().isEmpty()) {
+            tags = tagRepository.findAllByIdIn(request.getTagIds());
+        }
+
+        question.update(request.getTitle(), request.getContent(), tags);
+        return QuestionResponse.from(question);
+    }
+
+    // 질문 삭제
+    @Transactional
+    public void delete(Long questionId, Long memberId) {
+        // 질문 조회
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
+
+        // 작성자 권한 검증
+        if (!question.isAuthor(memberId)) {
+            throw new BusinessException(ErrorCode.QUESTION_FORBIDDEN);
+        }
+
+        questionRepository.delete(question);
     }
 
     // 정렬 기준 변환

@@ -1,12 +1,14 @@
 package xyz.abcganada.foryou.notification.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import xyz.abcganada.foryou.member.domain.Member;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Table(name = "notifications")
@@ -49,7 +51,7 @@ public class Notification {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE) // 생성 경로 강제 위해 Builder는 private
     public Notification(Member receiver, Member sender, NotificationType type, TargetType targetType, Long targetId, Long questionId, String content) {
         this.receiver = receiver;
         this.sender = sender;
@@ -67,6 +69,22 @@ public class Notification {
     // 엔티티 기반 변경이 필요할 경우 사용할 메서드
     public void markAsRead() {
         this.isRead = true;
+    }
+
+    public static Optional<Notification> create(Member receiver, Member sender, NotificationType type, TargetType targetType, Long targetId, Long questionId) {
+        if (receiver.getId().equals(sender.getId())) {
+            return Optional.empty();
+        }
+
+        return Optional.of(Notification.builder()
+                .receiver(receiver)
+                .sender(sender)
+                .type(type)
+                .targetType(targetType)
+                .targetId(targetId)
+                .questionId(questionId)
+                .content(type.buildContent(sender.getNickname()))
+                .build());
     }
 
 }

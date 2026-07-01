@@ -29,7 +29,7 @@ public class AnswerService {
     // WBS0404: 답변 목록 조회
     public List<AnswerResponse> getAnswers(Long questionId) {
         if (!questionRepository.existsById(questionId)) {
-            throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
+            throw new BusinessException(ErrorCode.QUESTION_NOT_FOUND);
         }
         return answerRepository.findByQuestionIdOrderByAcceptedDescCreatedAtAsc(questionId)
                 .stream()
@@ -93,10 +93,10 @@ public class AnswerService {
     @Transactional
     public AnswerResponse create(Long questionId, Long memberId, AnswerCreateRequest request) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
         Answer answer = Answer.builder()
                 .question(question)
@@ -109,5 +109,29 @@ public class AnswerService {
                 .build();
 
         return AnswerResponse.from(answerRepository.save(answer));
+    }
+
+    // WBS0607: Like 증가
+    @Transactional
+    public void incrementLikeCount(Long answerId) {
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
+        answer.incrementLikeCount();
+    }
+
+    // WBS0607: Like 감소
+    // this로 내부 호출 시 Spring 프록시 우회 문제로 getAnswer 사용 X
+    @Transactional
+    public void decrementLikeCount(Long answerId) {
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
+        answer.decrementLikeCount();
+    }
+
+    // 답변 조회 - 알림 전송 위한 단순 조회
+    @Transactional(readOnly = true)
+    public Answer getAnswer(Long answerId) {
+        return answerRepository.findById(answerId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
     }
 }
