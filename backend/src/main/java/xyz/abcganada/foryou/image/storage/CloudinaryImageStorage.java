@@ -24,7 +24,10 @@ public class CloudinaryImageStorage implements ImageStorage {
         try {
             Map result = cloudinary.uploader().upload(
                 file.getBytes(),
-                ObjectUtils.asMap("public_id", "foryou/" + storedName)
+                ObjectUtils.asMap(
+                    "folder", "foryou",
+                    "public_id", storedName
+                )
             );
             return (String) result.get("secure_url");
         } catch (IOException e) {
