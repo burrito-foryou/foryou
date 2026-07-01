@@ -7,7 +7,7 @@ import ProtectedRoute from "./features/auth/components/ProtectedRoute";
 const HomePage = lazy(() => import("./features/home/pages/HomePage"));
 const LoginPage = lazy(() => import("./features/auth/pages/LoginPage"));
 const SignupPage = lazy(() => import("./features/auth/pages/SignupPage"));
-const MyPage = lazy(() => import("./features/user/pages/MyPage"));
+const MyPage = lazy(() => import("./features/my/pages/MyPage"));
 const AccountPage = lazy(() => import("./features/user/pages/AccountPage"));
 const QuestionListPage = lazy(() => import("./features/question/pages/QuestionListPage"));
 const QuestionDetailPage = lazy(() => import("./features/question/pages/QuestionDetailPage"));
