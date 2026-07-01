@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import xyz.abcganada.foryou.comment.rest.request.CommentCreateRequest;
 import xyz.abcganada.foryou.comment.rest.request.CommentUpdateRequest;
 import xyz.abcganada.foryou.comment.rest.response.CommentResponse;
+import xyz.abcganada.foryou.comment.service.CommentFacade;
 import xyz.abcganada.foryou.comment.service.CommentService;
 import xyz.abcganada.foryou.global.response.ApiResponse;
 
@@ -18,6 +19,7 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService commentService;
+    private final CommentFacade commentFacade;
 
     // WBS0504: 댓글 조회
     @GetMapping("/api/answers/{answerId}/comments")
@@ -52,7 +54,7 @@ public class CommentController {
             @PathVariable Long answerId,
             @RequestParam Long memberId, // Security 구현 후 @AuthenticationPrincipal로 교체 예정
             @RequestBody @Valid CommentCreateRequest request) {
-        CommentResponse response = commentService.create(answerId, memberId, request);
+        CommentResponse response = commentFacade.create(answerId, memberId, request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(response, "댓글이 등록되었습니다."));
     }

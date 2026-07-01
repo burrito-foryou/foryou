@@ -29,12 +29,26 @@ public class NotificationCreator {
 
     // 질문에 댓글
     public Optional<Notification> fromQuestionCommentCreated(Comment comment, Member sender) {
-        return null;
+        return Notification.create(
+                comment.getAnswer().getQuestion().getMember(),
+                sender,
+                NotificationType.QUESTION_COMMENT_CREATED,
+                TargetType.COMMENT,
+                comment.getId(),
+                comment.getAnswer().getQuestion().getId()
+        );
     }
 
     // 답변에 댓글
     public Optional<Notification> fromAnswerCommentCreated(Comment comment, Member sender) {
-        return null;
+        return Notification.create(
+                comment.getAnswer().getMember(),
+                sender,
+                NotificationType.ANSWER_COMMENT_CREATED,
+                TargetType.COMMENT,
+                comment.getId(),
+                comment.getAnswer().getQuestion().getId()
+        );
     }
 
     // 답변 채택
