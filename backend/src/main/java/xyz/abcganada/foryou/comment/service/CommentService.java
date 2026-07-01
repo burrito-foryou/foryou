@@ -67,7 +67,7 @@ public class CommentService {
 
     // WBS0503: 댓글 작성
     @Transactional
-    public CommentResponse create(Long answerId, Long memberId, CommentCreateRequest request) {
+    public Comment create(Long answerId, Long memberId, CommentCreateRequest request) {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
 
@@ -81,7 +81,7 @@ public class CommentService {
                 .likeCount(0L)
                 .build();
 
-        return CommentResponse.from(commentRepository.save(comment));
+        return commentRepository.save(comment);
     }
 
     // WBS0608: Like 증가
