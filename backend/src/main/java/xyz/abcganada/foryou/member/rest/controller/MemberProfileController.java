@@ -2,6 +2,7 @@ package xyz.abcganada.foryou.member.rest.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,6 +13,7 @@ import xyz.abcganada.foryou.member.rest.request.MemberUpdateRequest;
 import xyz.abcganada.foryou.member.rest.response.MemberInfoResponse;
 import xyz.abcganada.foryou.member.service.MemberService;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/members/me")
@@ -21,6 +23,7 @@ public class MemberProfileController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<MemberInfoResponse>> me(@AuthenticationPrincipal AuthMember member) {
+        log.debug("[Member] 회원 정보 조회 요청 - memberId: {}", member.memberId());
         MemberInfoResponse response = memberService.getMemberInfo(member.memberId());
 
         return ResponseEntity
@@ -33,6 +36,7 @@ public class MemberProfileController {
         @AuthenticationPrincipal AuthMember member,
         @Valid @RequestBody MemberUpdateRequest request
     ) {
+        log.info("[Member] 닉네임 수정 요청 - memberId: {}", member.memberId());
         MemberInfoResponse response = memberService.updateMemberNickname(member.memberId(), request);
 
         return ResponseEntity
