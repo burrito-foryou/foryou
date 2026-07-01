@@ -39,4 +39,17 @@ public class NotificationEventListener {
         }
     }
 
+    //@Async("notificationExecutor")
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleAnswerAccepted(AnswerAcceptedEvent event) {
+        try {
+            Answer answer = answerService.getAnswer(event.answerId());
+            Member sender = answer.getQuestion().getMember();
+            notificationCreator.fromAnswerAccepted(answer, sender)
+                    .ifPresent(notificationService::saveAndSend);
+        } catch (Exception e) {
+            log.error("답변 채택 알림 실패: answerId={}", event.answerId(), e);
+        }
+    }
+
 }
