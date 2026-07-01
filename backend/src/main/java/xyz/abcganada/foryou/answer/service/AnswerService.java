@@ -54,7 +54,7 @@ public class AnswerService {
     // WBS0407/0408: 답변 채택 및 질문 상태 변경
     @Transactional
     public Answer accept(Long answerId, Long memberId) {
-        Answer answer = answerRepository.findById(answerId)
+        Answer answer = answerRepository.findByIdWithQuestionAndMembers(answerId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
 
         Question question = answer.getQuestion();
@@ -94,7 +94,7 @@ public class AnswerService {
     // WBS0403: 답변 등록
     @Transactional
     public Answer create(Long questionId, Long memberId, AnswerCreateRequest request) {
-        Question question = questionRepository.findById(questionId)
+        Question question = questionRepository.findByIdWithMember(questionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
 
         Member member = memberRepository.findById(memberId)
@@ -133,7 +133,7 @@ public class AnswerService {
     // 답변 조회 - 알림 전송 위한 단순 조회
     @Transactional(readOnly = true)
     public Answer getAnswer(Long answerId) {
-        return answerRepository.findById(answerId)
+        return answerRepository.findByIdWithQuestionAndMembers(answerId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
     }
 }

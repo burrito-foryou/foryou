@@ -16,7 +16,6 @@ import xyz.abcganada.foryou.global.exception.BusinessException;
 import xyz.abcganada.foryou.global.exception.ErrorCode;
 import xyz.abcganada.foryou.member.domain.Member;
 import xyz.abcganada.foryou.member.repository.MemberRepository;
-import xyz.abcganada.foryou.question.domain.Question;
 
 @Service
 @RequiredArgsConstructor
@@ -68,7 +67,7 @@ public class CommentService {
     // WBS0503: 댓글 작성
     @Transactional
     public Comment create(Long answerId, Long memberId, CommentCreateRequest request) {
-        Answer answer = answerRepository.findById(answerId)
+        Answer answer = answerRepository.findByIdWithQuestionAndMembers(answerId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
 
         Member member = memberRepository.findById(memberId)
@@ -102,7 +101,7 @@ public class CommentService {
 
     // 댓글 조회 - 알림 생성 위한 단순 조회
     public Comment getComment(Long commentId) {
-        return commentRepository.findByIdWithAnswerAndQuestion(commentId)
+        return commentRepository.findByIdWithAnswerAndQuestionAndMember(commentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
     }
 

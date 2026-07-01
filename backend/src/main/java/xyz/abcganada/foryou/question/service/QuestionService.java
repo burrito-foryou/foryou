@@ -185,7 +185,7 @@ public class QuestionService {
     // 질문 조회 - 알림 생성 위한 단순 조회
     @Transactional(readOnly = true)
     public Question getQuestion(Long questionId) {
-        return questionRepository.findById(questionId)
+        return questionRepository.findByIdWithMember(questionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
     }
 
