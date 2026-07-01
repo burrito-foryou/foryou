@@ -15,3 +15,8 @@ spring:
 jwt:
   secret: test-development-secret-key-for-foryou-jwt-token
   access-token-expiration: 3600000
+
+image:
+  upload:
+    path: /tmp/foryou/images
+    url-prefix: http://localhost:8080/images
