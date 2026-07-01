@@ -102,7 +102,7 @@ public class CommentService {
 
     // 댓글 조회 - 알림 생성 위한 단순 조회
     public Comment getComment(Long commentId) {
-        return commentRepository.findById(commentId)
+        return commentRepository.findByIdWithAnswerAndQuestion(commentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
     }
 

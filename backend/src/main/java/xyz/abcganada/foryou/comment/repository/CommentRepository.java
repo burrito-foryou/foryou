@@ -2,9 +2,12 @@ package xyz.abcganada.foryou.comment.repository;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import xyz.abcganada.foryou.comment.domain.Comment;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
@@ -12,4 +15,13 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     // @EntityGraph로 answer, member를 JOIN하여 N+1 방지
     @EntityGraph(attributePaths = {"answer", "member"})
     List<Comment> findByAnswerIdOrderByCreatedAtAsc(Long answerId);
+
+    @Query("""
+            select c
+                    from Comment c
+                    join fetch c.answer a
+                    join fetch a.question 
+                    where c.id = :commentId
+        """)
+    Optional<Comment> findByIdWithAnswerAndQuestion(@Param("commentId") Long commentId);
 }

@@ -35,23 +35,23 @@ public class LikeFacade {
 
         switch (targetType) {
             case QUESTION -> {
-                questionService.incrementLikeCount(targetId);
                 Question question = questionService.getQuestion(targetId);
+                questionService.incrementLikeCount(targetId);
                 notificationCreator.fromQuestionLiked(question, sender)
                         .ifPresent(notificationService::saveAndSend);
             }
             case ANSWER -> {
-                // 좋아요 수 증가
-                answerService.incrementLikeCount(targetId);
                 // 도메인 조회 (notification 생성용)
                 Answer answer = answerService.getAnswer(targetId);
+                // 좋아요 수 증가
+                answerService.incrementLikeCount(targetId); // increment 매개변수를 객체로 변경? BUT decrement와 비대칭성 문제
                 // notification 생성
                 notificationCreator.fromAnswerLiked(answer, sender)
                         .ifPresent(notificationService::saveAndSend);
             }
             case COMMENT -> {
-                commentService.incrementLikeCount(targetId); //여기서도 위아래 두번 동일 조회 발생
                 Comment comment = commentService.getComment(targetId);
+                commentService.incrementLikeCount(targetId);
                 notificationCreator.fromCommentLiked(comment, sender)
                         .ifPresent(notificationService::saveAndSend);
 
