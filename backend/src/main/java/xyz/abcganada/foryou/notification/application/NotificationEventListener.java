@@ -10,6 +10,9 @@ import xyz.abcganada.foryou.answer.domain.Answer;
 import xyz.abcganada.foryou.answer.event.AnswerAcceptedEvent;
 import xyz.abcganada.foryou.answer.event.AnswerCreatedEvent;
 import xyz.abcganada.foryou.answer.service.AnswerService;
+import xyz.abcganada.foryou.comment.domain.Comment;
+import xyz.abcganada.foryou.comment.event.CommentCreatedEvent;
+import xyz.abcganada.foryou.comment.service.CommentService;
 import xyz.abcganada.foryou.member.domain.Member;
 import xyz.abcganada.foryou.member.service.MemberService;
 import xyz.abcganada.foryou.notification.domain.Notification;
@@ -26,6 +29,7 @@ public class NotificationEventListener {
     private final NotificationCreator notificationCreator;
     private final NotificationService notificationService;
     private final MemberService memberService;
+    private final CommentService commentService;
 
     //@Async("notificationExecutor")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -49,6 +53,20 @@ public class NotificationEventListener {
                     .ifPresent(notificationService::saveAndSend);
         } catch (Exception e) {
             log.error("답변 채택 알림 실패: answerId={}", event.answerId(), e);
+        }
+    }
+
+    //@Async("notificationExecutor")
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleCommentCreated(CommentCreatedEvent event) {
+        try {
+            Comment comment = commentService.getComment(event.commentId());
+            notificationCreator.fromQuestionCommentCreated(comment, comment.getMember())
+                    .ifPresent(notificationService::saveAndSend);
+            notificationCreator.fromAnswerCommentCreated(comment, comment.getMember())
+                    .ifPresent(notificationService::saveAndSend);
+        } catch (Exception e) {
+            log.error("댓글 등록 알림 실패: commentId={}", event.commentId(), e);
         }
     }
 
