@@ -65,10 +65,19 @@ public class NotificationEventListener {
     public void handleCommentCreated(CommentCreatedEvent event) {
         try {
             Comment comment = commentService.getComment(event.commentId());
+            Member questionWriter = comment.getAnswer().getQuestion().getMember();
+            Member answerWriter = comment.getAnswer().getMember();
+
             notificationCreator.fromQuestionCommentCreated(comment, comment.getMember())
                     .ifPresent(notificationService::saveAndSend);
-            notificationCreator.fromAnswerCommentCreated(comment, comment.getMember())
-                    .ifPresent(notificationService::saveAndSend);
+
+            // 질문 작성자 = 답변 작성자일 경우 중복 알림이므로 스킵
+            if (!questionWriter.getId().equals(answerWriter.getId())) {
+                notificationCreator.fromAnswerCommentCreated(comment, comment.getMember())
+                        .ifPresent(notificationService::saveAndSend);
+            } else {
+                log.debug("질문/답변 작성자 동일하여 답변 댓글 알림 스킵: commentId={}", event.commentId());
+            }
         } catch (Exception e) {
             log.error("댓글 등록 알림 실패: commentId={}", event.commentId(), e);
         }
