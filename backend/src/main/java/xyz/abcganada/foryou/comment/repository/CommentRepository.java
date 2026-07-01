@@ -16,12 +16,14 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @EntityGraph(attributePaths = {"answer", "member"})
     List<Comment> findByAnswerIdOrderByCreatedAtAsc(Long answerId);
 
+    // LikeFacade.COMMENT
     @Query("""
             select c
                     from Comment c
                     join fetch c.answer a
                     join fetch a.question 
+                    join fetch c.member
                     where c.id = :commentId
         """)
-    Optional<Comment> findByIdWithAnswerAndQuestion(@Param("commentId") Long commentId);
+    Optional<Comment> findByIdWithAnswerAndQuestionAndMember(@Param("commentId") Long commentId);
 }
