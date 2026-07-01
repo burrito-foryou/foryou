@@ -2,7 +2,6 @@ package xyz.abcganada.foryou.answer.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.abcganada.foryou.answer.domain.Answer;
@@ -18,7 +17,6 @@ public class AnswerFacade {
     private final AnswerService answerService;
     private final ApplicationEventPublisher eventPublisher;
 
-    //@Async
     @Transactional
     public AnswerResponse create(Long questionId, Long memberId, AnswerCreateRequest request) {
         Answer answer = answerService.create(questionId, memberId, request);
@@ -28,13 +26,11 @@ public class AnswerFacade {
         return AnswerResponse.from(answer);
     }
 
-    //@Async
     @Transactional
     public void accept(Long answerId, Long memberId) {
         answerService.accept(answerId, memberId);
 
         eventPublisher.publishEvent(new AnswerAcceptedEvent(answerId));
-
 
     }
 
