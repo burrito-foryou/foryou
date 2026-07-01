@@ -165,4 +165,28 @@ public class QuestionService {
             default        -> Sort.by("createdAt").descending();    // 최신순 (기본값)
         };
     }
+
+    // WBS0606 : Like 증가
+    @Transactional
+    public void incrementLikeCount(Long questionId) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
+        question.incrementLikeCount();
+    }
+
+    // WBS0606 : Like 감소
+    @Transactional
+    public void decrementLikeCount(Long questionId) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
+        question.decrementLikeCount();
+    }
+
+    // 질문 조회 - 알림 생성 위한 단순 조회
+    @Transactional(readOnly = true)
+    public Question getQuestion(Long questionId) {
+        return questionRepository.findById(questionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
+    }
+
 }
