@@ -43,4 +43,13 @@ public interface QuestionRepository extends JpaRepository<Question, Long>, JpaSp
     @Query("SELECT DISTINCT q FROM Question q JOIN q.tags t WHERE t.name IN :tagNames")
     Page<Question> findByTagNames(@Param("tagNames") List<String> tagNames, Pageable pageable);
 
+    // AnswerFacade.create
+    @Query("""
+            select q
+                    from Question q 
+                    join fetch q.member
+                    where q.id = :questionId 
+            """)
+    Optional<Question> findByIdWithMember(@Param("questionId") Long questionId);
+
 }
