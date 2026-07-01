@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiSliders } from "react-icons/fi";
 import { ROUTES } from "../../../shared/constants/routes";
@@ -22,21 +22,38 @@ const QuestionListPage = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [onlyAccepted, setOnlyAccepted] = useState(false);
+  const sortMenuRef = useRef(null);
 
-  const activeFilterEntries = Object.entries(filters);
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (sortMenuRef.current && !sortMenuRef.current.contains(e.target)) {
+        setShowSortMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-  const filteredDummy = DUMMY.filter((q) =>
-    activeFilterEntries.every(([key, value]) => q[key] === value),
+  const activeFilterEntries = useMemo(() => Object.entries(filters), [filters]);
+
+  const filteredDummy = useMemo(
+    () =>
+      DUMMY.filter((q) =>
+        activeFilterEntries.every(([key, value]) => q[key] === value),
+      ),
+    [activeFilterEntries],
   );
 
-  const baseList = (questions.length > 0 ? questions : filteredDummy).filter(
-    (q) => !onlyAccepted || !!q.acceptedAnswerId,
-  );
-  const displayList = [...baseList].sort((a, b) => {
-    if (sort === "likes") return b.likeCount - a.likeCount;
-    if (sort === "answers") return b.answerCount - a.answerCount;
-    return new Date(b.createdAt) - new Date(a.createdAt);
-  });
+  const displayList = useMemo(() => {
+    const base = (questions.length > 0 ? questions : filteredDummy).filter(
+      (q) => !onlyAccepted || !!q.acceptedAnswerId,
+    );
+    return [...base].sort((a, b) => {
+      if (sort === "likes") return b.likeCount - a.likeCount;
+      if (sort === "answers") return b.answerCount - a.answerCount;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+  }, [questions, filteredDummy, onlyAccepted, sort]);
 
   const currentSortLabel =
     SORT_OPTIONS.find((o) => o.value === sort)?.label ?? "최신순";
@@ -67,7 +84,7 @@ const QuestionListPage = () => {
           채택된 질문만
         </button>
 
-        <div className="relative">
+        <div className="relative" ref={sortMenuRef}>
           <button
             onClick={() => setShowSortMenu((v) => !v)}
             className="flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-sm text-text-muted hover:border-primary hover:text-primary transition-colors"
