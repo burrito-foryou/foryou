@@ -6,7 +6,7 @@ import HeaderUserMenu from "./HeaderUserMenu";
 
 const Header = () => {
   return (
-    <header className="border-b border-border px-6 py-3">
+    <header className="sticky top-0 z-30 border-b border-border bg-background px-6 py-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         {/* 로고 */}
         <Link to={ROUTES.HOME}>
