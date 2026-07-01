@@ -53,13 +53,15 @@ jobs:
           test -n "$BACKEND_APPLICATION_CI_YAML"
           test -n "$BACKEND_APPLICATION_JWT_YAML"
           test -n "$BACKEND_APPLICATION_OAUTH2_YAML"
+          test -n "$BACKEND_APPLICATION_IMAGE_YAML"
           printf '%s' "$BACKEND_APPLICATION_CI_YAML" > src/main/resources/application-ci.yaml
           printf '%s' "$BACKEND_APPLICATION_JWT_YAML" > src/main/resources/application-jwt.yaml
           printf '%s' "$BACKEND_APPLICATION_OAUTH2_YAML" > src/main/resources/application-oauth2.yaml
+          printf '%s' "$BACKEND_APPLICATION_IMAGE_YAML" > src/main/resources/application-image.yaml
 
       - name: Run backend build
         env:
-          SPRING_PROFILES_ACTIVE: ci,jwt,oauth2
+          SPRING_PROFILES_ACTIVE: ci,jwt,oauth2,image
         run: ./gradlew build
 
   # 프론트엔드
