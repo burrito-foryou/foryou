@@ -1,0 +1,106 @@
+import { useEffect, useRef, useState } from "react";
+import {
+  getMyInfo,
+  updateNickname,
+  updateProfileImage,
+} from "../api/memberApi";
+import useToast from "../../../shared/hooks/useToast";
+
+const useAccount = () => {
+  const [member, setMember] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const [editingNickname, setEditingNickname] = useState(false);
+  const [nicknameInput, setNicknameInput] = useState("");
+  const [nicknameLoading, setNicknameLoading] = useState(false);
+  const [nicknameError, setNicknameError] = useState("");
+
+  const [imageLoading, setImageLoading] = useState(false);
+  const fileInputRef = useRef(null);
+  const { toast, showToast } = useToast();
+
+  useEffect(() => {
+    getMyInfo()
+      .then(setMember)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleNicknameEdit = () => {
+    setNicknameInput(member.nickname);
+    setEditingNickname(true);
+  };
+
+  const handleNicknameCancel = () => {
+    setEditingNickname(false);
+    setNicknameInput("");
+    setNicknameError("");
+  };
+
+  const handleNicknameSave = async () => {
+    const trimmed = nicknameInput.trim();
+
+    if (trimmed === member.nickname) {
+      handleNicknameCancel();
+      return;
+    }
+
+    if (!/^[가-힣a-zA-Z0-9]{2,20}$/.test(trimmed)) {
+      setNicknameError("2~20자의 한글, 영문, 숫자만 사용할 수 있습니다.");
+      return;
+    }
+
+    setNicknameError("");
+    setNicknameLoading(true);
+    try {
+      const updated = await updateNickname(trimmed);
+      setMember(updated);
+      setEditingNickname(false);
+      showToast("닉네임이 변경되었습니다.");
+    } catch (err) {
+      const message = err.response?.data?.message;
+      setNicknameError(message ?? "닉네임 수정에 실패했습니다.");
+    } finally {
+      setNicknameLoading(false);
+    }
+  };
+
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageLoading(true);
+    try {
+      const result = await updateProfileImage(file);
+      setMember((prev) => ({ ...prev, profileImageUrl: result.imageUrl }));
+      showToast("프로필 이미지가 변경되었습니다.");
+    } catch {
+      showToast("이미지 업로드에 실패했습니다.", "error");
+    } finally {
+      setImageLoading(false);
+      e.target.value = "";
+    }
+  };
+
+  return {
+    toast,
+    member,
+    loading,
+    editingNickname,
+    nicknameInput,
+    nicknameLoading,
+    imageLoading,
+    fileInputRef,
+    setNicknameInput,
+    nicknameError,
+    handleNicknameEdit,
+    handleNicknameCancel,
+    handleNicknameSave,
+    handleImageClick,
+    handleImageChange,
+  };
+};
+
+export default useAccount;
