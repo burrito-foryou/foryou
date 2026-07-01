@@ -37,6 +37,7 @@ public class MemberService {
     }
 
     public void updateProfileImageUrl(Long memberId, String imageUrl) {
+        log.info("[Member] 프로필 이미지 URL 수정 - memberId: {}", memberId);
         Member member = getMemberById(memberId);
         member.updateProfileImageUrl(imageUrl);
     }
