@@ -53,7 +53,7 @@ public class AnswerService {
 
     // WBS0407/0408: 답변 채택 및 질문 상태 변경
     @Transactional
-    public void accept(Long answerId, Long memberId) {
+    public Answer accept(Long answerId, Long memberId) {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
 
@@ -74,6 +74,8 @@ public class AnswerService {
 
         // WBS0408: 질문 채택 답변 ID 설정
         question.accept(answerId);
+
+        return answer;
     }
 
     // WBS0406: 답변 삭제
@@ -91,7 +93,7 @@ public class AnswerService {
 
     // WBS0403: 답변 등록
     @Transactional
-    public AnswerResponse create(Long questionId, Long memberId, AnswerCreateRequest request) {
+    public Answer create(Long questionId, Long memberId, AnswerCreateRequest request) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
 
@@ -108,7 +110,7 @@ public class AnswerService {
                 .accepted(false)
                 .build();
 
-        return AnswerResponse.from(answerRepository.save(answer));
+        return answerRepository.save(answer);
     }
 
     // WBS0607: Like 증가
