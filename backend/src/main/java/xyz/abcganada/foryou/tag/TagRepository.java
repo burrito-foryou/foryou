@@ -10,4 +10,6 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
 
     // 태그 ID 목록으로 태그 조회
     List<Tag> findAllByIdIn(List<Long> ids);
+    // 타입별 태그 조회
+    List<Tag> findAllByType(TagType type);
 }
