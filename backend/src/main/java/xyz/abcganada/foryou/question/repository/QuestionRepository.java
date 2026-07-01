@@ -19,6 +19,9 @@ public interface QuestionRepository extends JpaRepository<Question, Long>, JpaSp
     // 회원별 질문 목록 조회
     Page<Question> findByMemberId(Long memberId, Pageable pageable);
 
+    // 회원별 질문 목록 조회(최신순)
+    List<Question> findByMemberIdOrderByCreatedAtDesc(Long memberId);
+
     // 질문 상세 조회
     @Query("SELECT q FROM Question q LEFT JOIN FETCH q.member LEFT JOIN FETCH q.tags WHERE q.id = :id")
     Optional<Question> findWithDetailsById(@Param("id") Long id);

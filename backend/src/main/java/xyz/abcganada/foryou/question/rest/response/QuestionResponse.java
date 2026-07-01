@@ -31,7 +31,7 @@ public class QuestionResponse {
                 .id(question.getId())
                 .title(question.getTitle())
                 .content(question.getContent())
-                .memberId(question.getMember().getId())
+                .memberId(question.getMember().getId()) // N+1 문제
                 .memberNickname(question.getMember().getNickname())
                 .viewCount(question.getViewCount())
                 .likeCount(question.getLikeCount())
