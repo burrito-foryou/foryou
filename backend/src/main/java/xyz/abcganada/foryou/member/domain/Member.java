@@ -44,7 +44,7 @@ public class Member extends BaseEntity {
     }
 
     public void updateProfileImageUrl(String profileImageUrl) {
-        //TODO 사용자 이미지 변경
+        this.profileImageUrl = profileImageUrl;
     }
 
     public static Member createLocalMember(String email, String encodedPassword, String nickname) {

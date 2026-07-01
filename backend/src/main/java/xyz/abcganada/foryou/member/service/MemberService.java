@@ -36,6 +36,11 @@ public class MemberService {
         return MemberInfoResponse.from(member);
     }
 
+    public void updateProfileImageUrl(Long memberId, String imageUrl) {
+        Member member = getMemberById(memberId);
+        member.updateProfileImageUrl(imageUrl);
+    }
+
     private void validateNicknameChanged(Member member, String nickname) {
         if (member.getNickname().equals(nickname)) {
             throw new BusinessException(ErrorCode.SAME_NICKNAME);
