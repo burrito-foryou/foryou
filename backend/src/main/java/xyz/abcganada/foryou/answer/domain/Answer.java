@@ -51,4 +51,17 @@ public class Answer extends BaseEntity {
     public void accept() {
         this.accepted = true;
     }
+
+    // 좋아요 증가
+    public void incrementLikeCount() {
+        this.likeCount++;
+    }
+
+    // 좋아요 감소
+    public void decrementLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
+
 }
