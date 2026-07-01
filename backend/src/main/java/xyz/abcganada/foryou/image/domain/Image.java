@@ -39,7 +39,7 @@ public class Image {
     @Column(name = "created_at", nullable = false , updatable = false)
     private LocalDateTime createdAt;
 
-    @Builder // createdAt은 파라미터 없이 생성 시점에 자동으로 now()로 설정됨
+    @Builder
     public Image(ImageTargetType targetType,  Long targetId, String imageUrl, String originalName, String storedName, Long fileSize) {
         this.targetType = targetType;
         this.targetId = targetId;
@@ -47,6 +47,10 @@ public class Image {
         this.originalName = originalName;
         this.storedName = storedName;
         this.fileSize = fileSize;
+    }
+
+    @PrePersist
+    protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
 

@@ -3,6 +3,7 @@ package xyz.abcganada.foryou.global.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -37,6 +38,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/signup").permitAll()
                 .requestMatchers("/api/auth/login", "/api/auth/login/*").permitAll()
                 .requestMatchers("/api/auth/logout").authenticated()
+                    .requestMatchers(HttpMethod.POST, "/api/images/**").authenticated()
+                    .requestMatchers(HttpMethod.DELETE, "/api/images/**").authenticated()
                 .requestMatchers("/api/members/me").authenticated()
                 .anyRequest().permitAll()
             )
