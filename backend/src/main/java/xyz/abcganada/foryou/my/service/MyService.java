@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.abcganada.foryou.answer.repository.AnswerRepository;
 import xyz.abcganada.foryou.answer.rest.response.AnswerResponse;
+import xyz.abcganada.foryou.bookmark.repository.BookmarkRepository;
+import xyz.abcganada.foryou.bookmark.rest.response.BookmarkResponse;
 import xyz.abcganada.foryou.comment.repository.CommentRepository;
 import xyz.abcganada.foryou.comment.rest.response.CommentResponse;
 import xyz.abcganada.foryou.question.repository.QuestionRepository;
@@ -26,6 +28,7 @@ public class MyService {
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final CommentRepository commentRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     public Page<QuestionResponse> getMyQuestions(Long memberId, int page, int size) {
         log.debug("[My] 내 질문 목록 조회 - memberId: {}, page: {}, size: {}", memberId, page, size);
@@ -49,5 +52,13 @@ public class MyService {
 
         return commentRepository.findByMemberId(memberId, pageable)
             .map(CommentResponse::from);
+    }
+
+    public Page<BookmarkResponse> getMyBookmarks(Long memberId, int page, int size) {
+        log.debug("[My] 내 북마크 목록 조회 - memberId: {}, page: {}, size: {}", memberId, page, size);
+        Pageable pageable = PageRequest.of(page, size, CREATED_AT_DESC);
+
+        return bookmarkRepository.findByMemberId(memberId, pageable)
+            .map(BookmarkResponse::from);
     }
 }
