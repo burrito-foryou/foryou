@@ -1,5 +1,7 @@
 package xyz.abcganada.foryou.answer.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -28,4 +30,8 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
                     where a.id = :answerId
         """)
     Optional<Answer> findByIdWithQuestionAndMembers(@Param("answerId") Long answerId);
+           
+    // 내가 작성한 답변 목록 조회 (페이징)
+    @EntityGraph(attributePaths = {"question", "member"})
+    Page<Answer> findByMemberId(Long memberId, Pageable pageable);
 }
