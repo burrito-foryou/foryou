@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../shared/constants/routes";
 import { createQuestion } from "../api/questionApi";
 import { getTags } from "../api/tagApi";
+import { uploadQuestionImage } from "../../image/api/imageApi";
 import useMemberId from "../hooks/useMemberId";
+import MultiImageUploader from "../../image/components/MultiImageUploader";
 
 // 태그 타입 → 한글 라벨 매핑 (BE TagType enum 기준)
 const TAG_TYPE_LABELS = {
@@ -25,6 +27,7 @@ const QuestionWritePage = () => {
     const [tagsByType, setTagsByType] = useState({}); // { TARGET: [...], GENDER: [...], ... }
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [pendingFiles, setPendingFiles] = useState([]);
 
     // 컴포넌트 마운트 시 태그 목록 조회 후 타입별로 그룹핑
     useEffect(() => {
@@ -47,6 +50,16 @@ const QuestionWritePage = () => {
         );
     };
 
+    // 이미지 선택 시 파일 임시 저장 (질문 등록 후 업로드)
+    const handleImageAdd = (file) => {
+        setPendingFiles((prev) => [...prev, file]);
+    };
+
+// 이미지 삭제 시 임시 목록에서 제거
+    const handleImageDelete = (index) => {
+        setPendingFiles((prev) => prev.filter((_, i) => i !== index));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!title.trim() || !content.trim()) {
@@ -56,13 +69,25 @@ const QuestionWritePage = () => {
         setLoading(true);
         setError(null);
         try {
-            // memberId는 쿼리 파라미터, 나머지는 request body로 전송
             const question = await createQuestion(memberId, {
                 title: title.trim(),
                 content: content.trim(),
                 tagIds: selectedTagIds,
             });
-            // 작성 완료 후 해당 질문 상세 페이지로 이동
+
+            // 이미지 업로드 — 실패해도 질문 등록은 완료된 것으로 처리
+            if (pendingFiles.length > 0) {
+                try {
+                    await Promise.all(
+                        pendingFiles.map((file) => uploadQuestionImage(question.id, file)),
+                    );
+                } catch {
+                    // 이미지 업로드 실패는 무시하고 상세 페이지로 이동
+                    console.warn("이미지 업로드 실패 - 질문은 정상 등록됨");
+                }
+            }
+
+            // 질문 등록 성공 후 상세 페이지로 이동
             navigate(`/questions/${question.id}`);
         } catch {
             setError("질문 등록에 실패했습니다. 다시 시도해주세요.");
@@ -144,6 +169,17 @@ const QuestionWritePage = () => {
                             </div>
                         ))}
                     </div>
+                </div>
+
+                {/* 이미지 첨부 (최대 5장) */}
+                <div>
+                    <label className="mb-3 block text-sm font-medium text-text">
+                        이미지 첨부 <span className="text-xs font-normal text-text-muted">(선택)</span>
+                    </label>
+                    <MultiImageUploader
+                        onUpload={handleImageAdd}
+                        onDelete={handleImageDelete}
+                    />
                 </div>
 
                 {/* 에러 메시지 */}
