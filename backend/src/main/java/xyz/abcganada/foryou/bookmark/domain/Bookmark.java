@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "bookmarks",
-    uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "question_id"}))
+        uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "question_id"}))
 @Getter
 @NoArgsConstructor
 public class Bookmark {
@@ -37,4 +37,8 @@ public class Bookmark {
         this.question = question;
         this.createdAt = LocalDateTime.now();
     }
+
+
+
+
 }
