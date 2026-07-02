@@ -20,4 +20,5 @@ export const SORT_OPTIONS = [
   { value: "latest", label: "최신순" },
   { value: "likes", label: "좋아요순" },
   { value: "answers", label: "답변많은순" },
+  { value: "views", label: "조회수순" }
 ];
