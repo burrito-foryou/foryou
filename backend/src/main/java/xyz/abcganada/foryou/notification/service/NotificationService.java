@@ -3,6 +3,7 @@ package xyz.abcganada.foryou.notification.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.abcganada.foryou.global.exception.BusinessException;
 import xyz.abcganada.foryou.global.exception.ErrorCode;
@@ -22,14 +23,13 @@ public class NotificationService {
     private final NotificationSseService notificationSseService;
 
     // 1. 알림 생성
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveAndSend(Notification notification) {
 
         // DB에 알림 저장
         Notification saved = notificationRepository.save(notification);
 
         // SSE로 알림 전송
-        // TODO DB 저장 -> SSE 전송 -> 트랜잭션 커밋 시 문제 발생 가능 : DB commit 성공 후 SSE send 되도록 개선 필요
         notificationSseService.send(
                 saved.getReceiver().getId(),
                 NotificationResponse.from(saved));

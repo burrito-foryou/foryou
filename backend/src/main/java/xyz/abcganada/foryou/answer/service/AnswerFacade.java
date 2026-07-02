@@ -1,41 +1,37 @@
 package xyz.abcganada.foryou.answer.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.abcganada.foryou.answer.domain.Answer;
+import xyz.abcganada.foryou.answer.event.AnswerAcceptedEvent;
+import xyz.abcganada.foryou.answer.event.AnswerCreatedEvent;
 import xyz.abcganada.foryou.answer.rest.request.AnswerCreateRequest;
 import xyz.abcganada.foryou.answer.rest.response.AnswerResponse;
-import xyz.abcganada.foryou.member.domain.Member;
-import xyz.abcganada.foryou.notification.application.NotificationCreator;
-import xyz.abcganada.foryou.notification.service.NotificationService;
 
 @Service
 @RequiredArgsConstructor
 public class AnswerFacade {
 
     private final AnswerService answerService;
-    private final NotificationCreator notificationCreator;
-    private final NotificationService notificationService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public AnswerResponse create(Long questionId, Long memberId, AnswerCreateRequest request) {
         Answer answer = answerService.create(questionId, memberId, request);
 
-        notificationCreator.fromQuestionAnswerCreated(answer, answer.getMember())
-                .ifPresent(notificationService::saveAndSend);
+        eventPublisher.publishEvent(new AnswerCreatedEvent(answer.getId()));
 
         return AnswerResponse.from(answer);
     }
 
     @Transactional
     public void accept(Long answerId, Long memberId) {
-        Answer answer = answerService.accept(answerId, memberId);
-        // sender = 질문 작성자
-        Member sender = answer.getQuestion().getMember();
+        answerService.accept(answerId, memberId);
 
-        notificationCreator.fromAnswerAccepted(answer, sender)
-                .ifPresent(notificationService::saveAndSend);
+        eventPublisher.publishEvent(new AnswerAcceptedEvent(answerId));
+
     }
 
 }
