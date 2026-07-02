@@ -44,14 +44,14 @@ class ImageFacadeTest {
 
         ImageResponse imageResponse = ImageResponse.builder()
                 .id(1L)
-                .targetType(ImageTargetType.PROFILE)
+                .targetType(ImageTargetType.MEMBER)
                 .targetId(memberId)
                 .imageUrl(imageUrl)
                 .originalName("profile.jpg")
                 .fileSize(1024L)
                 .build();
 
-        given(imageService.replace(file, ImageTargetType.PROFILE, memberId))
+        given(imageService.replace(file, ImageTargetType.MEMBER, memberId))
                 .willReturn(imageResponse);
 
         // when
@@ -69,7 +69,7 @@ class ImageFacadeTest {
         Long memberId = MemberFixture.MEMBER_ID;
         MultipartFile file = mock(MultipartFile.class);
 
-        given(imageService.replace(file, ImageTargetType.PROFILE, memberId))
+        given(imageService.replace(file, ImageTargetType.MEMBER, memberId))
                 .willThrow(new BusinessException(ErrorCode.IMAGE_UPLOAD_FAILED));
 
         // when & then
