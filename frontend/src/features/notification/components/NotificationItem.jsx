@@ -1,6 +1,6 @@
 import useNotificationItem from "../hooks/useNotificationItem";
 import { NOTIFICATION_STYLE } from "../../../shared/constants/notificationStyle";
-import { timeAgo } from "../../../shared/utils/timeAgo";
+import timeAgo from "../../../shared/utils/timeAgo";
 import { FiX } from "react-icons/fi"
 
 const NotificationItem = ({ notification, updateReadStatus, onDelete }) => {

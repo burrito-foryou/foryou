@@ -1,24 +1,24 @@
-import { Heart, MessageCircle, CheckCircle } from "lucide-react";
+import { FiHeart, FiMessageCircle, FiCheckCircle } from "react-icons/fi";
 import { NOTIFICATION_TYPE } from "./notificationType";
 
 const LIKE_STYLE = {
   bg: "bg-pink-50",
   border: "border-pink-200",
-  icon: Heart,
+  icon: FiHeart,
   iconColor: "text-pink-500",
 };
 
 const COMMENT_STYLE = {
   bg: "bg-sky-50",
   border: "border-sky-200",
-  icon: MessageCircle,
+  icon: FiMessageCircle,
   iconColor: "text-sky-500",
 };
 
 const ACCEPT_STYLE = {
   bg: "bg-violet-50",
   border: "border-violet-200",
-  icon: CheckCircle,
+  icon: FiCheckCircle,
   iconColor: "text-violet-500",
 };
 

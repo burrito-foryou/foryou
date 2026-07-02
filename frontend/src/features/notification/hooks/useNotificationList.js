@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { getNotifications, markAllAsRead, deleteNotification, deleteAllNotifications, } from "../api/notificationApi";
+import useAuthStore from "../../auth/store/authStore";
 import useNotificationSse from "./useNotificationSse";
 
 // 알림 목록 전체
@@ -7,8 +8,9 @@ const useNotificationList = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const token = useAuthStore((state) => state.token);
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     setLoading(true);
     try {
       setError(null); // 새로고침 시 이전 error 초기화
@@ -20,11 +22,15 @@ const useNotificationList = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => { // API 호출
+    if (!token) {
+      setNotifications([]); // 로그아웃 시 이전 유저 알림 잔류 방지
+      return;
+    }
     fetchNotifications();
-  }, [fetchNotifications]);
+  }, [token, fetchNotifications]);
 
   // useNotificationItem의 markAsRead에서 사용 위함
   const updateReadStatus = (notificationId) => { // notification: 클릭한 알림, prev: 현재 알림 목록
@@ -76,6 +82,7 @@ const useNotificationList = () => {
   // NotificationBadge에서 사용
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
+  // SSE
   useNotificationSse((newNotification) => {                                                                                                                        
       setNotifications((prev) => [newNotification, ...prev]); // SSE에게 알림이 오면 setNotification 실행하라고 등록                                                                                                
     }); 
