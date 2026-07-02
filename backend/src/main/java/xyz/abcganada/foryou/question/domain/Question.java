@@ -3,6 +3,7 @@ package xyz.abcganada.foryou.question.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Formula;
+import org.hibernate.annotations.BatchSize;
 import xyz.abcganada.foryou.global.common.BaseEntity;
 import xyz.abcganada.foryou.member.domain.Member;
 import xyz.abcganada.foryou.tag.Tag;
@@ -49,6 +50,7 @@ public class Question extends BaseEntity {
             joinColumns = @JoinColumn(name = "question_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
+    @BatchSize(size = 100) // 목록 조회 시 tags N+1 방지 - IN 절로 한 번에 조회
     private List<Tag> tags = new ArrayList<>();
 
     @Builder

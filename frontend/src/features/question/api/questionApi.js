@@ -32,11 +32,18 @@ export const getQuestionDetail = (questionId) =>
     });
 
 // 질문 작성
-export const createQuestion = (data) =>
-  instance.post("/questions", data).then((res) => res.data.data);
-// 수정
-export const updateQuestion = (questionId, data) =>
-  instance.put(`/questions/${questionId}`, data).then((res) => res.data.data);
-// 삭제
-export const deleteQuestion = (questionId) =>
-  instance.delete(`/questions/${questionId}`).then((res) => res.data);
+export const createQuestion = (memberId, data) =>
+    instance
+        .post("/questions", data, { params: { memberId } })
+        .then((res) => res.data.data);
+
+// 질문 수정
+export const updateQuestion = (questionId, memberId, data) =>
+    instance
+        .patch(`/questions/${questionId}`, data, { params: { memberId } })
+        .then((res) => res.data.data);
+// 질문 삭제
+export const deleteQuestion = (questionId, memberId) =>
+    instance
+        .delete(`/questions/${questionId}`, { params: { memberId } })
+        .then((res) => res.data);
