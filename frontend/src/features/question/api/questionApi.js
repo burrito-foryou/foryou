@@ -47,3 +47,6 @@ export const deleteQuestion = (questionId, memberId) =>
     instance
         .delete(`/questions/${questionId}`, { params: { memberId } })
         .then((res) => res.data);
+// 질문에 첨부된 이미지 목록 조회
+export const getQuestionImages = (questionId) =>
+    instance.get(`/images/QUESTION/${questionId}`).then((res) => res.data.data);
