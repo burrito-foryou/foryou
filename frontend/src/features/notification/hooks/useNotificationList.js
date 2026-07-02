@@ -73,6 +73,9 @@ const useNotificationList = () => {
     }                                                                                                                                                                
   };       
 
+  // NotificationBadge에서 사용
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
   useNotificationSse((newNotification) => {                                                                                                                        
       setNotifications((prev) => [newNotification, ...prev]); // SSE에게 알림이 오면 setNotification 실행하라고 등록                                                                                                
     }); 
