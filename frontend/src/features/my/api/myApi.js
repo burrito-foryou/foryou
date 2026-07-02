@@ -17,3 +17,8 @@ export const getMyComments = (page = 0, size = 20) =>
   instance
     .get("/my/comments", { params: { page, size } })
     .then((res) => res.data.data.content);
+
+export const getMyBookmarks = (page = 0, size = 20) =>
+  instance
+    .get("/my/bookmarks", { params: { page, size } })
+    .then((res) => res.data.data.content);

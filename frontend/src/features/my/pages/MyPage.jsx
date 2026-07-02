@@ -14,29 +14,9 @@ import {
   getMyQuestions,
   getMyAnswers,
   getMyComments,
+  getMyBookmarks,
 } from "../api/myApi";
 import timeAgo from "../../../shared/utils/timeAgo";
-
-// ── 더미 데이터 (API 미연동 탭 레이아웃 확인용) ──────────────────────────
-const DUMMY_BOOKMARKS = [
-  {
-    id: 3,
-    questionId: 3,
-    title: "여자친구 100일 선물 예산 5만원 추천해주세요",
-    tagNames: ["연인", "기념일"],
-    answerCount: 12,
-    createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 4,
-    questionId: 9,
-    title: "할머니 칠순 선물 뭐가 좋을까요",
-    tagNames: ["가족", "어르신", "칠순"],
-    answerCount: 5,
-    createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-];
-// ──────────────────────────────────────────────────────────────────────
 
 const TABS = [
   { key: "question", label: "질문" },
@@ -177,6 +157,9 @@ const MyPage = () => {
   const [comments, setComments] = useState([]);
   const [commentsLoading, setCommentsLoading] = useState(true);
 
+  const [bookmarks, setBookmarks] = useState([]);
+  const [bookmarksLoading, setBookmarksLoading] = useState(true);
+
   useEffect(() => {
     getMyInfo()
       .then(setMember)
@@ -193,6 +176,10 @@ const MyPage = () => {
     getMyComments()
       .then(setComments)
       .finally(() => setCommentsLoading(false));
+
+    getMyBookmarks()
+      .then(setBookmarks)
+      .finally(() => setBookmarksLoading(false));
   }, []);
 
   if (loading) {
@@ -215,13 +202,14 @@ const MyPage = () => {
     question: questions,
     answer: answers,
     comment: comments,
-    bookmark: DUMMY_BOOKMARKS,
+    bookmark: bookmarks,
   };
 
   const isTabLoading =
     (activeTab === "question" && questionsLoading) ||
     (activeTab === "answer" && answersLoading) ||
-    (activeTab === "comment" && commentsLoading);
+    (activeTab === "comment" && commentsLoading) ||
+    (activeTab === "bookmark" && bookmarksLoading);
 
   const renderItem = (item) => {
     if (activeTab === "question")
@@ -230,7 +218,7 @@ const MyPage = () => {
     if (activeTab === "comment")
       return <CommentItem key={item.id} item={item} />;
     if (activeTab === "bookmark")
-      return <BookmarkItem key={item.id} item={item} />;
+      return <BookmarkItem key={item.questionId} item={item} />;
   };
 
   const items = tabItems[activeTab];
