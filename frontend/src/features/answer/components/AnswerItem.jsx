@@ -1,6 +1,7 @@
 import useAnswerItem from "../hooks/useAnswerItem";
 import CommentList from "../../comment/components/CommentList";
 import useScrollHighlight from "../../../shared/hooks/useScrollHighlight";
+import LikeButton from "../../like/components/LikeButton";
 
 const EDIT_FIELDS = [
   { label: "선물 이름", name: "giftName", placeholder: "예) 조말론 향수" },
@@ -8,7 +9,7 @@ const EDIT_FIELDS = [
 ];
 
 const AnswerItem = ({ answer, onSuccess, questionMemberId }) => {
-  const { giftName, priceRange, content, accepted, memberId, createdAt } = answer;
+  const { giftName, priceRange, content, accepted, memberId, createdAt, likeCount } = answer;
   const { ref: highlightRef, isTarget } = useScrollHighlight("ANSWER", answer.id);
   const {
     isEditing,
@@ -99,7 +100,12 @@ const AnswerItem = ({ answer, onSuccess, questionMemberId }) => {
             <p className="text-xs text-text-muted">
               {memberId} · {new Date(createdAt).toLocaleDateString("ko-KR")}
             </p>
-            <div className="flex gap-3">
+            <div className="flex items-center gap-3">
+              <LikeButton
+                targetType="ANSWER"
+                targetId={answer.id}
+                initialLikeCount={likeCount}
+              />
               {/* WBS0413: 질문 작성자에게만 채택 버튼 노출 */}
               {isQuestionAuthor && !accepted && (
                 <button
