@@ -1,9 +1,14 @@
 import { Link } from "react-router-dom";
 import { FiEye, FiHeart, FiMessageSquare } from "react-icons/fi";
 import timeAgo from "../../../shared/utils/timeAgo";
+import {
+  toQuestionDetail,
+  toQuestionEdit,
+} from "../../../shared/constants/routes";
 
 const QuestionCard = ({ question: q }) => (
-  <Link to={`/questions/${q.id}`}>
+  // `/questions/${q.id}` => toQuestionDetail(q.id)
+  <Link to={toQuestionDetail(q.id)}>
     <div className="rounded-2xl border border-border bg-background p-5 transition-all hover:border-primary hover:shadow-sm">
       <div className="mb-2 flex items-start justify-between gap-3">
         <p className="font-bold text-text leading-snug">{q.title}</p>
@@ -29,9 +34,15 @@ const QuestionCard = ({ question: q }) => (
           {q.memberNickname} · {timeAgo(q.createdAt)}
         </span>
         <div className="flex items-center gap-3 text-xs font-medium text-text-muted">
-          <span className="flex items-center gap-1"><FiEye size={14} /> {q.viewCount}</span>
-          <span className="flex items-center gap-1"><FiHeart size={14} /> {q.likeCount}</span>
-          <span className="flex items-center gap-1"><FiMessageSquare size={14} /> {q.answerCount}</span>
+          <span className="flex items-center gap-1">
+            <FiEye size={14} /> {q.viewCount}
+          </span>
+          <span className="flex items-center gap-1">
+            <FiHeart size={14} /> {q.likeCount}
+          </span>
+          <span className="flex items-center gap-1">
+            <FiMessageSquare size={14} /> {q.answerCount}
+          </span>
         </div>
       </div>
     </div>
