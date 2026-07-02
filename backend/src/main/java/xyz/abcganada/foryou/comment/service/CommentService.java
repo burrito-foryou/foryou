@@ -85,18 +85,20 @@ public class CommentService {
 
     // WBS0608: Like 증가
     @Transactional
-    public void incrementLikeCount(Long commentId) {
+    public Long incrementLikeCount(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
         comment.incrementLikeCount();
+        return comment.getLikeCount();
     }
 
     // WBS0608: Like 감소
     @Transactional
-    public void decrementLikeCount(Long commentId) {
+    public Long decrementLikeCount(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
         comment.decrementLikeCount();
+        return comment.getLikeCount();
     }
 
     // 댓글 조회 - 알림 생성 위한 단순 조회
