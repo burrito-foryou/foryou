@@ -16,6 +16,7 @@ import xyz.abcganada.foryou.auth.rest.response.SignupResponse;
 import xyz.abcganada.foryou.common.ServiceTest;
 import xyz.abcganada.foryou.global.exception.BusinessException;
 import xyz.abcganada.foryou.global.exception.ErrorCode;
+import xyz.abcganada.foryou.global.security.jwt.RefreshToken;
 import xyz.abcganada.foryou.member.domain.AuthProvider;
 import xyz.abcganada.foryou.member.domain.Member;
 import xyz.abcganada.foryou.member.domain.Role;
@@ -51,13 +52,17 @@ class AuthServiceTest extends ServiceTest {
             .willReturn(Optional.of(member));
         given(jwtTokenProvider.generateAccessToken(member))
             .willReturn(AuthFixture.ACCESS_TOKEN);
+        given(jwtTokenProvider.generateRefreshToken(member))
+            .willReturn(AuthFixture.REFRESH_TOKEN);
 
         // when
         LoginResponse response = authService.socialLogin(AuthProvider.KAKAO, AuthFixture.OAUTH_CODE);
 
         // then
         assertThat(response.accessToken()).isEqualTo(AuthFixture.ACCESS_TOKEN);
+        assertThat(response.refreshToken()).isEqualTo(AuthFixture.REFRESH_TOKEN);
         verify(memberRepository, never()).saveAndFlush(any());
+        verify(refreshTokenRepository).save(any(RefreshToken.class));
     }
 
     @Test
@@ -78,12 +83,15 @@ class AuthServiceTest extends ServiceTest {
             .willReturn(savedMember);
         given(jwtTokenProvider.generateAccessToken(savedMember))
             .willReturn(AuthFixture.ACCESS_TOKEN);
+        given(jwtTokenProvider.generateRefreshToken(savedMember))
+            .willReturn(AuthFixture.REFRESH_TOKEN);
 
         // when
         LoginResponse response = authService.socialLogin(AuthProvider.GOOGLE, AuthFixture.OAUTH_CODE);
 
         // then
         assertThat(response.accessToken()).isEqualTo(AuthFixture.ACCESS_TOKEN);
+        assertThat(response.refreshToken()).isEqualTo(AuthFixture.REFRESH_TOKEN);
         assertThat(response.tokenType()).isEqualTo("Bearer");
 
         ArgumentCaptor<Member> memberCaptor = ArgumentCaptor.forClass(Member.class);
@@ -117,6 +125,7 @@ class AuthServiceTest extends ServiceTest {
         verify(memberRepository, never()).findByProviderAndProviderId(any(), any());
         verify(memberRepository, never()).saveAndFlush(any());
         verify(jwtTokenProvider, never()).generateAccessToken(any());
+        verify(refreshTokenRepository, never()).save(any());
     }
 
     @Test
@@ -132,13 +141,17 @@ class AuthServiceTest extends ServiceTest {
             .willReturn(true);
         given(jwtTokenProvider.generateAccessToken(member))
             .willReturn(AuthFixture.ACCESS_TOKEN);
+        given(jwtTokenProvider.generateRefreshToken(member))
+            .willReturn(AuthFixture.REFRESH_TOKEN);
 
         // when
         LoginResponse response = authService.login(request);
 
         // then
         assertThat(response.accessToken()).isEqualTo(AuthFixture.ACCESS_TOKEN);
+        assertThat(response.refreshToken()).isEqualTo(AuthFixture.REFRESH_TOKEN);
         assertThat(response.tokenType()).isEqualTo("Bearer");
+        verify(refreshTokenRepository).save(any(RefreshToken.class));
     }
 
     @Test
@@ -158,6 +171,7 @@ class AuthServiceTest extends ServiceTest {
 
         verify(passwordEncoder, never()).matches(any(), any());
         verify(jwtTokenProvider, never()).generateAccessToken(any());
+        verify(refreshTokenRepository, never()).save(any());
     }
 
     @Test
@@ -179,6 +193,7 @@ class AuthServiceTest extends ServiceTest {
             );
 
         verify(jwtTokenProvider, never()).generateAccessToken(any());
+        verify(refreshTokenRepository, never()).save(any());
     }
 
     @Test
@@ -204,6 +219,7 @@ class AuthServiceTest extends ServiceTest {
 
         verify(passwordEncoder, never()).matches(any(), any());
         verify(jwtTokenProvider, never()).generateAccessToken(any());
+        verify(refreshTokenRepository, never()).save(any());
     }
 
     @Test

@@ -13,6 +13,7 @@ public class AuthFixture {
     public static final String PASSWORD = "password123!";
     public static final String NICKNAME = "tester";
     public static final String ACCESS_TOKEN = "access-token";
+    public static final String REFRESH_TOKEN = "refresh-token";
 
     public static final String OAUTH_CODE = "authorization-code";
     public static final String KAKAO_PROVIDER_ID = "kakao-provider-id";
@@ -31,7 +32,7 @@ public class AuthFixture {
     }
 
     public static LoginResponse loginResponse() {
-        return LoginResponse.of(ACCESS_TOKEN);
+        return LoginResponse.of(ACCESS_TOKEN, REFRESH_TOKEN);
     }
 
     public static SignupRequest signupRequest() {

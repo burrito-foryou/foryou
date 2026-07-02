@@ -45,6 +45,7 @@ class AuthControllerTest extends RestControllerTest {
             .andExpect(jsonPath("$.success").value(true))
             .andExpect(jsonPath("$.message").value("로그인이 완료되었습니다."))
             .andExpect(jsonPath("$.data.accessToken").value(AuthFixture.ACCESS_TOKEN))
+            .andExpect(jsonPath("$.data.refreshToken").value(AuthFixture.REFRESH_TOKEN))
             .andExpect(jsonPath("$.data.tokenType").value("Bearer"));
 
         verify(authService).login(any(LoginRequest.class));
@@ -97,6 +98,7 @@ class AuthControllerTest extends RestControllerTest {
             .andExpect(jsonPath("$.success").value(true))
             .andExpect(jsonPath("$.message").value("kakao 로그인이 완료되었습니다."))
             .andExpect(jsonPath("$.data.accessToken").value(AuthFixture.ACCESS_TOKEN))
+            .andExpect(jsonPath("$.data.refreshToken").value(AuthFixture.REFRESH_TOKEN))
             .andExpect(jsonPath("$.data.tokenType").value("Bearer"));
 
         verify(authService).socialLogin(AuthProvider.KAKAO, AuthFixture.OAUTH_CODE);

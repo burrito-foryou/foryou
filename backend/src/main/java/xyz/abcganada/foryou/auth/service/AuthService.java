@@ -7,17 +7,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.abcganada.foryou.auth.oauth.OAuthClientResolver;
-import xyz.abcganada.foryou.auth.rest.request.LoginRequest;
 import xyz.abcganada.foryou.auth.oauth.OAuthUserInfo;
+import xyz.abcganada.foryou.auth.rest.request.LoginRequest;
+import xyz.abcganada.foryou.auth.rest.request.SignupRequest;
 import xyz.abcganada.foryou.auth.rest.response.LoginResponse;
+import xyz.abcganada.foryou.auth.rest.response.SignupResponse;
 import xyz.abcganada.foryou.global.exception.BusinessException;
 import xyz.abcganada.foryou.global.exception.ErrorCode;
 import xyz.abcganada.foryou.global.security.jwt.JwtTokenProvider;
+import xyz.abcganada.foryou.global.security.jwt.RefreshToken;
+import xyz.abcganada.foryou.global.security.jwt.RefreshTokenRepository;
 import xyz.abcganada.foryou.member.domain.AuthProvider;
 import xyz.abcganada.foryou.member.domain.Member;
 import xyz.abcganada.foryou.member.repository.MemberRepository;
-import xyz.abcganada.foryou.auth.rest.request.SignupRequest;
-import xyz.abcganada.foryou.auth.rest.response.SignupResponse;
 
 @Slf4j
 @Service
@@ -30,6 +32,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final OAuthClientResolver oAuthClientResolver;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public SignupResponse signup(SignupRequest request) {
         log.info("[Auth] 회원가입 처리 시작 - email: {}", request.email());
@@ -52,8 +55,9 @@ public class AuthService {
 
         log.info("[Auth] 로그인 완료 - memberId: {}", member.getId());
         String accessToken = jwtTokenProvider.generateAccessToken(member);
+        String refreshToken = issueRefreshToken(member);
 
-        return LoginResponse.of(accessToken);
+        return LoginResponse.of(accessToken, refreshToken);
     }
 
     public LoginResponse socialLogin(AuthProvider provider, String code) {
@@ -71,8 +75,9 @@ public class AuthService {
 
         log.info("[Auth] 소셜 로그인 완료 - memberId: {}", member.getId());
         String accessToken = jwtTokenProvider.generateAccessToken(member);
+        String refreshToken = issueRefreshToken(member);
 
-        return LoginResponse.of(accessToken);
+        return LoginResponse.of(accessToken, refreshToken);
     }
 
     public void logout() {
@@ -117,6 +122,16 @@ public class AuthService {
         } catch (DataIntegrityViolationException e) {
             throw new BusinessException(ErrorCode.DUPLICATE_MEMBER);
         }
+    }
+
+    private String issueRefreshToken(Member member) {
+        String refreshToken = jwtTokenProvider.generateRefreshToken(member);
+
+        refreshTokenRepository.save(
+            new RefreshToken(member.getId(), refreshToken, jwtTokenProvider.getRefreshTokenExpiration())
+        );
+
+        return refreshToken;
     }
 
     private void validatePassword(String password, Member member) {

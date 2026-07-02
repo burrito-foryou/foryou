@@ -23,6 +23,7 @@ services:
       SPRING_PROFILES_ACTIVE: dev,jwt,oauth2,image
     depends_on:
       - postgres
+      - redis
     restart: unless-stopped
 
   postgres:
@@ -33,6 +34,10 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
     restart: unless-stopped
 
 volumes:
