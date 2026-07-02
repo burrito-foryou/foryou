@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { getNotifications, markAllAsRead, } from "../api/notificationApi";
+import useNotificationSse from "./useNotificationSse";
 
 // 알림 목록 전체
 const useNotificationList = () => {
@@ -53,6 +54,10 @@ const useNotificationList = () => {
       console.error(error);
     }
   };
+
+  useNotificationSse((newNotification) => {                                                                                                                        
+      setNotifications((prev) => [newNotification, ...prev]); // SSE에게 알림이 오면 setNotification 실행하라고 등록                                                                                                
+    }); 
 
   return {notifications, loading, error, 
     reload: fetchNotifications, // ?

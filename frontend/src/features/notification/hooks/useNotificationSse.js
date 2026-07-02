@@ -1,0 +1,24 @@
+import { useEffect } from "react";
+import useAuthStore from "../../auth/store/authStore";
+
+const useNotificationSse = (onNotification) => {
+  const token = useAuthStore((state) => state.token);
+
+  // onNotification 리렌더마다 바뀌어도 Listener 안에서 항상 최신값 참조
+
+    useEffect(() => {                                                                                                                                                  
+    if (!token) return; // 로그인 안 된 상태에서는 SSE 연결 시도 X                                                                                                                                          
+                                                                                                                                                                     
+    const eventSource = new EventSource(`/api/notifications/subscribe?token=${token}`); // 연결 생성                                                                             
+                                                                                                                                                                     
+    eventSource.addEventListener("notification", (e) => { // 서버에서 SSE 이벤트 도착 시 listener 실행                                                                                                    
+      const data = JSON.parse(e.data);                                                                                                                               
+      if (data.status === "connected") return; // 더미 연결 확인 이벤트 무시                                                                                         
+      onNotification(data); // 콜백 함수 실행 -> setNotifications                                                                                                               
+    });                                                                                                                                                              
+                                                                                                                                                                     
+    return () => eventSource.close();                                                                                                                               
+  }, [token]); // 로그인 상태 바뀔 때만 재연결
+};
+
+export default useNotificationSse;
