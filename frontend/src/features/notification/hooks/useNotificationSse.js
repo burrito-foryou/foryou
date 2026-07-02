@@ -4,8 +4,6 @@ import useAuthStore from "../../auth/store/authStore";
 const useNotificationSse = (onNotification) => {
   const token = useAuthStore((state) => state.token);
 
-  // onNotification 리렌더마다 바뀌어도 Listener 안에서 항상 최신값 참조
-
     useEffect(() => {                                                                                                                                                  
     if (!token) return; // 로그인 안 된 상태에서는 SSE 연결 시도 X                                                                                                                                          
                                                                                                                                                                      
