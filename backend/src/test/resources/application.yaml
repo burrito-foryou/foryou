@@ -20,3 +20,8 @@ image:
   upload:
     path: /tmp/foryou/images
     url-prefix: http://localhost:8080/images
+
+cloudinary:
+  cloud-name: test
+  api-key: test
+  api-secret: test
