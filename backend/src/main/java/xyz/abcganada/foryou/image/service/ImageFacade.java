@@ -20,7 +20,7 @@ public class ImageFacade {
 
     public ImageResponse replaceMemberProfileImage(Long memberId, MultipartFile file) {
         log.info("[Image] 프로필 이미지 교체 - memberId: {}", memberId);
-        ImageResponse response = imageService.replace(file, ImageTargetType.PROFILE, memberId);
+        ImageResponse response = imageService.replace(file, ImageTargetType.MEMBER, memberId);
         memberService.updateProfileImageUrl(memberId, response.imageUrl());
         
         log.info("[Image] 프로필 이미지 교체 완료 - memberId: {}, imageUrl: {}", memberId, response.imageUrl());
