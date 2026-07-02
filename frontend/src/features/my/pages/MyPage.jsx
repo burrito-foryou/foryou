@@ -113,7 +113,7 @@ const BookmarkItem = ({ item }) => (
       <p className="text-sm font-semibold text-text leading-snug">
         {item.title}
       </p>
-      <FiBookmark size={14} className="shrink-0 text-primary mt-0.5" />
+      <FiBookmark size={14} className="shrink-0 text-primary fill-primary mt-0.5" />
     </div>
     <div className="mb-2 flex flex-wrap gap-1">
       {item.tagNames.map((tag) => (
