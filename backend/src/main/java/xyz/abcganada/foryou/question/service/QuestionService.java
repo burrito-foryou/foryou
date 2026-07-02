@@ -168,18 +168,20 @@ public class QuestionService {
 
     // WBS0606 : Like 증가
     @Transactional
-    public void incrementLikeCount(Long questionId) {
+    public Long incrementLikeCount(Long questionId) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
         question.incrementLikeCount();
+        return question.getLikeCount();
     }
 
     // WBS0606 : Like 감소
     @Transactional
-    public void decrementLikeCount(Long questionId) {
+    public Long decrementLikeCount(Long questionId) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
         question.decrementLikeCount();
+        return question.getLikeCount();
     }
 
     // 질문 조회 - 알림 생성 위한 단순 조회
