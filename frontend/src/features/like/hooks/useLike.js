@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { addLike, cancelLike, getLikeStatus } from "../api/likeApi";
+import useAuthStore from "../../auth/store/authStore";
 
 const useLike = (targetType, targetId, initialLikeCount) => {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(initialLikeCount);
+  const token = useAuthStore((state) => state.token);
 
   useEffect(() => {
+    if (!token) return; // 비로그인 시 좋아요 불가
     getLikeStatus(targetType, targetId).then((data) => setLiked(data.liked));
-  }, [targetType, targetId]);
+  }, [targetType, targetId, token]);
 
   // 좋아요 등록/취소 낙관적 업데이트
   const toggleLike = async () => {
