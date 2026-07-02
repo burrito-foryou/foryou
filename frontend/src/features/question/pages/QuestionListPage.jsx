@@ -84,31 +84,6 @@ const QuestionListPage = () => {
           채택된 질문만
         </button>
 
-        <div className="relative" ref={sortMenuRef}>
-          <button
-            onClick={() => setShowSortMenu((v) => !v)}
-            className="flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-sm text-text-muted hover:border-primary hover:text-primary transition-colors"
-          >
-            <span className="whitespace-nowrap">{currentSortLabel}</span>{" "}
-            <span>▾</span>
-          </button>
-          {showSortMenu && (
-            <div className="absolute top-9 right-0 z-10 rounded-lg border border-border bg-background shadow-sm">
-              {SORT_OPTIONS.map((o) => (
-                <button
-                  key={o.value}
-                  onClick={() => {
-                    setSort(o.value);
-                    setShowSortMenu(false);
-                  }}
-                  className={`block w-full whitespace-nowrap px-4 py-2 text-left text-sm hover:bg-surface ${sort === o.value ? "text-primary font-bold" : "text-text"}`}
-                >
-                  {o.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
       </div>
 
       {/* 3행: 필터 버튼 + 활성 필터 칩 */}
@@ -119,6 +94,31 @@ const QuestionListPage = () => {
         >
           <FiSliders size={14} /> 필터
         </button>
+        <div className="relative" ref={sortMenuRef}>
+          <button
+              onClick={() => setShowSortMenu((v) => !v)}
+              className="flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-sm text-text-muted hover:border-primary hover:text-primary transition-colors"
+          >
+            <span className="whitespace-nowrap">{currentSortLabel}</span>{" "}
+            <span>▾</span>
+          </button>
+          {showSortMenu && (
+              <div className="absolute top-9 right-0 z-10 rounded-lg border border-border bg-background shadow-sm">
+                {SORT_OPTIONS.map((o) => (
+                    <button
+                        key={o.value}
+                        onClick={() => {
+                          setSort(o.value);
+                          setShowSortMenu(false);
+                        }}
+                        className={`block w-full whitespace-nowrap px-4 py-2 text-left text-sm hover:bg-surface ${sort === o.value ? "text-primary font-bold" : "text-text"}`}
+                    >
+                      {o.label}
+                    </button>
+                ))}
+              </div>
+          )}
+        </div>
         {activeFilterEntries.map(([key, value]) => (
           <button
             key={key}
