@@ -7,3 +7,8 @@ export const getMyQuestions = (page = 0, size = 20) =>
   instance
     .get("/my/questions", { params: { page, size } })
     .then((res) => res.data.data.content);
+
+export const getMyAnswers = (page = 0, size = 20) =>
+  instance
+    .get("/my/answers", { params: { page, size } })
+    .then((res) => res.data.data.content);

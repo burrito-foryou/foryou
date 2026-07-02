@@ -9,31 +9,10 @@ import {
   FiHeart,
 } from "react-icons/fi";
 import { ROUTES } from "../../../shared/constants/routes";
-import { getMyInfo, getMyQuestions } from "../api/myApi";
+import { getMyInfo, getMyQuestions, getMyAnswers } from "../api/myApi";
 import timeAgo from "../../../shared/utils/timeAgo";
 
 // ── 더미 데이터 (API 미연동 탭 레이아웃 확인용) ──────────────────────────
-const DUMMY_ANSWERS = [
-  {
-    id: 1,
-    questionId: 5,
-    questionTitle: "20대 여자친구 크리스마스 선물 뭐가 좋을까요",
-    content:
-      "향수 어떨까요? 조말론이나 딥티크 같은 브랜드 미니 세트도 부담 없고 좋아요.",
-    isAccepted: true,
-    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 2,
-    questionId: 8,
-    questionTitle: "친구 취업 축하 선물로 뭐가 적당할까요",
-    content:
-      "명함 지갑이나 가죽 카드 케이스 추천드려요. 실용적이고 의미 있어서 좋아했어요.",
-    isAccepted: false,
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-];
-
 const DUMMY_COMMENTS = [
   {
     id: 1,
@@ -122,10 +101,20 @@ const AnswerItem = ({ item }) => (
     <p className="mb-1.5 text-xs text-text-muted line-clamp-1">
       Q. {item.questionTitle}
     </p>
+    {(item.giftName || item.priceRange) && (
+      <div className="mb-1.5 flex items-center gap-2">
+        {item.giftName && (
+          <span className="text-xs font-medium text-text">{item.giftName}</span>
+        )}
+        {item.priceRange && (
+          <span className="text-xs text-text-muted">{item.priceRange}</span>
+        )}
+      </div>
+    )}
     <p className="mb-2 text-sm text-text line-clamp-2">{item.content}</p>
     <div className="flex items-center justify-between text-xs text-text-muted">
       <span>{timeAgo(item.createdAt)}</span>
-      {item.isAccepted && (
+      {item.accepted && (
         <span className="flex items-center gap-1 text-primary font-semibold">
           <FiHeart size={12} /> 채택됨
         </span>
@@ -194,6 +183,9 @@ const MyPage = () => {
   const [questions, setQuestions] = useState([]);
   const [questionsLoading, setQuestionsLoading] = useState(true);
 
+  const [answers, setAnswers] = useState([]);
+  const [answersLoading, setAnswersLoading] = useState(true);
+
   useEffect(() => {
     getMyInfo()
       .then(setMember)
@@ -202,6 +194,10 @@ const MyPage = () => {
     getMyQuestions()
       .then(setQuestions)
       .finally(() => setQuestionsLoading(false));
+
+    getMyAnswers()
+      .then(setAnswers)
+      .finally(() => setAnswersLoading(false));
   }, []);
 
   if (loading) {
@@ -222,12 +218,14 @@ const MyPage = () => {
 
   const tabItems = {
     question: questions,
-    answer: DUMMY_ANSWERS,
+    answer: answers,
     comment: DUMMY_COMMENTS,
     bookmark: DUMMY_BOOKMARKS,
   };
 
-  const isTabLoading = activeTab === "question" && questionsLoading;
+  const isTabLoading =
+    (activeTab === "question" && questionsLoading) ||
+    (activeTab === "answer" && answersLoading);
 
   const renderItem = (item) => {
     if (activeTab === "question")

@@ -9,7 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.abcganada.foryou.answer.repository.AnswerRepository;
-import xyz.abcganada.foryou.answer.rest.response.AnswerResponse;
+import xyz.abcganada.foryou.answer.rest.response.AnswerMyResponse;
 import xyz.abcganada.foryou.bookmark.repository.BookmarkRepository;
 import xyz.abcganada.foryou.bookmark.rest.response.BookmarkResponse;
 import xyz.abcganada.foryou.comment.repository.CommentRepository;
@@ -38,12 +38,12 @@ public class MyService {
             .map(QuestionResponse::from);
     }
 
-    public Page<AnswerResponse> getMyAnswers(Long memberId, int page, int size) {
+    public Page<AnswerMyResponse> getMyAnswers(Long memberId, int page, int size) {
         log.debug("[My] 내 답변 목록 조회 - memberId: {}, page: {}, size: {}", memberId, page, size);
         Pageable pageable = PageRequest.of(page, size, CREATED_AT_DESC);
 
         return answerRepository.findByMemberId(memberId, pageable)
-            .map(AnswerResponse::from);
+            .map(answer -> AnswerMyResponse.from(answer, answer.getQuestion()));
     }
 
     public Page<CommentResponse> getMyComments(Long memberId, int page, int size) {
