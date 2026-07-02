@@ -9,6 +9,7 @@ import xyz.abcganada.foryou.global.response.ApiResponse;
 import xyz.abcganada.foryou.global.security.auth.AuthMember;
 import xyz.abcganada.foryou.image.domain.ImageTargetType;
 import xyz.abcganada.foryou.image.rest.response.ImageResponse;
+import xyz.abcganada.foryou.image.service.ImageFacade;
 import xyz.abcganada.foryou.image.service.ImageService;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequestMapping("/api/images")
 public class ImageController {
 
+    private final ImageFacade imageFacade;
     private final ImageService imageService;
 
     // 질문 이미지 업로드
@@ -45,7 +47,7 @@ public class ImageController {
     public ResponseEntity<ApiResponse<ImageResponse>> uploadProfileImage(
             @RequestParam("file") MultipartFile file,
             @AuthenticationPrincipal AuthMember authMember) {
-        ImageResponse response = imageService.replace(file, ImageTargetType.PROFILE, authMember.memberId());
+        ImageResponse response = imageFacade.replaceMemberProfileImage(authMember.memberId(), file);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
