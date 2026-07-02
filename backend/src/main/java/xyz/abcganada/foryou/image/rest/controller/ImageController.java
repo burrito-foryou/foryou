@@ -3,6 +3,7 @@ package xyz.abcganada.foryou.image.rest.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import xyz.abcganada.foryou.global.response.ApiResponse;
@@ -23,7 +24,7 @@ public class ImageController {
     private final ImageService imageService;
 
     // 질문 이미지 업로드
-    @PostMapping("/questions/{questionId}")
+    @PostMapping(value = "/questions/{questionId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ImageResponse>> uploadQuestionImage(
             @PathVariable Long questionId,
             @RequestParam("file") MultipartFile file,
@@ -33,7 +34,7 @@ public class ImageController {
     }
 
     // 답변 이미지 업로드
-    @PostMapping("/answers/{answerId}")
+    @PostMapping(value = "/answers/{answerId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ImageResponse>> uploadAnswerImage(
             @PathVariable Long answerId,
             @RequestParam("file") MultipartFile file,
@@ -43,7 +44,7 @@ public class ImageController {
     }
 
     // 프로필 이미지 업로드 (기존 이미지 교체)
-    @PostMapping("/profile")
+    @PostMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ImageResponse>> uploadProfileImage(
             @RequestParam("file") MultipartFile file,
             @AuthenticationPrincipal AuthMember authMember) {
