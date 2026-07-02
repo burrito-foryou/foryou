@@ -65,9 +65,9 @@ public class NotificationController {
     }
 
     // SSE 구독
-    @GetMapping(value = "/subscribe/{receiverId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe(@PathVariable Long receiverId) {
-        return notificationSseService.subscribe(receiverId);
+    @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter subscribe(@AuthenticationPrincipal AuthMember member) {
+        return notificationSseService.subscribe(member.memberId());
     }
 
 

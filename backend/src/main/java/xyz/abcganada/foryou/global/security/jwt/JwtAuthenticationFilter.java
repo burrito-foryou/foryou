@@ -38,6 +38,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String resolveToken(HttpServletRequest request) {
+
+        // SSE는 query token 먼저 확인
+        if (request.getRequestURI().startsWith("/api/notifications/subscribe")) {
+            String token = request.getParameter("token");
+            if (token != null) {
+                return token;
+            }
+        }
+
+        // 일반 API는 헤더 JWT
         String authorization = request.getHeader(AUTHORIZATION_HEADER);
 
         if (authorization == null || !authorization.startsWith(BEARER_PREFIX)) {
