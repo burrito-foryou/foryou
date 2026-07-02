@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/members/me").authenticated()
                 .requestMatchers("/api/notifications/subscribe/**").permitAll()
                 .requestMatchers("/api/notifications/**").authenticated()
+                .requestMatchers("/api/likes/**").authenticated()
                 .anyRequest().permitAll()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
