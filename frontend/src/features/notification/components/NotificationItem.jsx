@@ -2,10 +2,9 @@ import useNotificationItem from "../hooks/useNotificationItem";
 import { NOTIFICATION_STYLE } from "../../../shared/constants/notificationStyle";
 import { timeAgo } from "../../../shared/utils/timeAgo";
 
-const NotificationItem = ({ notification, receiverId, updateReadStatus, }) => {
+const NotificationItem = ({ notification, updateReadStatus, }) => {
   const { handleClick } = useNotificationItem(
     notification,
-    receiverId,
     updateReadStatus,
   );
 

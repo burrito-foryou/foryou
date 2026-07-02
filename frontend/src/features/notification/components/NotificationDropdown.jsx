@@ -1,13 +1,13 @@
 import NotificationItem from "./NotificationItem";
 import useNotificationList from "../hooks/useNotificationList";
 
-const NotificationDropdown = ({ receiverId }) => {
+const NotificationDropdown = () => {
   const {
     notifications,
     loading,
     handleMarkAllAsRead,
     updateReadStatus,
-  } = useNotificationList(receiverId);
+  } = useNotificationList();
 
   return (
     <div className="w-[380px] rounded-xl border border-gray-200 bg-white shadow-lg">
@@ -36,7 +36,6 @@ const NotificationDropdown = ({ receiverId }) => {
             <NotificationItem
               key={notification.id}
               notification={notification}
-              receiverId={receiverId}
               updateReadStatus={updateReadStatus}
             />
           ))

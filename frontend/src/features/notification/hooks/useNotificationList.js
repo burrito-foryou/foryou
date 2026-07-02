@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getNotifications, markAllAsRead, } from "../api/notificationApi";
 
 // 알림 목록 전체
-const useNotificationList = (receiverId) => {
+const useNotificationList = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -12,7 +12,7 @@ const useNotificationList = (receiverId) => {
     try {
       setError(null); // 새로고침 시 이전 error 초기화
 
-      const data = await getNotifications(receiverId);
+      const data = await getNotifications();
       setNotifications(data);
     } catch (error) {
       setError(error);
@@ -41,7 +41,7 @@ const useNotificationList = (receiverId) => {
 
   const handleMarkAllAsRead = async () => {
     try {
-      await markAllAsRead(receiverId);
+      await markAllAsRead();
 
       setNotifications((prev) =>
         prev.map((notification) => ({

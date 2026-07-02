@@ -2,13 +2,13 @@ import { useNavigate } from "react-router-dom";
 import { markAsRead } from "../api/notificationApi";
 import { buildTargetLink } from "../utils/buildTargetLink";
 
-const useNotificationItem = (notification, receiverId, updateReadStatus,) => {
+const useNotificationItem = (notification, updateReadStatus,) => {
   const navigate = useNavigate();
 
   const handleClick = async () => {
     if (!notification.isRead) {
       try {
-        await markAsRead(notification.id, receiverId);
+        await markAsRead(notification.id);
 
         updateReadStatus(notification.id);
       } catch (error) {
