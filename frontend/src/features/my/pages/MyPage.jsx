@@ -9,29 +9,10 @@ import {
   FiHeart,
 } from "react-icons/fi";
 import { ROUTES } from "../../../shared/constants/routes";
-import { getMyInfo } from "../api/myApi";
+import { getMyInfo, getMyQuestions } from "../api/myApi";
 import timeAgo from "../../../shared/utils/timeAgo";
 
-// ── 더미 데이터 (API 연동 전 레이아웃 확인용) ──────────────────────────
-const DUMMY_QUESTIONS = [
-  {
-    id: 1,
-    title: "남자친구 20대 생일 선물 추천해주세요",
-    tagNames: ["연인", "20대", "생일"],
-    answerCount: 4,
-    acceptedAnswerId: null,
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 2,
-    title: "부모님 결혼기념일 선물로 뭐가 좋을까요?",
-    tagNames: ["부모님", "기념일"],
-    answerCount: 7,
-    acceptedAnswerId: 3,
-    createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-];
-
+// ── 더미 데이터 (API 미연동 탭 레이아웃 확인용) ──────────────────────────
 const DUMMY_ANSWERS = [
   {
     id: 1,
@@ -210,10 +191,17 @@ const MyPage = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("question");
 
+  const [questions, setQuestions] = useState([]);
+  const [questionsLoading, setQuestionsLoading] = useState(true);
+
   useEffect(() => {
     getMyInfo()
       .then(setMember)
       .finally(() => setLoading(false));
+
+    getMyQuestions()
+      .then(setQuestions)
+      .finally(() => setQuestionsLoading(false));
   }, []);
 
   if (loading) {
@@ -233,11 +221,13 @@ const MyPage = () => {
   }
 
   const tabItems = {
-    question: DUMMY_QUESTIONS,
+    question: questions,
     answer: DUMMY_ANSWERS,
     comment: DUMMY_COMMENTS,
     bookmark: DUMMY_BOOKMARKS,
   };
+
+  const isTabLoading = activeTab === "question" && questionsLoading;
 
   const renderItem = (item) => {
     if (activeTab === "question")
@@ -323,7 +313,11 @@ const MyPage = () => {
 
         {/* 탭 컨텐츠 */}
         <div className="p-4">
-          {items.length === 0 ? (
+          {isTabLoading ? (
+            <p className="py-8 text-center text-sm text-text-muted">
+              불러오는 중...
+            </p>
+          ) : items.length === 0 ? (
             <p className="py-8 text-center text-sm text-text-muted">
               {EMPTY_MESSAGES[activeTab]}
             </p>
