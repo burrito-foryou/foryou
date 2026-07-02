@@ -1,4 +1,5 @@
 import useAnswerItem from "../hooks/useAnswerItem";
+import CommentList from "../../comment/components/CommentList";
 
 const EDIT_FIELDS = [
   { label: "선물 이름", name: "giftName", placeholder: "예) 조말론 향수" },
@@ -126,6 +127,9 @@ const AnswerItem = ({ answer, onSuccess, questionMemberId }) => {
           </div>
         </>
       )}
+
+      {/* WBS0508: 댓글 목록 + 작성 폼 */}
+      <CommentList answerId={answer.id} />
     </div>
   );
 };
