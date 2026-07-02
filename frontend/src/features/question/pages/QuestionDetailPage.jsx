@@ -10,7 +10,11 @@ import {
 } from "react-icons/fi";
 import { ROUTES } from "../../../shared/constants/routes";
 import { getQuestionDetail, deleteQuestion } from "../api/questionApi";
-import { addBookmark, removeBookmark, getBookmarkStatus } from "../api/bookmarkApi";
+import {
+  addBookmark,
+  removeBookmark,
+  getBookmarkStatus,
+} from "../api/bookmarkApi";
 import useMemberId from "../hooks/useMemberId";
 import timeAgo from "../../../shared/utils/timeAgo";
 
@@ -22,7 +26,7 @@ const QuestionDetailPage = () => {
   const [question, setQuestion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false); // 북마크 추가
 
   const fetchedId = useRef(null);
   useEffect(() => {
@@ -33,6 +37,7 @@ const QuestionDetailPage = () => {
       try {
         const data = await getQuestionDetail(id);
         setQuestion(data);
+        // 북마크 상태 초기화 (로그인 시에만)
         if (memberId) {
           const bookmarked = await getBookmarkStatus(id);
           setIsBookmarked(bookmarked);
@@ -46,6 +51,7 @@ const QuestionDetailPage = () => {
     fetch();
   }, [id]);
 
+  // 북마크 토글
   const handleBookmark = async () => {
     try {
       if (isBookmarked) {
@@ -55,7 +61,7 @@ const QuestionDetailPage = () => {
       }
       setIsBookmarked((prev) => !prev);
     } catch {
-      alert("북마크 처리에 실패했습니다.");
+      alert("북마크 실패");
     }
   };
 
@@ -122,10 +128,17 @@ const QuestionDetailPage = () => {
           </span>
         )}
 
+        {/* 제목 + 북마크 버튼 */}
         <div className="mb-3 flex items-start justify-between gap-3">
           <h1 className="text-xl font-bold text-text">{question.title}</h1>
-          <button onClick={handleBookmark} className="shrink-0 text-text-muted hover:text-primary transition-colors mt-1">
-            <FiBookmark size={20} className={isBookmarked ? "fill-primary text-primary" : ""} />
+          <button
+            onClick={handleBookmark}
+            className="shrink-0 text-text-muted hover:text-primary transition-colors mt-1"
+          >
+            <FiBookmark
+              size={20}
+              className={isBookmarked ? "fill-primary text-primary" : ""}
+            />
           </button>
         </div>
 
@@ -156,9 +169,15 @@ const QuestionDetailPage = () => {
 
         {/* 통계 */}
         <div className="mt-6 flex items-center gap-4 text-xs font-medium text-text-muted">
-          <span className="flex items-center gap-1"><FiEye size={14} /> {question.viewCount}</span>
-          <span className="flex items-center gap-1"><FiHeart size={14} /> {question.likeCount}</span>
-          <span className="flex items-center gap-1"><FiMessageSquare size={14} /> {question.answerCount}</span>
+          <span className="flex items-center gap-1">
+            <FiEye size={14} /> {question.viewCount}
+          </span>
+          <span className="flex items-center gap-1">
+            <FiHeart size={14} /> {question.likeCount}
+          </span>
+          <span className="flex items-center gap-1">
+            <FiMessageSquare size={14} /> {question.answerCount}
+          </span>
         </div>
       </div>
     </div>

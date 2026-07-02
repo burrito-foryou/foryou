@@ -4,8 +4,9 @@ import { FiBookmark, FiEye, FiHeart, FiMessageSquare } from "react-icons/fi";
 import timeAgo from "../../../shared/utils/timeAgo";
 
 const QuestionCard = ({ question: q }) => {
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false); // 북마크 추가
 
+  // 북마크 토글 (카드 클릭 이벤트 전파 방지)
   const handleBookmark = (e) => {
     e.preventDefault();
     setIsBookmarked((prev) => !prev);
