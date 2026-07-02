@@ -19,9 +19,6 @@ public interface QuestionRepository extends JpaRepository<Question, Long>, JpaSp
     // 회원별 질문 목록 조회
     Page<Question> findByMemberId(Long memberId, Pageable pageable);
 
-    // 회원별 질문 목록 조회(최신순)
-    List<Question> findByMemberIdOrderByCreatedAtDesc(Long memberId);
-
     // 질문 상세 조회
     @Query("SELECT q FROM Question q LEFT JOIN FETCH q.member LEFT JOIN FETCH q.tags WHERE q.id = :id")
     Optional<Question> findWithDetailsById(@Param("id") Long id);
@@ -42,5 +39,14 @@ public interface QuestionRepository extends JpaRepository<Question, Long>, JpaSp
     // 태그 이름 기반 검색
     @Query("SELECT DISTINCT q FROM Question q JOIN q.tags t WHERE t.name IN :tagNames")
     Page<Question> findByTagNames(@Param("tagNames") List<String> tagNames, Pageable pageable);
+
+    // AnswerFacade.create
+    @Query("""
+            select q
+                    from Question q 
+                    join fetch q.member
+                    where q.id = :questionId 
+            """)
+    Optional<Question> findByIdWithMember(@Param("questionId") Long questionId);
 
 }

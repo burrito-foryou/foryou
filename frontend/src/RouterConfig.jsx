@@ -7,7 +7,8 @@ import ProtectedRoute from "./features/auth/components/ProtectedRoute";
 const HomePage = lazy(() => import("./features/home/pages/HomePage"));
 const LoginPage = lazy(() => import("./features/auth/pages/LoginPage"));
 const SignupPage = lazy(() => import("./features/auth/pages/SignupPage"));
-const MyPage = lazy(() => import("./features/user/pages/MyPage"));
+const MyPage = lazy(() => import("./features/my/pages/MyPage"));
+const AccountPage = lazy(() => import("./features/user/pages/AccountPage"));
 const QuestionListPage = lazy(() => import("./features/question/pages/QuestionListPage"));
 const QuestionDetailPage = lazy(() => import("./features/question/pages/QuestionDetailPage"));
 const QuestionWritePage = lazy(() => import("./features/question/pages/QuestionWritePage"));
@@ -38,6 +39,7 @@ const router = createBrowserRouter([
         children: [
           { path: ROUTES.QUESTION_WRITE, element: <QuestionWritePage /> },
           { path: ROUTES.MY_PAGE, element: <MyPage /> },
+          { path: ROUTES.MY_ACCOUNT, element: <AccountPage /> },
           { path: ROUTES.NOTIFICATIONS, element: <NotificationPage /> },
         ],
       },

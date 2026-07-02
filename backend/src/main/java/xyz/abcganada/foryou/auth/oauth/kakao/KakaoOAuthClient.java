@@ -1,6 +1,7 @@
 package xyz.abcganada.foryou.auth.oauth.kakao;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -19,6 +20,7 @@ import xyz.abcganada.foryou.global.exception.BusinessException;
 import xyz.abcganada.foryou.global.exception.ErrorCode;
 import xyz.abcganada.foryou.member.domain.AuthProvider;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class KakaoOAuthClient implements OAuthClient {
@@ -53,13 +55,17 @@ public class KakaoOAuthClient implements OAuthClient {
     }
 
     private KakaoTokenResponse requestToken(ClientRegistration registration, String code) {
+        log.debug("[Auth] 카카오 토큰 요청 - tokenUri: {}, redirectUri: {}", registration.getProviderDetails().getTokenUri(), registration.getRedirectUri());
         try {
-            return restOperations.postForObject(
+            KakaoTokenResponse response = restOperations.postForObject(
                 registration.getProviderDetails().getTokenUri(),
                 createTokenRequest(registration, code),
                 KakaoTokenResponse.class
             );
+            log.debug("[Auth] 카카오 토큰 요청 성공");
+            return response;
         } catch (RestClientException e) {
+            log.error("[Auth] 카카오 토큰 요청 실패 - {}", e.getMessage());
             throw new BusinessException(ErrorCode.OAUTH_TOKEN_REQUEST_FAILED);
         }
     }
@@ -87,6 +93,7 @@ public class KakaoOAuthClient implements OAuthClient {
     private KakaoUserResponse requestKakaoUser(String accessToken) {
         ClientRegistration registration = oAuthClientSupport.getRegistration(REGISTRATION_ID);
 
+        log.debug("[Auth] 카카오 유저 정보 요청 - userInfoUri: {}", registration.getProviderDetails().getUserInfoEndpoint().getUri());
         try {
             KakaoUserResponse response = restOperations.exchange(
                 registration.getProviderDetails().getUserInfoEndpoint().getUri(),
@@ -96,11 +103,14 @@ public class KakaoOAuthClient implements OAuthClient {
             ).getBody();
 
             if (response == null || !response.isValid()) {
+                log.error("[Auth] 카카오 유저 정보 유효하지 않음 - response: {}", response);
                 throw new BusinessException(ErrorCode.OAUTH_USER_INFO_INVALID);
             }
 
+            log.debug("[Auth] 카카오 유저 정보 요청 성공");
             return response;
         } catch (RestClientException e) {
+            log.error("[Auth] 카카오 유저 정보 요청 실패 - {}", e.getMessage());
             throw new BusinessException(ErrorCode.OAUTH_USER_INFO_REQUEST_FAILED);
         }
     }

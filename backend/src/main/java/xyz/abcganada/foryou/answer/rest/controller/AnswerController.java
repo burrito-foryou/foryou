@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import xyz.abcganada.foryou.answer.rest.request.AnswerCreateRequest;
 import xyz.abcganada.foryou.answer.rest.request.AnswerUpdateRequest;
 import xyz.abcganada.foryou.answer.rest.response.AnswerResponse;
+import xyz.abcganada.foryou.answer.service.AnswerFacade;
 import xyz.abcganada.foryou.answer.service.AnswerService;
 import xyz.abcganada.foryou.global.response.ApiResponse;
 
@@ -18,6 +19,7 @@ import java.util.List;
 public class AnswerController {
 
     private final AnswerService answerService;
+    private final AnswerFacade answerFacade;
 
     // WBS0404: 답변 목록 조회
     @GetMapping("/api/questions/{questionId}/answers")
@@ -42,7 +44,7 @@ public class AnswerController {
     public ResponseEntity<ApiResponse<Void>> acceptAnswer(
             @PathVariable Long answerId,
             @RequestParam Long memberId) { // Security 구현 후 @AuthenticationPrincipal로 교체 예정
-        answerService.accept(answerId, memberId);
+        answerFacade.accept(answerId, memberId);
         return ResponseEntity.ok(ApiResponse.successWithoutData("답변이 채택되었습니다."));
     }
 
@@ -61,7 +63,7 @@ public class AnswerController {
             @PathVariable Long questionId,
             @RequestParam Long memberId, // Security 구현 후 @AuthenticationPrincipal로 교체 예정
             @RequestBody @Valid AnswerCreateRequest request) {
-        AnswerResponse response = answerService.create(questionId, memberId, request);
+        AnswerResponse response = answerFacade.create(questionId, memberId, request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(response, "답변이 등록되었습니다."));
     }

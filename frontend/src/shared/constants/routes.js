@@ -6,6 +6,7 @@ export const ROUTES = {
   OAUTH_CALLBACK: "/auth/callback/:provider",
 
   MY_PAGE: "/my",
+  MY_ACCOUNT: "/my/account",
 
   QUESTIONS: "/questions",
   QUESTION_DETAIL: "/questions/:id",

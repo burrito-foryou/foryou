@@ -2,6 +2,7 @@ package xyz.abcganada.foryou.auth.rest.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import xyz.abcganada.foryou.auth.rest.request.SignupRequest;
 import xyz.abcganada.foryou.auth.rest.response.SignupResponse;
 import xyz.abcganada.foryou.member.domain.AuthProvider;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
@@ -22,6 +24,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<SignupResponse>> signup(@Valid @RequestBody SignupRequest request) {
+        log.info("[Auth] 회원가입 요청 - email: {}", request.email());
         SignupResponse response = authService.signup(request);
 
         return ResponseEntity
@@ -31,6 +34,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
+        log.info("[Auth] 로그인 요청 - email: {}", request.email());
         LoginResponse response = authService.login(request);
 
         return ResponseEntity
@@ -43,6 +47,7 @@ public class AuthController {
         @PathVariable String provider,
         @RequestParam String code
     ) {
+        log.info("[Auth] 소셜 로그인 요청 - provider: {}", provider);
         LoginResponse response = authService.socialLogin(AuthProvider.fromSocial(provider), code);
 
         return ResponseEntity
@@ -52,6 +57,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
+        log.info("[Auth] 로그아웃 요청");
         authService.logout();
 
         return ResponseEntity.noContent().build();

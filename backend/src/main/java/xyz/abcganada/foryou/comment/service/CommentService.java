@@ -66,8 +66,8 @@ public class CommentService {
 
     // WBS0503: 댓글 작성
     @Transactional
-    public CommentResponse create(Long answerId, Long memberId, CommentCreateRequest request) {
-        Answer answer = answerRepository.findById(answerId)
+    public Comment create(Long answerId, Long memberId, CommentCreateRequest request) {
+        Answer answer = answerRepository.findByIdWithQuestionAndMembers(answerId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
 
         Member member = memberRepository.findById(memberId)
@@ -80,6 +80,29 @@ public class CommentService {
                 .likeCount(0L)
                 .build();
 
-        return CommentResponse.from(commentRepository.save(comment));
+        return commentRepository.save(comment);
     }
+
+    // WBS0608: Like 증가
+    @Transactional
+    public void incrementLikeCount(Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
+        comment.incrementLikeCount();
+    }
+
+    // WBS0608: Like 감소
+    @Transactional
+    public void decrementLikeCount(Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
+        comment.decrementLikeCount();
+    }
+
+    // 댓글 조회 - 알림 생성 위한 단순 조회
+    public Comment getComment(Long commentId) {
+        return commentRepository.findByIdWithAnswerAndQuestionAndMember(commentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
+    }
+
 }
