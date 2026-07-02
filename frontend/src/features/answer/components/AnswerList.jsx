@@ -2,7 +2,7 @@ import useAnswerList from "../hooks/useAnswerList";
 import AnswerItem from "./AnswerItem";
 import AnswerForm from "./AnswerForm";
 
-const AnswerList = ({ questionId }) => {
+const AnswerList = ({ questionId, questionMemberId }) => {
   const { answers, loading, error, refetch } = useAnswerList(questionId);
 
   if (loading) return <p className="py-6 text-center text-sm text-text-muted">불러오는 중...</p>;
@@ -20,7 +20,12 @@ const AnswerList = ({ questionId }) => {
         </p>
       ) : (
         answers.map((answer) => (
-          <AnswerItem key={answer.id} answer={answer} />
+          <AnswerItem
+            key={answer.id}
+            answer={answer}
+            onSuccess={refetch}
+            questionMemberId={questionMemberId}
+          />
         ))
       )}
 
