@@ -11,3 +11,11 @@ export const markAsRead = (notificationId) => {
 export const markAllAsRead = () => {
     return instance.patch("/notifications/read-all");
 };
+
+export const deleteNotification = (notificationId) => {                                                                                                            
+    return instance.delete(`/notifications/${notificationId}`);                                                                                                    
+};                                                                                                                                                                 
+                                                                                                                                                                     
+export const deleteAllNotifications = () => {                                                                                                                      
+    return instance.delete("/notifications");                                                                                                                      
+}; 

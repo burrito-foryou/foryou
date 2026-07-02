@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { getNotifications, markAllAsRead, } from "../api/notificationApi";
+import { getNotifications, markAllAsRead, deleteNotification, deleteAllNotifications, } from "../api/notificationApi";
 import useNotificationSse from "./useNotificationSse";
 
 // 알림 목록 전체
@@ -55,14 +55,34 @@ const useNotificationList = () => {
     }
   };
 
+  const handleDeleteNotification = async (notificationId) => {                                                                                                       
+    try {                                                                                                                                                            
+      await deleteNotification(notificationId);                                                                                                                      
+      setNotifications((prev) => prev.filter((n) => n.id !== notificationId));                                                                                       
+    } catch (error) {                                                                                                                                                
+      console.error(error);                                                                                                                                          
+    }                                                                                                                                                                
+  };                                                                                                                                                                 
+                                                                                                                                                                     
+  const handleDeleteAllNotifications = async () => {                                                                                                                 
+    try {                                                                                                                                                            
+      await deleteAllNotifications();                                                                                                                                
+      setNotifications([]);                                                                                                                                          
+    } catch (error) {                                                                                                                                                
+      console.error(error);                                                                                                                                          
+    }                                                                                                                                                                
+  };       
+
   useNotificationSse((newNotification) => {                                                                                                                        
       setNotifications((prev) => [newNotification, ...prev]); // SSE에게 알림이 오면 setNotification 실행하라고 등록                                                                                                
     }); 
 
-  return {notifications, loading, error, 
-    reload: fetchNotifications, // ?
+  return {notifications, loading, error, unreadCount,
+    reload: fetchNotifications,
     updateReadStatus,
     handleMarkAllAsRead,
+    handleDeleteNotification,
+    handleDeleteAllNotifications,
   };
 };
 

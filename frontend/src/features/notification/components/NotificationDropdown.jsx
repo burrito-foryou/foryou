@@ -3,10 +3,9 @@ import useNotificationList from "../hooks/useNotificationList";
 
 const NotificationDropdown = () => {
   const {
-    notifications,
-    loading,
-    handleMarkAllAsRead,
-    updateReadStatus,
+    notifications, loading,
+    handleMarkAllAsRead, updateReadStatus,
+    handleDeleteNotification, handleDeleteAllNotifications,
   } = useNotificationList();
 
   return (
@@ -14,12 +13,10 @@ const NotificationDropdown = () => {
       <div className="flex items-center justify-between border-b px-4 py-3">
         <h2 className="text-base font-semibold">알림</h2>
 
-        <button
-          onClick={handleMarkAllAsRead}
-          className="rounded-md border px-2 py-1 text-xs text-gray-600 hover:bg-gray-100"
-        >
-          모두 읽음
-        </button>
+        <div className="flex gap-2">                                                                                                                               
+            <button onClick={handleMarkAllAsRead} className="rounded-md border px-2 py-1 text-xs text-gray-600 hover:bg-gray-100">모두 읽음</button>                 
+            <button onClick={handleDeleteAllNotifications} className="rounded-md border px-2 py-1 text-xs text-gray-600 hover:bg-gray-100">전체 삭제</button>        
+          </div>
       </div>
 
       <div className="max-h-[500px] overflow-y-auto">
@@ -37,6 +34,7 @@ const NotificationDropdown = () => {
               key={notification.id}
               notification={notification}
               updateReadStatus={updateReadStatus}
+              onDelete={handleDeleteNotification} 
             />
           ))
         )}
