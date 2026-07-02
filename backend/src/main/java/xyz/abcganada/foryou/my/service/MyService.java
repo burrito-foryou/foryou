@@ -9,11 +9,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.abcganada.foryou.answer.repository.AnswerRepository;
-import xyz.abcganada.foryou.answer.rest.response.AnswerResponse;
+import xyz.abcganada.foryou.answer.rest.response.AnswerMyResponse;
 import xyz.abcganada.foryou.bookmark.repository.BookmarkRepository;
-import xyz.abcganada.foryou.bookmark.rest.response.BookmarkResponse;
+import xyz.abcganada.foryou.bookmark.rest.response.BookmarkMyResponse;
 import xyz.abcganada.foryou.comment.repository.CommentRepository;
-import xyz.abcganada.foryou.comment.rest.response.CommentResponse;
+import xyz.abcganada.foryou.comment.rest.response.CommentMyResponse;
 import xyz.abcganada.foryou.question.repository.QuestionRepository;
 import xyz.abcganada.foryou.question.rest.response.QuestionResponse;
 
@@ -38,27 +38,27 @@ public class MyService {
             .map(QuestionResponse::from);
     }
 
-    public Page<AnswerResponse> getMyAnswers(Long memberId, int page, int size) {
+    public Page<AnswerMyResponse> getMyAnswers(Long memberId, int page, int size) {
         log.debug("[My] 내 답변 목록 조회 - memberId: {}, page: {}, size: {}", memberId, page, size);
         Pageable pageable = PageRequest.of(page, size, CREATED_AT_DESC);
 
         return answerRepository.findByMemberId(memberId, pageable)
-            .map(AnswerResponse::from);
+            .map(answer -> AnswerMyResponse.from(answer, answer.getQuestion()));
     }
 
-    public Page<CommentResponse> getMyComments(Long memberId, int page, int size) {
+    public Page<CommentMyResponse> getMyComments(Long memberId, int page, int size) {
         log.debug("[My] 내 댓글 목록 조회 - memberId: {}, page: {}, size: {}", memberId, page, size);
         Pageable pageable = PageRequest.of(page, size, CREATED_AT_DESC);
 
         return commentRepository.findByMemberId(memberId, pageable)
-            .map(CommentResponse::from);
+            .map(comment -> CommentMyResponse.from(comment, comment.getAnswer().getQuestion()));
     }
 
-    public Page<BookmarkResponse> getMyBookmarks(Long memberId, int page, int size) {
+    public Page<BookmarkMyResponse> getMyBookmarks(Long memberId, int page, int size) {
         log.debug("[My] 내 북마크 목록 조회 - memberId: {}, page: {}, size: {}", memberId, page, size);
         Pageable pageable = PageRequest.of(page, size, CREATED_AT_DESC);
 
         return bookmarkRepository.findByMemberId(memberId, pageable)
-            .map(BookmarkResponse::from);
+            .map(bookmark -> BookmarkMyResponse.from(bookmark, bookmark.getQuestion()));
     }
 }

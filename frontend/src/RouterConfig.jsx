@@ -12,6 +12,7 @@ const AccountPage = lazy(() => import("./features/user/pages/AccountPage"));
 const QuestionListPage = lazy(() => import("./features/question/pages/QuestionListPage"));
 const QuestionDetailPage = lazy(() => import("./features/question/pages/QuestionDetailPage"));
 const QuestionWritePage = lazy(() => import("./features/question/pages/QuestionWritePage"));
+const QuestionEditPage = lazy(() => import("./features/question/pages/QuestionEditPage"));
 const NotificationPage = lazy(() => import("./features/notification/pages/NotificationPage"));
 const OAuthCallbackPage = lazy(() => import("./features/auth/pages/OAuthCallbackPage"));
 const ImageTestPage = lazy(() => import("./features/image/pages/ImageTestPage"));
@@ -38,6 +39,7 @@ const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
           { path: ROUTES.QUESTION_WRITE, element: <QuestionWritePage /> },
+          { path: ROUTES.QUESTION_EDIT, element: <QuestionEditPage /> },
           { path: ROUTES.MY_PAGE, element: <MyPage /> },
           { path: ROUTES.MY_ACCOUNT, element: <AccountPage /> },
           { path: ROUTES.NOTIFICATIONS, element: <NotificationPage /> },

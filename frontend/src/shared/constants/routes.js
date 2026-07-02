@@ -11,6 +11,7 @@ export const ROUTES = {
   QUESTIONS: "/questions",
   QUESTION_DETAIL: "/questions/:id",
   QUESTION_WRITE: "/questions/write",
+  QUESTION_EDIT: "/questions/:id/edit",
 
   NOTIFICATIONS: "/notifications",
 };

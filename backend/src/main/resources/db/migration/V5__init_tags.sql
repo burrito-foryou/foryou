@@ -1,0 +1,36 @@
+INSERT INTO tags (name, type) VALUES
+                                  ('여자친구',  'TARGET'),
+                                  ('남자친구',  'TARGET'),
+                                  ('부모님',    'TARGET'),
+                                  ('친구',      'TARGET'),
+                                  ('직장동료',  'TARGET'),
+                                  ('선생님',    'TARGET'),
+                                  ('여성', 'GENDER'),
+                                  ('남성', 'GENDER'),
+
+                                  ('10대',    'AGE_GROUP'),
+                                  ('20대',    'AGE_GROUP'),
+                                  ('30대',    'AGE_GROUP'),
+                                  ('40대',    'AGE_GROUP'),
+                                  ('50대 이상', 'AGE_GROUP'),
+
+                                  ('1만원대',    'BUDGET'),
+                                  ('3만원대',    'BUDGET'),
+                                  ('5만원대',    'BUDGET'),
+                                  ('10만원대',   'BUDGET'),
+                                  ('10만원 이상', 'BUDGET'),
+
+                                  ('생일',   'SITUATION'),
+                                  ('기념일',  'SITUATION'),
+                                  ('크리스마스', 'SITUATION'),
+                                  ('어버이날', 'SITUATION'),
+                                  ('졸업',   'SITUATION'),
+                                  ('입학',   'SITUATION'),
+                                  ('취업',   'SITUATION'),
+
+                                  ('패션/뷰티', 'GIFT_TYPE'),
+                                  ('테크/가전', 'GIFT_TYPE'),
+                                  ('식품',    'GIFT_TYPE'),
+                                  ('건강',    'GIFT_TYPE'),
+                                  ('취미',    'GIFT_TYPE'),
+                                  ('인테리어', 'GIFT_TYPE');

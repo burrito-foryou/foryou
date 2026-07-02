@@ -115,19 +115,21 @@ public class AnswerService {
 
     // WBS0607: Like 증가
     @Transactional
-    public void incrementLikeCount(Long answerId) {
+    public Long incrementLikeCount(Long answerId) {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
         answer.incrementLikeCount();
+        return answer.getLikeCount();
     }
 
     // WBS0607: Like 감소
     // this로 내부 호출 시 Spring 프록시 우회 문제로 getAnswer 사용 X
     @Transactional
-    public void decrementLikeCount(Long answerId) {
+    public Long decrementLikeCount(Long answerId) {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
         answer.decrementLikeCount();
+        return answer.getLikeCount();
     }
 
     // 답변 조회 - 알림 전송 위한 단순 조회

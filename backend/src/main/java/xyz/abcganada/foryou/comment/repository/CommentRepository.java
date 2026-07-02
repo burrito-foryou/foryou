@@ -30,6 +30,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     Optional<Comment> findByIdWithAnswerAndQuestionAndMember(@Param("commentId") Long commentId);
            
     // 내가 작성한 댓글 목록 조회 (페이징)
-    @EntityGraph(attributePaths = {"answer", "member"})
+    @EntityGraph(attributePaths = {"answer", "answer.question", "member"})
     Page<Comment> findByMemberId(Long memberId, Pageable pageable);
 }

@@ -8,6 +8,24 @@ import { DUMMY } from "../constants/questionDummy";
 import QuestionFilterModal from "../components/QuestionFilterModal";
 import QuestionCard from "../components/QuestionCard";
 
+// 현재 페이지 주변 번호 + 처음/끝 페이지 배열 계산 (... 포함)
+const getPageNumbers = (current, total) => {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i);
+
+  const pages = new Set([0, total - 1]);
+  for (let i = Math.max(0, current - 2); i <= Math.min(total - 1, current + 2); i++) {
+    pages.add(i);
+  }
+
+  const sorted = [...pages].sort((a, b) => a - b);
+  const result = [];
+  for (let i = 0; i < sorted.length; i++) {
+    if (i > 0 && sorted[i] - sorted[i - 1] > 1) result.push("...");
+    result.push(sorted[i]);
+  }
+  return result;
+};
+
 const QuestionListPage = () => {
   const navigate = useNavigate();
   const {
@@ -15,6 +33,9 @@ const QuestionListPage = () => {
     filters,
     sort,
     setSort,
+    page,
+    setPage,
+    totalPages,
     removeFilter,
     applyFilters,
     loading,
@@ -51,6 +72,7 @@ const QuestionListPage = () => {
     return [...base].sort((a, b) => {
       if (sort === "likes") return b.likeCount - a.likeCount;
       if (sort === "answers") return b.answerCount - a.answerCount;
+      if (sort === "views") return b.viewCount - a.viewCount;
       return new Date(b.createdAt) - new Date(a.createdAt);
     });
   }, [questions, filteredDummy, onlyAccepted, sort]);
@@ -81,7 +103,7 @@ const QuestionListPage = () => {
               : "border-border text-text-muted hover:border-primary hover:text-primary"
           }`}
         >
-          채택된 질문만
+          채택된 질문
         </button>
 
       </div>
@@ -151,6 +173,50 @@ const QuestionListPage = () => {
             <QuestionCard key={q.id} question={q} />
           ))}
         </div>
+      )}
+
+      {/* 페이지네이션 */}
+      {totalPages > 1 && (
+          <div className="mt-8 flex items-center justify-center gap-1">
+            {/* 이전 버튼 */}
+            <button
+                onClick={() => setPage((p) => p - 1)}
+                disabled={page === 0}
+                className="rounded-lg border border-border px-3 py-1.5 text-sm text-text-muted transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              ‹
+            </button>
+
+            {/* 페이지 번호 */}
+            {getPageNumbers(page, totalPages).map((p, i) =>
+                    p === "..." ? (
+                        <span key={`ellipsis-${i}`} className="px-2 text-sm text-text-muted">
+          …
+        </span>
+                    ) : (
+                        <button
+                            key={p}
+                            onClick={() => setPage(p)}
+                            className={`rounded-lg border px-3 py-1.5 text-sm transition-colors ${
+                                p === page
+                                    ? "border-primary bg-primary text-white"
+                                    : "border-border text-text-muted hover:border-primary hover:text-primary"
+                            }`}
+                        >
+                          {p + 1}
+                        </button>
+                    ),
+            )}
+
+            {/* 다음 버튼 */}
+            <button
+                onClick={() => setPage((p) => p + 1)}
+                disabled={page === totalPages - 1}
+                className="rounded-lg border border-border px-3 py-1.5 text-sm text-text-muted transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              ›
+            </button>
+          </div>
       )}
 
       {showFilter && (

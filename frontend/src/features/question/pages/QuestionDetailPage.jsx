@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FiEye, FiHeart, FiMessageSquare, FiEdit2, FiTrash2 } from "react-icons/fi";
 import { ROUTES } from "../../../shared/constants/routes";
@@ -16,7 +16,12 @@ const QuestionDetailPage = () => {
     const [error, setError] = useState(null);
 
     // 질문 상세 조회 (조회 시 viewCount 자동 증가)
+    const fetchedId = useRef(null); // 이미 조회한 id 추적
     useEffect(() => {
+        // StrictMode 이중 실행 대응 — 같은 id 재호출 방지
+        if (fetchedId.current === id) return;
+        fetchedId.current = id;
+
         const fetch = async () => {
             try {
                 const data = await getQuestionDetail(id);
