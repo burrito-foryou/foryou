@@ -5,6 +5,7 @@ import {
   updateProfileImage,
 } from "../api/memberApi";
 import useToast from "../../../shared/hooks/useToast";
+import useAuthStore from "../../auth/store/authStore";
 
 const useAccount = () => {
   const [member, setMember] = useState(null);
@@ -18,6 +19,7 @@ const useAccount = () => {
   const [imageLoading, setImageLoading] = useState(false);
   const fileInputRef = useRef(null);
   const { toast, showToast } = useToast();
+  const setNickname = useAuthStore((state) => state.setNickname);
 
   useEffect(() => {
     getMyInfo()
@@ -54,6 +56,7 @@ const useAccount = () => {
     try {
       const updated = await updateNickname(trimmed);
       setMember(updated);
+      setNickname(trimmed);
       setEditingNickname(false);
       showToast("닉네임이 변경되었습니다.");
     } catch (err) {
