@@ -9,27 +9,15 @@ import {
   FiHeart,
 } from "react-icons/fi";
 import { ROUTES } from "../../../shared/constants/routes";
-import { getMyInfo, getMyQuestions, getMyAnswers } from "../api/myApi";
+import {
+  getMyInfo,
+  getMyQuestions,
+  getMyAnswers,
+  getMyComments,
+} from "../api/myApi";
 import timeAgo from "../../../shared/utils/timeAgo";
 
 // ── 더미 데이터 (API 미연동 탭 레이아웃 확인용) ──────────────────────────
-const DUMMY_COMMENTS = [
-  {
-    id: 1,
-    questionId: 12,
-    questionTitle: "30대 직장 선배 선물로 뭐가 무난할까요",
-    content: "저도 이거 고민했는데 좋은 답변 감사해요!",
-    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 2,
-    questionId: 15,
-    questionTitle: "고등학교 친구 생일 선물 부담 없는 거 추천",
-    content: "디퓨저 세트도 좋을 것 같아요. 인테리어 관심 있는 친구면 특히요.",
-    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-];
-
 const DUMMY_BOOKMARKS = [
   {
     id: 3,
@@ -186,6 +174,9 @@ const MyPage = () => {
   const [answers, setAnswers] = useState([]);
   const [answersLoading, setAnswersLoading] = useState(true);
 
+  const [comments, setComments] = useState([]);
+  const [commentsLoading, setCommentsLoading] = useState(true);
+
   useEffect(() => {
     getMyInfo()
       .then(setMember)
@@ -198,6 +189,10 @@ const MyPage = () => {
     getMyAnswers()
       .then(setAnswers)
       .finally(() => setAnswersLoading(false));
+
+    getMyComments()
+      .then(setComments)
+      .finally(() => setCommentsLoading(false));
   }, []);
 
   if (loading) {
@@ -219,13 +214,14 @@ const MyPage = () => {
   const tabItems = {
     question: questions,
     answer: answers,
-    comment: DUMMY_COMMENTS,
+    comment: comments,
     bookmark: DUMMY_BOOKMARKS,
   };
 
   const isTabLoading =
     (activeTab === "question" && questionsLoading) ||
-    (activeTab === "answer" && answersLoading);
+    (activeTab === "answer" && answersLoading) ||
+    (activeTab === "comment" && commentsLoading);
 
   const renderItem = (item) => {
     if (activeTab === "question")
