@@ -16,7 +16,7 @@ const NotificationItem = ({ notification, updateReadStatus, onDelete }) => {
   };
 
   return (
-    <div onClick={handleClick} className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors hover:bg-gray-50 
+    <div onClick={handleClick} className={`flex cursor-pointer items-start gap-3 rounded-lg border px-4 py-2 transition-colors hover:bg-gray-50
       ${notification.isRead
           ? "border-gray-200 bg-white"
           : `${style.bg} ${style.border}`
@@ -29,11 +29,11 @@ const NotificationItem = ({ notification, updateReadStatus, onDelete }) => {
       </div>
 
       <div className="flex-1">
-        <p className="text-sm text-text">
+        <p className="text-[10px] text-text">
           {notification.content}
         </p>
 
-        <span className="text-xs text-gray-500">
+        <span className="text-[10px] text-gray-500">
           {timeAgo(notification.createdAt)}
         </span>
       </div>

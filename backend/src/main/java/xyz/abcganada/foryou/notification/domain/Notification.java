@@ -82,7 +82,7 @@ public class Notification {
                 .targetType(targetType)
                 .targetId(targetId)
                 .questionId(questionId)
-                .content(type.buildContent(sender.getNickname()))
+                .content(type.buildContent(sender.getNickname(), questionId))
                 .build());
     }
 
