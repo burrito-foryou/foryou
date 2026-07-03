@@ -21,10 +21,6 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    /* TODO
-    *  현재 모든 API 열려 있음.
-    *  인증 정책 보강 필요.
-    */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -38,12 +34,22 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/signup").permitAll()
                 .requestMatchers("/api/auth/login", "/api/auth/login/*").permitAll()
                 .requestMatchers("/api/auth/logout").authenticated()
-                    .requestMatchers(HttpMethod.POST, "/api/images/**").authenticated()
-                    .requestMatchers(HttpMethod.DELETE, "/api/images/**").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/images/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/images/**").authenticated()
                 .requestMatchers("/api/members/me").authenticated()
                 .requestMatchers("/api/notifications/subscribe/**").authenticated()
                 .requestMatchers("/api/notifications/**").authenticated()
                 .requestMatchers("/api/likes/**").authenticated()
+                .requestMatchers("/api/my/**").authenticated()
+                // 답변: 등록/수정/삭제/채택은 인증 필요, 목록 조회는 공개
+                .requestMatchers(HttpMethod.POST, "/api/questions/*/answers").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/answers/*").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/answers/*").authenticated()
+                .requestMatchers(HttpMethod.PATCH, "/api/answers/*/accept").authenticated()
+                // 댓글: 등록/수정/삭제는 인증 필요, 목록 조회는 공개
+                .requestMatchers(HttpMethod.POST, "/api/answers/*/comments").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/comments/*").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/comments/*").authenticated()
                 .anyRequest().permitAll()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

@@ -1,23 +1,9 @@
 import { useState } from "react";
-import useAuthStore from "../../auth/store/authStore";
 import { createAnswer } from "../api/answerApi";
 
 const INITIAL_FORM = { giftName: "", priceRange: "", content: "" };
 
-const getMemberIdFromToken = (token) => {
-  try {
-    const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
-    const json = new TextDecoder().decode(
-      Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)),
-    );
-    return JSON.parse(json).sub;
-  } catch {
-    return null;
-  }
-};
-
 const useAnswerForm = (questionId, onSuccess) => {
-  const token = useAuthStore((state) => state.token);
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -41,12 +27,9 @@ const useAnswerForm = (questionId, onSuccess) => {
     e.preventDefault();
     if (!validate()) return;
 
-    const memberId = getMemberIdFromToken(token);
-    if (!memberId) return;
-
     setLoading(true);
     try {
-      await createAnswer(questionId, memberId, form);
+      await createAnswer(questionId, form);
       setForm(INITIAL_FORM);
       setErrors({});
       onSuccess?.();
