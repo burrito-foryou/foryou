@@ -1,7 +1,9 @@
 import useCommentItem from "../hooks/useCommentItem";
+import useScrollHighlight from "../../../shared/hooks/useScrollHighlight";
 
 const CommentItem = ({ comment, onSuccess }) => {
-  const { createdAt } = comment;
+  const { id, createdAt } = comment;
+  const { ref: highlightRef, isTarget } = useScrollHighlight("COMMENT", id);
   const {
     isEditing,
     setIsEditing,
@@ -14,7 +16,12 @@ const CommentItem = ({ comment, onSuccess }) => {
   } = useCommentItem(comment, onSuccess);
 
   return (
-    <div className="flex flex-col gap-1 border-t border-border py-3">
+    <div
+      ref={highlightRef}
+      className={`flex flex-col gap-1 border-t border-border py-3 transition-colors ${
+        isTarget ? "rounded-lg bg-primary-light px-2" : ""
+      }`}
+    >
       {isEditing ? (
         // WBS0509: 수정 폼
         <form onSubmit={handleUpdate} className="flex flex-col gap-2">
