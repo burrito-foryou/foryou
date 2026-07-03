@@ -22,6 +22,7 @@ import xyz.abcganada.foryou.question.repository.QuestionSpecification;
 import xyz.abcganada.foryou.tag.Tag;
 import xyz.abcganada.foryou.tag.TagRepository;
 import xyz.abcganada.foryou.tag.TagType;
+import xyz.abcganada.foryou.bookmark.repository.BookmarkRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final MemberRepository memberRepository;
     private final TagRepository tagRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     // 질문 등록 (조건 태그 입력 처리 포함)
     @Transactional
@@ -61,6 +63,7 @@ public class QuestionService {
 
     // 질문 목록 조회 (검색 + 필터 + 정렬)
     public Page<QuestionResponse> getList(
+            Long memberId,
             String keyword,
             String target,
             String budget,
@@ -103,7 +106,11 @@ public class QuestionService {
         // 정렬 + 페이징
         Pageable pageable = PageRequest.of(page, size, toSort(sort));
 
-        return questionRepository.findAll(spec, pageable).map(QuestionResponse::from);
+        return questionRepository.findAll(spec, pageable).map(q -> {
+            boolean isBookmarked = memberId != null &&
+                    bookmarkRepository.existsByMemberIdAndQuestionId(memberId, q.getId());
+            return QuestionResponse.from(q, isBookmarked);
+        });
     }
 
     // 질문 상세 조회 (조회수 증가 포함)
