@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import xyz.abcganada.foryou.auth.rest.request.LoginRequest;
+import xyz.abcganada.foryou.auth.rest.request.ReissueRequest;
 import xyz.abcganada.foryou.auth.rest.response.LoginResponse;
 import xyz.abcganada.foryou.auth.service.AuthService;
 import xyz.abcganada.foryou.global.response.ApiResponse;
@@ -53,6 +54,16 @@ public class AuthController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(ApiResponse.success(response, provider + " 로그인이 완료되었습니다."));
+    }
+
+    @PostMapping("/reissue")
+    public ResponseEntity<ApiResponse<LoginResponse>> reissue(@Valid @RequestBody ReissueRequest request) {
+        log.info("[Auth] 토큰 재발급 요청");
+        LoginResponse response = authService.reissue(request.refreshToken());
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(ApiResponse.success(response, "토큰이 재발급되었습니다."));
     }
 
     @PostMapping("/logout")

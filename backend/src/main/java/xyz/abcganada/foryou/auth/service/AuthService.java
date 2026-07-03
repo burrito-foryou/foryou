@@ -80,6 +80,18 @@ public class AuthService {
         return LoginResponse.of(accessToken, refreshToken);
     }
 
+    @Transactional(readOnly = true)
+    public LoginResponse reissue(String refreshToken) {
+        log.info("[Auth] 토큰 재발급 처리 시작");
+        Member member = findMemberByRefreshToken(refreshToken);
+
+        log.info("[Auth] 토큰 재발급 완료 - memberId: {}", member.getId());
+        String newAccessToken = jwtTokenProvider.generateAccessToken(member);
+        String newRefreshToken = issueRefreshToken(member);
+
+        return LoginResponse.of(newAccessToken, newRefreshToken);
+    }
+
     public void logout() {
         // TODO refresh token 도입
         // Stateless JWT 방식에서는 서버에서 별도 처리하지 않음.
@@ -88,6 +100,16 @@ public class AuthService {
     private Member findMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
             .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_LOGIN_CREDENTIALS));
+    }
+
+    private Member findMemberByRefreshToken(String refreshToken) {
+        validateRefreshToken(refreshToken);
+
+        Long memberId = jwtTokenProvider.getMemberId(refreshToken);
+        validateStoredRefreshToken(memberId, refreshToken);
+
+        return memberRepository.findById(memberId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN));
     }
 
     private boolean isInvalidPassword(String password, Member member) {
@@ -152,6 +174,23 @@ public class AuthService {
         if (member.getProvider() != AuthProvider.FORYOU) {
             log.warn("[Auth] 소셜 회원의 일반 로그인 시도 - memberId: {}, provider: {}", member.getId(), member.getProvider());
             throw new BusinessException(ErrorCode.INVALID_LOGIN_CREDENTIALS);
+        }
+    }
+
+    private void validateRefreshToken(String refreshToken) {
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
+            log.warn("[Auth] 유효하지 않은 리프레시 토큰");
+            throw new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+    }
+
+    private void validateStoredRefreshToken(Long memberId, String refreshToken) {
+        RefreshToken savedRefreshToken = refreshTokenRepository.findById(memberId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN));
+
+        if (!savedRefreshToken.getToken().equals(refreshToken)) {
+            log.warn("[Auth] 저장된 리프레시 토큰과 불일치 - memberId: {}", memberId);
+            throw new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
     }
 }

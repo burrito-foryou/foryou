@@ -223,6 +223,126 @@ class AuthServiceTest extends ServiceTest {
     }
 
     @Test
+    @DisplayName("유효한 리프레시 토큰이면 토큰을 재발급한다")
+    void reissue() {
+        // given
+        Member member = MemberFixture.member();
+        RefreshToken savedRefreshToken = new RefreshToken(
+            MemberFixture.MEMBER_ID, AuthFixture.REFRESH_TOKEN, AuthFixture.REFRESH_TOKEN_EXPIRATION
+        );
+
+        given(jwtTokenProvider.validateToken(AuthFixture.REFRESH_TOKEN))
+            .willReturn(true);
+        given(jwtTokenProvider.getMemberId(AuthFixture.REFRESH_TOKEN))
+            .willReturn(MemberFixture.MEMBER_ID);
+        given(refreshTokenRepository.findById(MemberFixture.MEMBER_ID))
+            .willReturn(Optional.of(savedRefreshToken));
+        given(memberRepository.findById(MemberFixture.MEMBER_ID))
+            .willReturn(Optional.of(member));
+        given(jwtTokenProvider.generateAccessToken(member))
+            .willReturn(AuthFixture.NEW_ACCESS_TOKEN);
+        given(jwtTokenProvider.generateRefreshToken(member))
+            .willReturn(AuthFixture.NEW_REFRESH_TOKEN);
+
+        // when
+        LoginResponse response = authService.reissue(AuthFixture.REFRESH_TOKEN);
+
+        // then
+        assertThat(response.accessToken()).isEqualTo(AuthFixture.NEW_ACCESS_TOKEN);
+        assertThat(response.refreshToken()).isEqualTo(AuthFixture.NEW_REFRESH_TOKEN);
+        verify(refreshTokenRepository).save(any(RefreshToken.class));
+    }
+
+    @Test
+    @DisplayName("서명이 유효하지 않거나 만료된 리프레시 토큰이면 재발급에 실패한다")
+    void reissueWithInvalidToken() {
+        // given
+        given(jwtTokenProvider.validateToken(AuthFixture.REFRESH_TOKEN))
+            .willReturn(false);
+
+        // when & then
+        assertThatThrownBy(() -> authService.reissue(AuthFixture.REFRESH_TOKEN))
+            .isInstanceOfSatisfying(BusinessException.class, exception ->
+                assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_REFRESH_TOKEN)
+            );
+
+        verify(jwtTokenProvider, never()).getMemberId(any());
+        verify(refreshTokenRepository, never()).findById(any());
+    }
+
+    @Test
+    @DisplayName("저장된 리프레시 토큰이 없으면 재발급에 실패한다")
+    void reissueWithNoStoredToken() {
+        // given
+        given(jwtTokenProvider.validateToken(AuthFixture.REFRESH_TOKEN))
+            .willReturn(true);
+        given(jwtTokenProvider.getMemberId(AuthFixture.REFRESH_TOKEN))
+            .willReturn(MemberFixture.MEMBER_ID);
+        given(refreshTokenRepository.findById(MemberFixture.MEMBER_ID))
+            .willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> authService.reissue(AuthFixture.REFRESH_TOKEN))
+            .isInstanceOfSatisfying(BusinessException.class, exception ->
+                assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_REFRESH_TOKEN)
+            );
+
+        verify(memberRepository, never()).findById(any());
+        verify(jwtTokenProvider, never()).generateAccessToken(any());
+    }
+
+    @Test
+    @DisplayName("저장된 리프레시 토큰과 일치하지 않으면 재발급에 실패한다")
+    void reissueWithMismatchedToken() {
+        // given
+        RefreshToken savedRefreshToken = new RefreshToken(
+            MemberFixture.MEMBER_ID, "other-refresh-token", AuthFixture.REFRESH_TOKEN_EXPIRATION
+        );
+
+        given(jwtTokenProvider.validateToken(AuthFixture.REFRESH_TOKEN))
+            .willReturn(true);
+        given(jwtTokenProvider.getMemberId(AuthFixture.REFRESH_TOKEN))
+            .willReturn(MemberFixture.MEMBER_ID);
+        given(refreshTokenRepository.findById(MemberFixture.MEMBER_ID))
+            .willReturn(Optional.of(savedRefreshToken));
+
+        // when & then
+        assertThatThrownBy(() -> authService.reissue(AuthFixture.REFRESH_TOKEN))
+            .isInstanceOfSatisfying(BusinessException.class, exception ->
+                assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_REFRESH_TOKEN)
+            );
+
+        verify(memberRepository, never()).findById(any());
+        verify(jwtTokenProvider, never()).generateAccessToken(any());
+    }
+
+    @Test
+    @DisplayName("회원이 존재하지 않으면 재발급에 실패한다")
+    void reissueWithUnknownMember() {
+        // given
+        RefreshToken savedRefreshToken = new RefreshToken(
+            MemberFixture.MEMBER_ID, AuthFixture.REFRESH_TOKEN, AuthFixture.REFRESH_TOKEN_EXPIRATION
+        );
+
+        given(jwtTokenProvider.validateToken(AuthFixture.REFRESH_TOKEN))
+            .willReturn(true);
+        given(jwtTokenProvider.getMemberId(AuthFixture.REFRESH_TOKEN))
+            .willReturn(MemberFixture.MEMBER_ID);
+        given(refreshTokenRepository.findById(MemberFixture.MEMBER_ID))
+            .willReturn(Optional.of(savedRefreshToken));
+        given(memberRepository.findById(MemberFixture.MEMBER_ID))
+            .willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> authService.reissue(AuthFixture.REFRESH_TOKEN))
+            .isInstanceOfSatisfying(BusinessException.class, exception ->
+                assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_REFRESH_TOKEN)
+            );
+
+        verify(jwtTokenProvider, never()).generateAccessToken(any());
+    }
+
+    @Test
     @DisplayName("회원가입에 성공하면 비밀번호를 암호화하고 회원 정보를 반환한다")
     void signup() {
         // given

@@ -14,6 +14,7 @@ public enum ErrorCode {
     OAUTH_TOKEN_REQUEST_FAILED(HttpStatus.UNAUTHORIZED, "AUTH_004", "소셜 로그인 토큰 요청에 실패했습니다."),
     OAUTH_USER_INFO_REQUEST_FAILED(HttpStatus.UNAUTHORIZED, "AUTH_005", "소셜 사용자 정보 요청에 실패했습니다."),
     OAUTH_USER_INFO_INVALID(HttpStatus.UNAUTHORIZED, "AUTH_006", "소셜 사용자 정보가 올바르지 않습니다."),
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_007", "유효하지 않은 리프레시 토큰입니다."),
 
     //member
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "MEMBER_001", "이미 사용 중인 이메일입니다."),

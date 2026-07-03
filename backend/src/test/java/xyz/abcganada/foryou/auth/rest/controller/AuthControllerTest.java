@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import xyz.abcganada.foryou.auth.rest.request.LoginRequest;
+import xyz.abcganada.foryou.auth.rest.request.ReissueRequest;
 import xyz.abcganada.foryou.auth.rest.request.SignupRequest;
 import xyz.abcganada.foryou.auth.service.AuthService;
 import xyz.abcganada.foryou.common.RestControllerTest;
@@ -117,6 +118,58 @@ class AuthControllerTest extends RestControllerTest {
             .andExpect(jsonPath("$.success").value(false))
             .andExpect(jsonPath("$.code").value("AUTH_002"))
             .andExpect(jsonPath("$.message").value("지원하지 않는 소셜 로그인 제공자입니다."));
+    }
+
+    @Test
+    @DisplayName("토큰 재발급 요청에 성공하면 200 응답을 반환한다")
+    void reissue() throws Exception {
+        // given
+        ReissueRequest request = new ReissueRequest(AuthFixture.REFRESH_TOKEN);
+
+        given(authService.reissue(AuthFixture.REFRESH_TOKEN))
+            .willReturn(AuthFixture.loginResponse());
+
+        // when & then
+        postRequest("/api/auth/reissue", request)
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.message").value("토큰이 재발급되었습니다."))
+            .andExpect(jsonPath("$.data.accessToken").value(AuthFixture.ACCESS_TOKEN))
+            .andExpect(jsonPath("$.data.refreshToken").value(AuthFixture.REFRESH_TOKEN))
+            .andExpect(jsonPath("$.data.tokenType").value("Bearer"));
+
+        verify(authService).reissue(AuthFixture.REFRESH_TOKEN);
+    }
+
+    @Test
+    @DisplayName("유효하지 않은 리프레시 토큰이면 에러 응답을 반환한다")
+    void reissueWithInvalidToken() throws Exception {
+        // given
+        ReissueRequest request = new ReissueRequest(AuthFixture.REFRESH_TOKEN);
+
+        given(authService.reissue(AuthFixture.REFRESH_TOKEN))
+            .willThrow(new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN));
+
+        // when & then
+        postRequest("/api/auth/reissue", request)
+            .andExpect(status().isUnauthorized())
+            .andExpect(jsonPath("$.success").value(false))
+            .andExpect(jsonPath("$.code").value("AUTH_007"))
+            .andExpect(jsonPath("$.message").value("유효하지 않은 리프레시 토큰입니다."));
+    }
+
+    @Test
+    @DisplayName("리프레시 토큰이 비어있으면 잘못된 입력값 응답을 반환한다")
+    void reissueWithInvalidRequest() throws Exception {
+        // given
+        ReissueRequest request = new ReissueRequest(" ");
+
+        // when & then
+        postRequest("/api/auth/reissue", request)
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.success").value(false))
+            .andExpect(jsonPath("$.code").value("COMMON_001"))
+            .andExpect(jsonPath("$.message").value("잘못된 입력값입니다."));
     }
 
     @Test

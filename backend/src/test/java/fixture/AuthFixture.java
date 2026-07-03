@@ -14,6 +14,9 @@ public class AuthFixture {
     public static final String NICKNAME = "tester";
     public static final String ACCESS_TOKEN = "access-token";
     public static final String REFRESH_TOKEN = "refresh-token";
+    public static final String NEW_ACCESS_TOKEN = "new-access-token";
+    public static final String NEW_REFRESH_TOKEN = "new-refresh-token";
+    public static final long REFRESH_TOKEN_EXPIRATION = 1_209_600_000L;
 
     public static final String OAUTH_CODE = "authorization-code";
     public static final String KAKAO_PROVIDER_ID = "kakao-provider-id";
