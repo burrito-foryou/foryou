@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { ROUTES } from "../constants/routes";
 import { FiSearch } from "react-icons/fi";
-import { RxHamburgerMenu } from "react-icons/rx";
 import HeaderUserMenu from "./HeaderUserMenu";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -43,9 +42,6 @@ const Header = () => {
         <div className="order-2 flex items-center gap-4 sm:order-3">
           <NotificationBell />
           <HeaderUserMenu />
-          <button>
-            <RxHamburgerMenu size={22} className="text-gray-600" />
-          </button>
         </div>
       </div>
     </header>

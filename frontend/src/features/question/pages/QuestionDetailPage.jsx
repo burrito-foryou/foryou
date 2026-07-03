@@ -14,6 +14,7 @@ import useMemberId from "../hooks/useMemberId";
 import useBookmark from "../hooks/useBookmark";
 import useToast from "../../../shared/hooks/useToast";
 import Toast from "../../../shared/components/Toast";
+import LikeLoginModal from "../../like/components/LikeLoginModal";
 import timeAgo from "../../../shared/utils/timeAgo";
 import useScrollHighlight from "../../../shared/hooks/useScrollHighlight";
 import LikeButton from "../../like/components/LikeButton";
@@ -26,6 +27,7 @@ const QuestionDetailPage = () => {
 
   const { toast, showToast } = useToast();
   const { isBookmarked, setIsBookmarked, toggle: toggleBookmark, loading: bookmarkLoading } = useBookmark(false, showToast);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const [question, setQuestion] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -61,7 +63,13 @@ const QuestionDetailPage = () => {
 
   const { ref: highlightRef, isTarget } = useScrollHighlight("QUESTION", question?.id);
 
-  const handleBookmark = () => toggleBookmark(id);
+  const handleBookmark = () => {
+    if (!memberId) {
+      setShowLoginModal(true);
+      return;
+    }
+    toggleBookmark(id);
+  };
 
   const handleDelete = async () => {
     if (!window.confirm("정말 삭제하시겠습니까?")) return;
@@ -207,6 +215,12 @@ const QuestionDetailPage = () => {
       </div>
 
       <Toast toast={toast} />
+      {showLoginModal && (
+        <LikeLoginModal
+          onGoLogin={() => navigate(ROUTES.LOGIN)}
+          onClose={() => setShowLoginModal(false)}
+        />
+      )}
     </div>
   );
 };
