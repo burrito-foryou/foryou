@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/images/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/api/images/**").authenticated()
                 .requestMatchers("/api/members/me").authenticated()
+                .requestMatchers("/api/members/me/**").authenticated()
                 .requestMatchers("/api/notifications/subscribe/**").authenticated()
                 .requestMatchers("/api/notifications/**").authenticated()
                 .requestMatchers("/api/likes/**").authenticated()
