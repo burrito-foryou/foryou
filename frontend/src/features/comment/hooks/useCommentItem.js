@@ -31,7 +31,7 @@ const useCommentItem = (comment, onSuccess) => {
     if (!content.trim()) return;
     setLoading(true);
     try {
-      await updateComment(comment.id, memberId, { content });
+      await updateComment(comment.id, { content });
       setIsEditing(false);
       onSuccess?.();
     } catch (err) {
@@ -45,7 +45,7 @@ const useCommentItem = (comment, onSuccess) => {
     if (!window.confirm("댓글을 삭제하시겠습니까?")) return;
     setLoading(true);
     try {
-      await deleteComment(comment.id, memberId);
+      await deleteComment(comment.id);
       onSuccess?.();
     } catch (err) {
       alert(err.response?.data?.message ?? "댓글 삭제에 실패했습니다.");

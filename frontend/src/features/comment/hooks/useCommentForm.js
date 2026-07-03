@@ -1,21 +1,7 @@
 import { useState } from "react";
-import useAuthStore from "../../auth/store/authStore";
 import { createComment } from "../api/commentApi";
 
-const getMemberIdFromToken = (token) => {
-  try {
-    const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
-    const json = new TextDecoder().decode(
-      Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)),
-    );
-    return JSON.parse(json).sub;
-  } catch {
-    return null;
-  }
-};
-
 const useCommentForm = (answerId, onSuccess) => {
-  const token = useAuthStore((state) => state.token);
   const [content, setContent] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,12 +18,9 @@ const useCommentForm = (answerId, onSuccess) => {
       return;
     }
 
-    const memberId = getMemberIdFromToken(token);
-    if (!memberId) return;
-
     setLoading(true);
     try {
-      await createComment(answerId, memberId, { content });
+      await createComment(answerId, { content });
       setContent("");
       setError("");
       onSuccess?.();

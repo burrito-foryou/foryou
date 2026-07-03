@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { FiBookmark, FiEye, FiHeart, FiMessageSquare } from "react-icons/fi";
 import timeAgo from "../../../shared/utils/timeAgo";
+import { toQuestionDetail } from "../../../shared/constants/routes";
 
 const QuestionCard = ({ question: q }) => {
   const [isBookmarked, setIsBookmarked] = useState(false); // 북마크 추가
@@ -13,7 +14,8 @@ const QuestionCard = ({ question: q }) => {
   };
 
   return (
-    <Link to={`/questions/${q.id}`}>
+    // `/questions/${q.id}` => toQuestionDetail(q.id)
+    <Link to={toQuestionDetail(q.id)}>
       <div className="rounded-2xl border border-border bg-background p-5 transition-all hover:border-primary hover:shadow-sm">
         <div className="mb-2 flex items-start justify-between gap-3">
           <p className="font-bold text-text leading-snug">{q.title}</p>
@@ -28,7 +30,7 @@ const QuestionCard = ({ question: q }) => {
               className="text-text-muted hover:text-primary transition-colors"
             >
               <FiBookmark
-                size={16}
+                size={20}
                 className={isBookmarked ? "fill-primary text-primary" : ""}
               />
             </button>

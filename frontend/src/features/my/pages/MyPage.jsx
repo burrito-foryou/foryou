@@ -8,7 +8,7 @@ import {
   FiBookmark,
   FiHeart,
 } from "react-icons/fi";
-import { ROUTES } from "../../../shared/constants/routes";
+import { ROUTES, toQuestionDetail } from "../../../shared/constants/routes";
 import {
   getMyInfo,
   getMyQuestions,
@@ -28,8 +28,9 @@ const TABS = [
 // ── 탭별 아이템 컴포넌트 ───────────────────────────────────────────────
 
 const QuestionItem = ({ item }) => (
+  // `/questions/${item.id}` => toQuestionDetail(item.id)
   <Link
-    to={`/questions/${item.id}`}
+    to={toQuestionDetail(item.id)}
     className="block rounded-xl border border-gray-200 bg-white p-4 hover:border-primary transition-colors"
   >
     <div className="flex items-start justify-between gap-2 mb-2">
@@ -62,8 +63,9 @@ const QuestionItem = ({ item }) => (
 );
 
 const AnswerItem = ({ item }) => (
+  // `/questions/${item.questionId}` => toQuestionDetail(item.questionId)
   <Link
-    to={`/questions/${item.questionId}`}
+    to={toQuestionDetail(item.questionId)}
     className="block rounded-xl border border-gray-200 bg-white p-4 hover:border-primary transition-colors"
   >
     <p className="mb-1.5 text-xs text-text-muted line-clamp-1">
@@ -92,8 +94,9 @@ const AnswerItem = ({ item }) => (
 );
 
 const CommentItem = ({ item }) => (
+  // `/questions/${item.questionId}` => toQuestionDetail(item.questionId)
   <Link
-    to={`/questions/${item.questionId}`}
+    to={toQuestionDetail(item.questionId)}
     className="block rounded-xl border border-gray-200 bg-white p-4 hover:border-primary transition-colors"
   >
     <p className="mb-1.5 text-xs text-text-muted line-clamp-1">
@@ -105,8 +108,9 @@ const CommentItem = ({ item }) => (
 );
 
 const BookmarkItem = ({ item }) => (
+  // `/questions/${item.questionId}` => toQuestionDetail(item.questionId)
   <Link
-    to={`/questions/${item.questionId}`}
+    to={toQuestionDetail(item.questionId)}
     className="block rounded-xl border border-gray-200 bg-white p-4 hover:border-primary transition-colors"
   >
     <div className="flex items-start justify-between gap-2 mb-2">
