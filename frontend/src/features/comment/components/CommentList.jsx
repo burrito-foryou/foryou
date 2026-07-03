@@ -18,7 +18,7 @@ const CommentList = ({ answerId }) => {
         <p className="py-2 text-xs text-red-500">{error}</p>
       )}
       {!loading && !error && comments.map((comment) => (
-        <CommentItem key={comment.id} comment={comment} />
+        <CommentItem key={comment.id} comment={comment} onSuccess={refetch} />
       ))}
 
       <CommentForm answerId={answerId} onSuccess={refetch} />

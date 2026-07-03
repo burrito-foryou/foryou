@@ -2,14 +2,13 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   FiEye,
-  FiHeart,
   FiMessageSquare,
   FiEdit2,
   FiTrash2,
   FiBookmark,
 } from "react-icons/fi";
 import { ROUTES } from "../../../shared/constants/routes";
-import { getQuestionDetail, deleteQuestion } from "../api/questionApi";
+import { getQuestionDetail, deleteQuestion, getQuestionImages } from "../api/questionApi";
 import {
   addBookmark,
   removeBookmark,
@@ -17,6 +16,9 @@ import {
 } from "../api/bookmarkApi";
 import useMemberId from "../hooks/useMemberId";
 import timeAgo from "../../../shared/utils/timeAgo";
+import useScrollHighlight from "../../../shared/hooks/useScrollHighlight";
+import LikeButton from "../../like/components/LikeButton";
+import AnswerList from "../../answer/components/AnswerList";
 
 const QuestionDetailPage = () => {
   const { id } = useParams();
@@ -26,7 +28,8 @@ const QuestionDetailPage = () => {
   const [question, setQuestion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isBookmarked, setIsBookmarked] = useState(false); // 북마크 추가
+  const [images, setImages] = useState([]);
+  const [isBookmarked, setIsBookmarked] = useState(false);
 
   const fetchedId = useRef(null);
   useEffect(() => {
@@ -35,8 +38,12 @@ const QuestionDetailPage = () => {
 
     const fetch = async () => {
       try {
-        const data = await getQuestionDetail(id);
+        const [data, imgs] = await Promise.all([
+          getQuestionDetail(id),
+          getQuestionImages(id),
+        ]);
         setQuestion(data);
+        setImages(imgs);
         // 북마크 상태 초기화 (로그인 시에만)
         if (memberId) {
           const bookmarked = await getBookmarkStatus(id);
@@ -51,7 +58,8 @@ const QuestionDetailPage = () => {
     fetch();
   }, [id]);
 
-  // 북마크 토글
+  const { ref: highlightRef, isTarget } = useScrollHighlight("QUESTION", question?.id);
+
   const handleBookmark = async () => {
     try {
       if (isBookmarked) {
@@ -121,7 +129,12 @@ const QuestionDetailPage = () => {
       </div>
 
       {/* 질문 본문 */}
-      <div className="rounded-2xl border border-border bg-background p-6">
+      <div
+        ref={highlightRef}
+        className={`rounded-2xl border bg-background p-6 transition-colors ${
+          isTarget ? "border-primary ring-2 ring-primary" : "border-border"
+        }`}
+      >
         {question.acceptedAnswerId && (
           <span className="mb-3 inline-block rounded-full bg-primary-light px-3 py-1 text-xs font-semibold text-primary">
             채택완료
@@ -167,18 +180,39 @@ const QuestionDetailPage = () => {
           {question.content}
         </p>
 
+        {/* 첨부 이미지 */}
+        {images.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {images.map((img) => (
+              <img
+                key={img.id}
+                src={img.imageUrl}
+                alt={img.originalName}
+                className="h-48 w-auto rounded-xl border border-border object-cover"
+              />
+            ))}
+          </div>
+        )}
+
         {/* 통계 */}
         <div className="mt-6 flex items-center gap-4 text-xs font-medium text-text-muted">
           <span className="flex items-center gap-1">
             <FiEye size={14} /> {question.viewCount}
           </span>
-          <span className="flex items-center gap-1">
-            <FiHeart size={14} /> {question.likeCount}
-          </span>
+          <LikeButton
+            targetType="QUESTION"
+            targetId={question.id}
+            initialLikeCount={question.likeCount}
+          />
           <span className="flex items-center gap-1">
             <FiMessageSquare size={14} /> {question.answerCount}
           </span>
         </div>
+      </div>
+
+      {/* 답변 목록 */}
+      <div className="mt-6">
+        <AnswerList questionId={id} questionMemberId={question.memberId} />
       </div>
     </div>
   );
