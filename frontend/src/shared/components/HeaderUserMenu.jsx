@@ -7,7 +7,6 @@ import { logout } from "../../features/auth/api/authApi";
 import LogoutConfirmModal from "./LogoutConfirmModal";
 
 const DROPDOWN_MENU = [
-  { label: "알림", to: ROUTES.NOTIFICATIONS },
   { label: "마이페이지", to: ROUTES.MY_PAGE },
   { label: "계정 정보", to: ROUTES.MY_ACCOUNT },
 ];
