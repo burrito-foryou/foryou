@@ -43,7 +43,7 @@ const useLoginForm = () => {
         email: form.email,
         password: form.password,
       });
-      setAuth(data.data.accessToken);
+      setAuth(data.data.accessToken, data.data.refreshToken);
       navigate(ROUTES.HOME);
     } catch (error) {
       const message = error.response?.data?.message ?? "로그인에 실패했습니다.";

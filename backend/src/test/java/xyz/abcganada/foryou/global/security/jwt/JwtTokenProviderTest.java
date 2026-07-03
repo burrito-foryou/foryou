@@ -17,10 +17,12 @@ class JwtTokenProviderTest {
 
     private static final String SECRET = "test-development-secret-key-for-foryou-jwt-token";
     private static final long ACCESS_TOKEN_EXPIRATION = 3_600_000L;
+    private static final long REFRESH_TOKEN_EXPIRATION = 1_209_600_000L;
 
     private final JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(
         SECRET,
-        ACCESS_TOKEN_EXPIRATION
+        ACCESS_TOKEN_EXPIRATION,
+        REFRESH_TOKEN_EXPIRATION
     );
 
     @Test
@@ -39,6 +41,23 @@ class JwtTokenProviderTest {
         assertThat(claims.get("email", String.class)).isEqualTo(MemberFixture.EMAIL);
         assertThat(claims.get("nickname", String.class)).isEqualTo(MemberFixture.NICKNAME);
         assertThat(claims.get("role", String.class)).isEqualTo(member.getRole().name());
+        assertThat(claims.getIssuedAt()).isNotNull();
+        assertThat(claims.getExpiration()).isAfter(claims.getIssuedAt());
+    }
+
+    @Test
+    @DisplayName("회원 정보로 리프레시 토큰을 생성한다")
+    void generateRefreshToken() {
+        // given
+        Member member = MemberFixture.member();
+
+        // when
+        String refreshToken = jwtTokenProvider.generateRefreshToken(member);
+
+        // then
+        Claims claims = parseClaims(refreshToken);
+
+        assertThat(claims.getSubject()).isEqualTo(String.valueOf(MemberFixture.MEMBER_ID));
         assertThat(claims.getIssuedAt()).isNotNull();
         assertThat(claims.getExpiration()).isAfter(claims.getIssuedAt());
     }
@@ -68,7 +87,7 @@ class JwtTokenProviderTest {
     @Test
     @DisplayName("만료된 토큰이면 검증에 실패한다")
     void validateExpiredToken() {
-        JwtTokenProvider expiredTokenProvider = new JwtTokenProvider(SECRET, -1_000L);
+        JwtTokenProvider expiredTokenProvider = new JwtTokenProvider(SECRET, -1_000L, REFRESH_TOKEN_EXPIRATION);
         String expiredToken = expiredTokenProvider.generateAccessToken(MemberFixture.member());
 
         assertThat(jwtTokenProvider.validateToken(expiredToken)).isFalse();
@@ -79,7 +98,8 @@ class JwtTokenProviderTest {
     void validateTokenWithInvalidSignature() {
         JwtTokenProvider otherTokenProvider = new JwtTokenProvider(
             "other-development-secret-key-for-foryou-jwt-token",
-            ACCESS_TOKEN_EXPIRATION
+            ACCESS_TOKEN_EXPIRATION,
+            REFRESH_TOKEN_EXPIRATION
         );
         String token = otherTokenProvider.generateAccessToken(MemberFixture.member());
 

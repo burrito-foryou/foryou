@@ -17,13 +17,16 @@ public class JwtTokenProvider {
 
     private final SecretKey secretKey;
     private final long accessTokenExpiration;
+    private final long refreshTokenExpiration;
 
     public JwtTokenProvider(
         @Value("${jwt.secret}") String secret,
-        @Value("${jwt.access-token-expiration}") long accessTokenExpiration
+        @Value("${jwt.access-token-expiration}") long accessTokenExpiration,
+        @Value("${jwt.refresh-token-expiration}") long refreshTokenExpiration
     ) {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.accessTokenExpiration = accessTokenExpiration;
+        this.refreshTokenExpiration = refreshTokenExpiration;
     }
 
     public String generateAccessToken(Member member) {
@@ -39,6 +42,22 @@ public class JwtTokenProvider {
             .expiration(expiration)
             .signWith(secretKey)
             .compact();
+    }
+
+    public String generateRefreshToken(Member member) {
+        Date now = new Date();
+        Date expiration = new Date(now.getTime() + refreshTokenExpiration);
+
+        return Jwts.builder()
+            .subject(String.valueOf(member.getId()))
+            .issuedAt(now)
+            .expiration(expiration)
+            .signWith(secretKey)
+            .compact();
+    }
+
+    public long getRefreshTokenExpiration() {
+        return refreshTokenExpiration;
     }
 
     public boolean validateToken(String token) {

@@ -7,17 +7,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.abcganada.foryou.auth.oauth.OAuthClientResolver;
-import xyz.abcganada.foryou.auth.rest.request.LoginRequest;
 import xyz.abcganada.foryou.auth.oauth.OAuthUserInfo;
+import xyz.abcganada.foryou.auth.rest.request.LoginRequest;
+import xyz.abcganada.foryou.auth.rest.request.SignupRequest;
 import xyz.abcganada.foryou.auth.rest.response.LoginResponse;
+import xyz.abcganada.foryou.auth.rest.response.SignupResponse;
 import xyz.abcganada.foryou.global.exception.BusinessException;
 import xyz.abcganada.foryou.global.exception.ErrorCode;
 import xyz.abcganada.foryou.global.security.jwt.JwtTokenProvider;
+import xyz.abcganada.foryou.global.security.jwt.RefreshToken;
+import xyz.abcganada.foryou.global.security.jwt.RefreshTokenRepository;
 import xyz.abcganada.foryou.member.domain.AuthProvider;
 import xyz.abcganada.foryou.member.domain.Member;
 import xyz.abcganada.foryou.member.repository.MemberRepository;
-import xyz.abcganada.foryou.auth.rest.request.SignupRequest;
-import xyz.abcganada.foryou.auth.rest.response.SignupResponse;
 
 @Slf4j
 @Service
@@ -30,6 +32,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final OAuthClientResolver oAuthClientResolver;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public SignupResponse signup(SignupRequest request) {
         log.info("[Auth] 회원가입 처리 시작 - email: {}", request.email());
@@ -52,8 +55,9 @@ public class AuthService {
 
         log.info("[Auth] 로그인 완료 - memberId: {}", member.getId());
         String accessToken = jwtTokenProvider.generateAccessToken(member);
+        String refreshToken = issueRefreshToken(member);
 
-        return LoginResponse.of(accessToken);
+        return LoginResponse.of(accessToken, refreshToken);
     }
 
     public LoginResponse socialLogin(AuthProvider provider, String code) {
@@ -71,18 +75,42 @@ public class AuthService {
 
         log.info("[Auth] 소셜 로그인 완료 - memberId: {}", member.getId());
         String accessToken = jwtTokenProvider.generateAccessToken(member);
+        String refreshToken = issueRefreshToken(member);
 
-        return LoginResponse.of(accessToken);
+        return LoginResponse.of(accessToken, refreshToken);
     }
 
-    public void logout() {
-        // TODO refresh token 도입
-        // Stateless JWT 방식에서는 서버에서 별도 처리하지 않음.
+    @Transactional(readOnly = true)
+    public LoginResponse reissue(String refreshToken) {
+        log.info("[Auth] 토큰 재발급 처리 시작");
+        Member member = findMemberByRefreshToken(refreshToken);
+
+        log.info("[Auth] 토큰 재발급 완료 - memberId: {}", member.getId());
+        String newAccessToken = jwtTokenProvider.generateAccessToken(member);
+        String newRefreshToken = issueRefreshToken(member);
+
+        return LoginResponse.of(newAccessToken, newRefreshToken);
+    }
+
+    public void logout(Long memberId) {
+        log.info("[Auth] 로그아웃 처리 시작 - memberId: {}", memberId);
+        refreshTokenRepository.deleteById(memberId);
+        log.info("[Auth] 로그아웃 완료 - memberId: {}", memberId);
     }
 
     private Member findMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
             .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_LOGIN_CREDENTIALS));
+    }
+
+    private Member findMemberByRefreshToken(String refreshToken) {
+        validateRefreshToken(refreshToken);
+
+        Long memberId = jwtTokenProvider.getMemberId(refreshToken);
+        validateStoredRefreshToken(memberId, refreshToken);
+
+        return memberRepository.findById(memberId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN));
     }
 
     private boolean isInvalidPassword(String password, Member member) {
@@ -119,6 +147,16 @@ public class AuthService {
         }
     }
 
+    private String issueRefreshToken(Member member) {
+        String refreshToken = jwtTokenProvider.generateRefreshToken(member);
+
+        refreshTokenRepository.save(
+            new RefreshToken(member.getId(), refreshToken, jwtTokenProvider.getRefreshTokenExpiration())
+        );
+
+        return refreshToken;
+    }
+
     private void validatePassword(String password, Member member) {
         if (isInvalidPassword(password, member)) {
             log.warn("[Auth] 비밀번호 불일치 - memberId: {}", member.getId());
@@ -137,6 +175,23 @@ public class AuthService {
         if (member.getProvider() != AuthProvider.FORYOU) {
             log.warn("[Auth] 소셜 회원의 일반 로그인 시도 - memberId: {}, provider: {}", member.getId(), member.getProvider());
             throw new BusinessException(ErrorCode.INVALID_LOGIN_CREDENTIALS);
+        }
+    }
+
+    private void validateRefreshToken(String refreshToken) {
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
+            log.warn("[Auth] 유효하지 않은 리프레시 토큰");
+            throw new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+    }
+
+    private void validateStoredRefreshToken(Long memberId, String refreshToken) {
+        RefreshToken savedRefreshToken = refreshTokenRepository.findById(memberId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN));
+
+        if (!savedRefreshToken.getToken().equals(refreshToken)) {
+            log.warn("[Auth] 저장된 리프레시 토큰과 불일치 - memberId: {}", memberId);
+            throw new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
     }
 }

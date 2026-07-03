@@ -6,6 +6,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import xyz.abcganada.foryou.auth.oauth.OAuthClientResolver;
 import xyz.abcganada.foryou.global.security.jwt.JwtTokenProvider;
+import xyz.abcganada.foryou.global.security.jwt.RefreshTokenRepository;
 import xyz.abcganada.foryou.member.repository.MemberRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -21,4 +22,7 @@ public abstract class ServiceTest {
 
     @Mock
     protected OAuthClientResolver oAuthClientResolver;
+
+    @Mock
+    protected RefreshTokenRepository refreshTokenRepository;
 }
