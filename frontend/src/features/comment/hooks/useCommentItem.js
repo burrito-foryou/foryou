@@ -42,7 +42,6 @@ const useCommentItem = (comment, onSuccess) => {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("댓글을 삭제하시겠습니까?")) return;
     setLoading(true);
     try {
       await deleteComment(comment.id);

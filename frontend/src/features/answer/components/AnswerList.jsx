@@ -8,6 +8,8 @@ const AnswerList = ({ questionId, questionMemberId }) => {
   if (loading) return <p className="py-6 text-center text-sm text-text-muted">불러오는 중...</p>;
   if (error) return <p className="py-6 text-center text-sm text-red-500">{error}</p>;
 
+  const hasAcceptedAnswer = answers.some((a) => a.accepted);
+
   return (
     <div className="flex flex-col gap-4">
       <p className="text-sm font-bold text-text">
@@ -25,6 +27,7 @@ const AnswerList = ({ questionId, questionMemberId }) => {
             answer={answer}
             onSuccess={refetch}
             questionMemberId={questionMemberId}
+            hasAcceptedAnswer={hasAcceptedAnswer}
           />
         ))
       )}
