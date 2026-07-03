@@ -7,7 +7,7 @@ import useMemberId from "../hooks/useMemberId";
 import timeAgo from "../../../shared/utils/timeAgo";
 import useScrollHighlight from "../../../shared/hooks/useScrollHighlight";
 import LikeButton from "../../like/components/LikeButton";
-import AnswerList from "../../answer/components/AnswerList"; // TEST: 답변/좋아요 확인용 임시
+import AnswerList from "../../answer/components/AnswerList";
 
 const QuestionDetailPage = () => {
     const { id } = useParams();           // URL의 :id 추출
@@ -177,7 +177,6 @@ const QuestionDetailPage = () => {
                 </div>
             </div>
 
-            {/* TEST: 답변/댓글 확인용 임시 */}
             <div className="mt-6">
                 <AnswerList questionId={id} questionMemberId={question.memberId} />
             </div>
