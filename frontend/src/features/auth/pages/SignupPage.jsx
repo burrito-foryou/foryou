@@ -1,7 +1,8 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../shared/constants/routes";
 import useSignupForm from "../hooks/useSignupForm";
 import SignupSuccessModal from "../components/SignupSuccessModal";
+import useAuthStore from "../store/authStore";
 
 const FIELDS = [
   {
@@ -31,9 +32,12 @@ const FIELDS = [
 ];
 
 const SignupPage = () => {
+  const token = useAuthStore((s) => s.token);
   const navigate = useNavigate();
   const { form, errors, handleChange, handleSubmit, showModal } =
     useSignupForm();
+
+  if (token) return <Navigate to={ROUTES.HOME} replace />;
 
   return (
     <>
