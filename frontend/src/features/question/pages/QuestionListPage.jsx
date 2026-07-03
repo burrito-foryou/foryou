@@ -33,6 +33,8 @@ const QuestionListPage = () => {
     filters,
     sort,
     setSort,
+    keyword,
+    setKeyword,
     page,
     setPage,
     totalPages,
@@ -66,7 +68,7 @@ const QuestionListPage = () => {
   );
 
   const displayList = useMemo(() => {
-    const base = (questions.length > 0 ? questions : filteredDummy).filter(
+    const base = questions.filter(
       (q) => !onlyAccepted || !!q.acceptedAnswerId,
     );
     return [...base].sort((a, b) => {
@@ -164,15 +166,17 @@ const QuestionListPage = () => {
 
       {/* 질문 카드 목록 */}
       {loading ? (
-        <p className="text-center text-sm text-text-muted py-10">
-          불러오는 중...
-        </p>
+          <p className="text-center text-sm text-text-muted py-10">불러오는 중...</p>
+      ) : displayList.length === 0 ? (
+          <p className="text-center text-sm text-text-muted py-10">
+            {keyword ? `"${keyword}" 검색 결과가 없습니다.` : "등록된 질문이 없습니다."}
+          </p>
       ) : (
-        <div className="flex flex-col gap-4">
-          {displayList.map((q) => (
-            <QuestionCard key={q.id} question={q} />
-          ))}
-        </div>
+          <div className="flex flex-col gap-4">
+            {displayList.map((q) => (
+                <QuestionCard key={q.id} question={q} />
+            ))}
+          </div>
       )}
 
       {/* 페이지네이션 */}

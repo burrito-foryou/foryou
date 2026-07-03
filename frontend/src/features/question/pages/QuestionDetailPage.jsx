@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FiEye, FiMessageSquare, FiEdit2, FiTrash2 } from "react-icons/fi";
 import { ROUTES } from "../../../shared/constants/routes";
-import { getQuestionDetail, deleteQuestion } from "../api/questionApi";
+import { getQuestionDetail, deleteQuestion, getQuestionImages } from "../api/questionApi";
 import useMemberId from "../hooks/useMemberId";
 import timeAgo from "../../../shared/utils/timeAgo";
 import useScrollHighlight from "../../../shared/hooks/useScrollHighlight";
@@ -17,6 +17,7 @@ const QuestionDetailPage = () => {
     const [question, setQuestion] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [images, setImages] = useState([]);
 
     // 질문 상세 조회 (조회 시 viewCount 자동 증가)
     const fetchedId = useRef(null); // 이미 조회한 id 추적
@@ -27,8 +28,13 @@ const QuestionDetailPage = () => {
 
         const fetch = async () => {
             try {
-                const data = await getQuestionDetail(id);
+                // 질문 상세 + 이미지 목록 동시 조회
+                const [data, imgs] = await Promise.all([
+                    getQuestionDetail(id),
+                    getQuestionImages(id),
+                ]);
                 setQuestion(data);
+                setImages(imgs);
             } catch {
                 setError("질문을 찾을 수 없습니다.");
             } finally {
@@ -141,6 +147,19 @@ const QuestionDetailPage = () => {
                 <p className="whitespace-pre-wrap text-sm leading-relaxed text-text">
                     {question.content}
                 </p>
+                {/* 첨부 이미지 */}
+                {images.length > 0 && (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                        {images.map((img) => (
+                            <img
+                                key={img.id}
+                                src={img.imageUrl}
+                                alt={img.originalName}
+                                className="h-48 w-auto rounded-xl border border-border object-cover"
+                            />
+                        ))}
+                    </div>
+                )}
 
                 {/* 통계 (조회수, 좋아요, 답변수) */}
                 <div className="mt-6 flex items-center gap-4 text-xs font-medium text-text-muted">
