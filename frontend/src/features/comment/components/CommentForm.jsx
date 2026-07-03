@@ -31,9 +31,15 @@ const CommentForm = ({ answerId, onSuccess }) => {
           onChange={handleChange}
           placeholder="댓글을 입력하세요."
           rows={2}
+          maxLength={50}
           className="w-full rounded-md border border-border px-3 py-2 text-sm outline-none focus:border-primary"
         />
-        {error && <p className="text-xs text-red-500">{error}</p>}
+        <div className="flex items-center justify-between">
+          <span className={`text-xs ${content.length >= 50 ? "text-red-500" : "text-text-muted"}`}>
+            {content.length} / 50
+          </span>
+          {error && <p className="text-xs text-red-500">{error}</p>}
+        </div>
         <div className="flex justify-end">
           <button
             type="submit"

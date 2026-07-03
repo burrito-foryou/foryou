@@ -32,7 +32,7 @@ const AnswerList = ({ questionId, questionMemberId }) => {
         ))
       )}
 
-      <AnswerForm questionId={questionId} onSuccess={refetch} />
+      {!hasAcceptedAnswer && <AnswerForm questionId={questionId} onSuccess={refetch} />}
     </div>
   );
 };

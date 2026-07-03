@@ -24,11 +24,15 @@ const useCommentItem = (comment, onSuccess) => {
 
   const isAuthor = String(memberId) === String(comment.memberId);
 
-  const handleChange = (e) => setContent(e.target.value);
+  const handleChange = (e) => {
+    if (e.target.value.length > 50) return;
+    setContent(e.target.value);
+  };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
     if (!content.trim()) return;
+    if (content.length > 50) return;
     setLoading(true);
     try {
       await updateComment(comment.id, { content });

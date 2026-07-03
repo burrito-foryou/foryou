@@ -3,6 +3,7 @@ import useCommentItem from "../hooks/useCommentItem";
 import useScrollHighlight from "../../../shared/hooks/useScrollHighlight";
 import LikeButton from "../../like/components/LikeButton";
 import ConfirmModal from "../../../shared/components/ConfirmModal";
+import timeAgo from "../../../shared/utils/timeAgo";
 
 const CommentItem = ({ comment, onSuccess }) => {
   const { id, createdAt, likeCount } = comment;
@@ -35,23 +36,29 @@ const CommentItem = ({ comment, onSuccess }) => {
               value={content}
               onChange={handleChange}
               rows={2}
+              maxLength={50}
               className="w-full rounded-md border border-border px-3 py-2 text-sm outline-none focus:border-primary"
             />
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setIsEditing(false)}
-                className="rounded-md border border-border px-3 py-1 text-xs text-text-muted hover:bg-surface"
-              >
-                취소
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="rounded-md bg-primary px-3 py-1 text-xs font-bold text-white hover:bg-primary-hover disabled:opacity-50"
-              >
-                {loading ? "저장 중..." : "저장"}
-              </button>
+            <div className="flex items-center justify-between">
+              <span className={`text-xs ${content.length >= 50 ? "text-red-500" : "text-text-muted"}`}>
+                {content.length} / 50
+              </span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  className="rounded-md border border-border px-3 py-1 text-xs text-text-muted hover:bg-surface"
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="rounded-md bg-primary px-3 py-1 text-xs font-bold text-white hover:bg-primary-hover disabled:opacity-50"
+                >
+                  {loading ? "저장 중..." : "저장"}
+                </button>
+              </div>
             </div>
           </form>
         ) : (
@@ -60,7 +67,7 @@ const CommentItem = ({ comment, onSuccess }) => {
             <p className="text-sm leading-relaxed text-text">{content}</p>
             <div className="flex items-center justify-between">
               <p className="text-xs text-text-muted">
-                {comment.memberNickname} · {new Date(createdAt).toLocaleDateString("ko-KR")}
+                {comment.memberNickname} · {timeAgo(createdAt)}
               </p>
               <div className="flex items-center gap-3">
                 <LikeButton targetType="COMMENT" targetId={id} initialLikeCount={likeCount} />

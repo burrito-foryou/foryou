@@ -4,6 +4,7 @@ import CommentList from "../../comment/components/CommentList";
 import useScrollHighlight from "../../../shared/hooks/useScrollHighlight";
 import LikeButton from "../../like/components/LikeButton";
 import ConfirmModal from "../../../shared/components/ConfirmModal";
+import timeAgo from "../../../shared/utils/timeAgo";
 
 const EDIT_FIELDS = [
   { label: "선물 이름", name: "giftName", placeholder: "예) 조말론 향수" },
@@ -104,7 +105,7 @@ const AnswerItem = ({ answer, onSuccess, questionMemberId, hasAcceptedAnswer }) 
 
             <div className="mt-3 flex items-center justify-between">
               <p className="text-xs text-text-muted">
-                {memberNickname} · {new Date(createdAt).toLocaleDateString("ko-KR")}
+                {memberNickname} · {timeAgo(createdAt)}
               </p>
               <div className="flex items-center gap-3">
                 <LikeButton
