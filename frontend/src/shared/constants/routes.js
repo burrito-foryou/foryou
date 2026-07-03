@@ -15,3 +15,7 @@ export const ROUTES = {
 
   NOTIFICATIONS: "/notifications",
 };
+
+// 동적 경로 헬퍼 — id를 받아서 실제 URL 문자열로 변환
+export const toQuestionDetail = (id) => `/questions/${id}`;
+export const toQuestionEdit = (id) => `/questions/${id}/edit`;

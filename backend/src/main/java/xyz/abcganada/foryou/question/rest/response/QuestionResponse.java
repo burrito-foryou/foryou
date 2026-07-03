@@ -25,8 +25,13 @@ public class QuestionResponse {
     private List<String> tagNames;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private boolean isBookmarked;
 
     public static QuestionResponse from(Question question) {
+        return from(question, false);
+    }
+
+    public static QuestionResponse from(Question question, boolean isBookmarked) {
         return QuestionResponse.builder()
                 .id(question.getId())
                 .title(question.getTitle())
@@ -42,6 +47,7 @@ public class QuestionResponse {
                         .toList())
                 .createdAt(question.getCreatedAt())
                 .updatedAt(question.getUpdatedAt())
+                .isBookmarked(isBookmarked)
                 .build();
     }
 }

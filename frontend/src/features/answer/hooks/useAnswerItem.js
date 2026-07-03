@@ -41,7 +41,7 @@ const useAnswerItem = (answer, onSuccess, questionMemberId) => {
     if (!memberId) return;
     setLoading(true);
     try {
-      await updateAnswer(answer.id, memberId, form);
+      await updateAnswer(answer.id, form);
       setIsEditing(false);
       onSuccess?.();
     } catch {
@@ -55,7 +55,7 @@ const useAnswerItem = (answer, onSuccess, questionMemberId) => {
     if (!window.confirm("답변을 삭제하시겠습니까?")) return;
     if (!memberId) return;
     try {
-      await deleteAnswer(answer.id, memberId);
+      await deleteAnswer(answer.id);
       onSuccess?.();
     } catch {
       // 에러 처리 추가 가능
@@ -66,7 +66,7 @@ const useAnswerItem = (answer, onSuccess, questionMemberId) => {
     if (!window.confirm("이 답변을 채택하시겠습니까?")) return;
     if (!memberId) return;
     try {
-      await acceptAnswer(answer.id, memberId);
+      await acceptAnswer(answer.id);
       onSuccess?.();
     } catch {
       // 에러 처리 추가 가능
