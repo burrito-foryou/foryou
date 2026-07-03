@@ -13,20 +13,24 @@ const decodeJwt = (token) => {
 };
 
 const storedToken = localStorage.getItem("token");
+const storedRefreshToken = localStorage.getItem("refreshToken");
 
 const useAuthStore = create((set) => ({
   token: storedToken ?? null,
+  refreshToken: storedRefreshToken ?? null,
   nickname: storedToken ? (decodeJwt(storedToken)?.nickname ?? null) : null,
 
-  setAuth: (token) => {
+  setAuth: (token, refreshToken) => {
     const nickname = decodeJwt(token)?.nickname ?? null;
     localStorage.setItem("token", token);
-    set({ token, nickname });
+    localStorage.setItem("refreshToken", refreshToken);
+    set({ token, refreshToken, nickname });
   },
 
   clearAuth: () => {
     localStorage.removeItem("token");
-    set({ token: null, nickname: null });
+    localStorage.removeItem("refreshToken");
+    set({ token: null, refreshToken: null, nickname: null });
   },
 
   setNickname: (nickname) => set({ nickname }),

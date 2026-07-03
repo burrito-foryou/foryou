@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { FiChevronDown } from "react-icons/fi";
 import { ROUTES } from "../constants/routes";
 import useAuthStore from "../../features/auth/store/authStore";
+import { logout } from "../../features/auth/api/authApi";
+import LogoutConfirmModal from "./LogoutConfirmModal";
 
 const DROPDOWN_MENU = [
   { label: "알림", to: ROUTES.NOTIFICATIONS },
@@ -17,6 +19,7 @@ const HeaderUserMenu = () => {
   const clearAuth = useAuthStore((state) => state.clearAuth);
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -29,10 +32,17 @@ const HeaderUserMenu = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    clearAuth();
-    setIsOpen(false);
-    navigate(ROUTES.HOME);
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch {
+      // 로그아웃 API 호출이 실패해도 로컬 로그아웃은 진행한다.
+    } finally {
+      clearAuth();
+      setIsLogoutModalOpen(false);
+      setIsOpen(false);
+      navigate(ROUTES.HOME);
+    }
   };
 
   if (!token) {
@@ -73,12 +83,22 @@ const HeaderUserMenu = () => {
           ))}
           <div className="my-1.5 border-t border-border" />
           <button
-            onClick={handleLogout}
+            onClick={() => {
+              setIsOpen(false);
+              setIsLogoutModalOpen(true);
+            }}
             className="w-full rounded-xl px-4 py-2.5 text-left text-sm text-red-400 hover:bg-surface transition-colors"
           >
             로그아웃
           </button>
         </div>
+      )}
+
+      {isLogoutModalOpen && (
+        <LogoutConfirmModal
+          onConfirm={handleLogout}
+          onClose={() => setIsLogoutModalOpen(false)}
+        />
       )}
     </div>
   );

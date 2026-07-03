@@ -24,7 +24,7 @@ const OAuthCallbackPage = () => {
 
     socialLogin({ provider, code })
       .then(({ data }) => {
-        setAuth(data.data.accessToken);
+        setAuth(data.data.accessToken, data.data.refreshToken);
         navigate(ROUTES.HOME, { replace: true });
       })
       .catch(() => {
