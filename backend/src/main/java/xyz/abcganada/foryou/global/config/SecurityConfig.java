@@ -55,6 +55,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/answers/*/comments").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/tags").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/images/*/*").permitAll()
+                .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
