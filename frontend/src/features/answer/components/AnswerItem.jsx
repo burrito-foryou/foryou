@@ -9,7 +9,7 @@ const EDIT_FIELDS = [
 ];
 
 const AnswerItem = ({ answer, onSuccess, questionMemberId }) => {
-  const { giftName, priceRange, content, accepted, memberId, createdAt, likeCount } = answer;
+  const { giftName, priceRange, content, accepted, memberId, memberNickname, createdAt, likeCount } = answer;
   const { ref: highlightRef, isTarget } = useScrollHighlight("ANSWER", answer.id);
   const {
     isEditing,
@@ -98,7 +98,7 @@ const AnswerItem = ({ answer, onSuccess, questionMemberId }) => {
 
           <div className="mt-3 flex items-center justify-between">
             <p className="text-xs text-text-muted">
-              {memberId} · {new Date(createdAt).toLocaleDateString("ko-KR")}
+              {memberNickname} · {new Date(createdAt).toLocaleDateString("ko-KR")}
             </p>
             <div className="flex items-center gap-3">
               <LikeButton

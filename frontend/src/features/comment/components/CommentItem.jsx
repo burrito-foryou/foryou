@@ -55,7 +55,7 @@ const CommentItem = ({ comment, onSuccess }) => {
           <p className="text-sm leading-relaxed text-text">{content}</p>
           <div className="flex items-center justify-between">
             <p className="text-xs text-text-muted">
-              {comment.memberId} · {new Date(createdAt).toLocaleDateString("ko-KR")}
+              {comment.memberNickname} · {new Date(createdAt).toLocaleDateString("ko-KR")}
             </p>
             <div className="flex items-center gap-3">
               <LikeButton targetType="COMMENT" targetId={id} initialLikeCount={likeCount} />
