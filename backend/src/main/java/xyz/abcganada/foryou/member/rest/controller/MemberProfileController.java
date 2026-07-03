@@ -11,6 +11,7 @@ import xyz.abcganada.foryou.global.response.ApiResponse;
 import xyz.abcganada.foryou.global.security.auth.AuthMember;
 import xyz.abcganada.foryou.member.rest.request.MemberUpdateRequest;
 import xyz.abcganada.foryou.member.rest.response.MemberInfoResponse;
+import xyz.abcganada.foryou.member.service.MemberFacade;
 import xyz.abcganada.foryou.member.service.MemberService;
 
 @Slf4j
@@ -19,6 +20,7 @@ import xyz.abcganada.foryou.member.service.MemberService;
 @RequestMapping("/api/members/me")
 public class MemberProfileController {
 
+    private final MemberFacade memberFacade;
     private final MemberService memberService;
 
     @GetMapping
@@ -42,5 +44,12 @@ public class MemberProfileController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(ApiResponse.success(response, "사용자 정보가 수정되었습니다."));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> withdraw(@AuthenticationPrincipal AuthMember member) {
+        log.info("[Member] 회원 탈퇴 요청 - memberId: {}", member.memberId());
+        memberFacade.withdraw(member.memberId());
+        return ResponseEntity.noContent().build();
     }
 }

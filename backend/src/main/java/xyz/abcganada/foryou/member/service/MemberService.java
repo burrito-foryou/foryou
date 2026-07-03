@@ -42,6 +42,12 @@ public class MemberService {
         member.updateProfileImageUrl(imageUrl);
     }
 
+    public void withdraw(Long memberId) {
+        log.info("[Member] 회원 탈퇴 요청 - memberId: {}", memberId);
+        Member member = getMemberById(memberId);
+        memberRepository.delete(member);
+    }
+
     private void validateNicknameChanged(Member member, String nickname) {
         if (member.getNickname().equals(nickname)) {
             throw new BusinessException(ErrorCode.SAME_NICKNAME);
