@@ -1,21 +1,39 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { FiBookmark, FiEye, FiHeart, FiMessageSquare } from "react-icons/fi";
 import timeAgo from "../../../shared/utils/timeAgo";
-import { toQuestionDetail } from "../../../shared/constants/routes";
+import { toQuestionDetail, ROUTES } from "../../../shared/constants/routes";
 import useBookmark from "../hooks/useBookmark";
+import useAuthStore from "../../auth/store/authStore";
+import LikeLoginModal from "../../like/components/LikeLoginModal";
 
 const QuestionCard = ({ question: q }) => {
+  const navigate = useNavigate();
+  const token = useAuthStore((s) => s.token);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
   // 백엔드 Java boolean 필드 isBookmarked → Jackson이 "bookmarked"로 직렬화
   const { isBookmarked, toggle, loading } = useBookmark(q.bookmarked ?? false);
 
   const handleBookmark = (e) => {
     e.preventDefault();
+    if (!token) {
+      setShowLoginModal(true);
+      return;
+    }
     toggle(q.id);
   };
 
   return (
-    // `/questions/${q.id}` => toQuestionDetail(q.id)
-    <Link to={toQuestionDetail(q.id)}>
+    <>
+      {showLoginModal && (
+        <LikeLoginModal
+          onGoLogin={() => navigate(ROUTES.LOGIN)}
+          onClose={() => setShowLoginModal(false)}
+        />
+      )}
+      {/* `/questions/${q.id}` => toQuestionDetail(q.id) */}
+      <Link to={toQuestionDetail(q.id)}>
       <div className="rounded-2xl border border-border bg-background p-5 transition-all hover:border-primary hover:shadow-sm">
         <div className="mb-2 flex items-start justify-between gap-3">
           <p className="font-bold text-text leading-snug">{q.title}</p>
@@ -60,6 +78,7 @@ const QuestionCard = ({ question: q }) => {
         </div>
       </div>
     </Link>
+    </>
   );
 };
 
