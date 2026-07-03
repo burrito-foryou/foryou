@@ -9,12 +9,11 @@ import {
 } from "react-icons/fi";
 import { ROUTES } from "../../../shared/constants/routes";
 import { getQuestionDetail, deleteQuestion, getQuestionImages } from "../api/questionApi";
-import {
-  addBookmark,
-  removeBookmark,
-  getBookmarkStatus,
-} from "../api/bookmarkApi";
+import { getBookmarkStatus } from "../api/bookmarkApi";
 import useMemberId from "../hooks/useMemberId";
+import useBookmark from "../hooks/useBookmark";
+import useToast from "../../../shared/hooks/useToast";
+import Toast from "../../../shared/components/Toast";
 import timeAgo from "../../../shared/utils/timeAgo";
 import useScrollHighlight from "../../../shared/hooks/useScrollHighlight";
 import LikeButton from "../../like/components/LikeButton";
@@ -25,11 +24,13 @@ const QuestionDetailPage = () => {
   const navigate = useNavigate();
   const memberId = useMemberId();
 
+  const { toast, showToast } = useToast();
+  const { isBookmarked, setIsBookmarked, toggle: toggleBookmark, loading: bookmarkLoading } = useBookmark(false, showToast);
+
   const [question, setQuestion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [images, setImages] = useState([]);
-  const [isBookmarked, setIsBookmarked] = useState(false);
 
   const fetchedId = useRef(null);
   useEffect(() => {
@@ -47,7 +48,7 @@ const QuestionDetailPage = () => {
         // 북마크 상태 초기화 (로그인 시에만)
         if (memberId) {
           const bookmarked = await getBookmarkStatus(id);
-          setIsBookmarked(bookmarked);
+          setIsBookmarked(bookmarked); // useBookmark 초기 상태 동기화
         }
       } catch {
         setError("질문을 찾을 수 없습니다.");
@@ -60,18 +61,7 @@ const QuestionDetailPage = () => {
 
   const { ref: highlightRef, isTarget } = useScrollHighlight("QUESTION", question?.id);
 
-  const handleBookmark = async () => {
-    try {
-      if (isBookmarked) {
-        await removeBookmark(id);
-      } else {
-        await addBookmark(id);
-      }
-      setIsBookmarked((prev) => !prev);
-    } catch {
-      alert("북마크 실패");
-    }
-  };
+  const handleBookmark = () => toggleBookmark(id);
 
   const handleDelete = async () => {
     if (!window.confirm("정말 삭제하시겠습니까?")) return;
@@ -146,7 +136,8 @@ const QuestionDetailPage = () => {
           <h1 className="text-xl font-bold text-text">{question.title}</h1>
           <button
             onClick={handleBookmark}
-            className="shrink-0 text-text-muted hover:text-primary transition-colors mt-1"
+            disabled={bookmarkLoading}
+            className="shrink-0 text-text-muted hover:text-primary transition-colors mt-1 disabled:opacity-50"
           >
             <FiBookmark
               size={20}
@@ -214,6 +205,8 @@ const QuestionDetailPage = () => {
       <div className="mt-6">
         <AnswerList questionId={id} questionMemberId={question.memberId} />
       </div>
+
+      <Toast toast={toast} />
     </div>
   );
 };
