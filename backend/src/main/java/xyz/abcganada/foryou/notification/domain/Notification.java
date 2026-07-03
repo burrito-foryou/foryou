@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import xyz.abcganada.foryou.member.domain.Member;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Optional;
 
 @Entity
@@ -49,7 +49,7 @@ public class Notification {
     private boolean isRead;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @Builder(access = AccessLevel.PRIVATE) // 생성 경로 강제 위해 Builder는 private
     public Notification(Member receiver, Member sender, NotificationType type, TargetType targetType, Long targetId, Long questionId, String content) {
@@ -61,8 +61,7 @@ public class Notification {
         this.questionId = questionId;
         this.content = content;
         this.isRead = false;
-        // TODO 운영 서버 타임존 미설정 시 KST 불일치 가능
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = Instant.now();
     }
 
     // 현재는 JPQL UPDATE로 읽음 처리하지만,

@@ -18,7 +18,7 @@ import xyz.abcganada.foryou.member.rest.request.MemberUpdateRequest;
 import xyz.abcganada.foryou.member.rest.response.MemberInfoResponse;
 import xyz.abcganada.foryou.member.service.MemberService;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -50,7 +50,7 @@ class MemberProfileControllerTest extends RestControllerTest {
             MemberFixture.EMAIL,
             "https://example.com/profile.png",
             AuthProvider.FORYOU,
-            LocalDateTime.of(2026, 6, 30, 12, 0)
+            Instant.parse("2026-06-30T12:00:00Z")
         );
 
         authenticateMember();
@@ -68,7 +68,7 @@ class MemberProfileControllerTest extends RestControllerTest {
             .andExpect(jsonPath("$.data.email").value(MemberFixture.EMAIL))
             .andExpect(jsonPath("$.data.profileImageUrl").value("https://example.com/profile.png"))
             .andExpect(jsonPath("$.data.provider").value(AuthProvider.FORYOU.name()))
-            .andExpect(jsonPath("$.data.createdAt").value("2026-06-30T12:00:00"));
+            .andExpect(jsonPath("$.data.createdAt").value("2026-06-30T12:00:00Z"));
 
         verify(memberService).getMemberInfo(MemberFixture.MEMBER_ID);
     }
@@ -84,7 +84,7 @@ class MemberProfileControllerTest extends RestControllerTest {
             MemberFixture.EMAIL,
             "https://example.com/profile.png",
             AuthProvider.FORYOU,
-            LocalDateTime.of(2026, 6, 30, 12, 0)
+            Instant.parse("2026-06-30T12:00:00Z")
         );
 
         authenticateMember();
@@ -102,7 +102,7 @@ class MemberProfileControllerTest extends RestControllerTest {
             .andExpect(jsonPath("$.data.email").value(MemberFixture.EMAIL))
             .andExpect(jsonPath("$.data.profileImageUrl").value("https://example.com/profile.png"))
             .andExpect(jsonPath("$.data.provider").value(AuthProvider.FORYOU.name()))
-            .andExpect(jsonPath("$.data.createdAt").value("2026-06-30T12:00:00"));
+            .andExpect(jsonPath("$.data.createdAt").value("2026-06-30T12:00:00Z"));
 
         verify(memberService).updateMemberNickname(MemberFixture.MEMBER_ID, request);
     }
