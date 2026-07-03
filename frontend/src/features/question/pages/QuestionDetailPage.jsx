@@ -8,7 +8,11 @@ import {
   FiBookmark,
 } from "react-icons/fi";
 import { ROUTES } from "../../../shared/constants/routes";
-import { getQuestionDetail, deleteQuestion, getQuestionImages } from "../api/questionApi";
+import {
+  getQuestionDetail,
+  deleteQuestion,
+  getQuestionImages,
+} from "../api/questionApi";
 import { getBookmarkStatus } from "../api/bookmarkApi";
 import useMemberId from "../hooks/useMemberId";
 import useBookmark from "../hooks/useBookmark";
@@ -26,7 +30,12 @@ const QuestionDetailPage = () => {
   const memberId = useMemberId();
 
   const { toast, showToast } = useToast();
-  const { isBookmarked, setIsBookmarked, toggle: toggleBookmark, loading: bookmarkLoading } = useBookmark(false, showToast);
+  const {
+    isBookmarked,
+    setIsBookmarked,
+    toggle: toggleBookmark,
+    loading: bookmarkLoading,
+  } = useBookmark(false, showToast);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const [question, setQuestion] = useState(null);
@@ -61,7 +70,10 @@ const QuestionDetailPage = () => {
     fetch();
   }, [id]);
 
-  const { ref: highlightRef, isTarget } = useScrollHighlight("QUESTION", question?.id);
+  const { ref: highlightRef, isTarget } = useScrollHighlight(
+    "QUESTION",
+    question?.id,
+  );
 
   const handleBookmark = () => {
     if (!memberId) {
@@ -140,19 +152,21 @@ const QuestionDetailPage = () => {
         )}
 
         {/* 제목 + 북마크 버튼 */}
-        <div className="mb-3 flex items-start justify-between gap-3">
-          <h1 className="text-xl font-bold text-text">{question.title}</h1>
-          <button
-            onClick={handleBookmark}
-            disabled={bookmarkLoading}
-            className="shrink-0 text-text-muted hover:text-primary transition-colors mt-1 disabled:opacity-50"
-          >
-            <FiBookmark
-              size={20}
-              className={isBookmarked ? "fill-primary text-primary" : ""}
-            />
-          </button>
-        </div>
+        {!isAuthor && (
+          <div className="mb-3 flex items-start justify-between gap-3">
+            <h1 className="text-xl font-bold text-text">{question.title}</h1>
+            <button
+              onClick={handleBookmark}
+              disabled={bookmarkLoading}
+              className="shrink-0 text-text-muted hover:text-primary transition-colors mt-1 disabled:opacity-50"
+            >
+              <FiBookmark
+                size={20}
+                className={isBookmarked ? "fill-primary text-primary" : ""}
+              />
+            </button>
+          </div>
+        )}
 
         <div className="mb-4 flex items-center gap-2 text-xs text-text-muted">
           <span>{question.memberNickname}</span>
