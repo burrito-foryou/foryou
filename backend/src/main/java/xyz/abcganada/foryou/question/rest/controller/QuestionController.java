@@ -34,6 +34,7 @@ public class QuestionController {
     // 질문 목록 조회
     @GetMapping
     public ResponseEntity<ApiResponse<Page<QuestionResponse>>> getQuestions(
+            @RequestParam(required = false) Long memberId,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String target,
             @RequestParam(required = false) String budget,
@@ -46,7 +47,7 @@ public class QuestionController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Page<QuestionResponse> response = questionService.getList(
-                keyword, target, budget, gender, ageGroup, situation, giftType, sort, page, size
+                memberId, keyword, target, budget, gender, ageGroup, situation, giftType, sort, page, size
         );
         return ResponseEntity.ok(ApiResponse.success(response));
     }
