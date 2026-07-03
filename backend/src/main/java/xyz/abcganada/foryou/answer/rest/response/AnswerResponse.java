@@ -15,6 +15,7 @@ public class AnswerResponse {
     private Long id;
     private Long questionId;
     private Long memberId;
+    private String memberNickname;
     private String giftName;
     private String priceRange;
     private String content;
@@ -28,6 +29,7 @@ public class AnswerResponse {
                 .id(answer.getId())
                 .questionId(answer.getQuestion().getId())
                 .memberId(answer.getMember().getId())
+                .memberNickname(answer.getMember().getNickname())
                 .giftName(answer.getGiftName())
                 .priceRange(answer.getPriceRange())
                 .content(answer.getContent())

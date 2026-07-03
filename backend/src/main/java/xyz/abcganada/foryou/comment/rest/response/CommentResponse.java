@@ -15,6 +15,7 @@ public class CommentResponse {
     private Long id;
     private Long answerId;
     private Long memberId;
+    private String memberNickname;
     private String content;
     private Long likeCount;
     private LocalDateTime createdAt;
@@ -25,6 +26,7 @@ public class CommentResponse {
                 .id(comment.getId())
                 .answerId(comment.getAnswer().getId())
                 .memberId(comment.getMember().getId())
+                .memberNickname(comment.getMember().getNickname())
                 .content(comment.getContent())
                 .likeCount(comment.getLikeCount())
                 .createdAt(comment.getCreatedAt())
