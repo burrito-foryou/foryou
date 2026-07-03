@@ -1,8 +1,9 @@
 import useCommentItem from "../hooks/useCommentItem";
 import useScrollHighlight from "../../../shared/hooks/useScrollHighlight";
+import LikeButton from "../../like/components/LikeButton";
 
 const CommentItem = ({ comment, onSuccess }) => {
-  const { id, createdAt } = comment;
+  const { id, createdAt, likeCount } = comment;
   const { ref: highlightRef, isTarget } = useScrollHighlight("COMMENT", id);
   const {
     isEditing,
@@ -56,24 +57,27 @@ const CommentItem = ({ comment, onSuccess }) => {
             <p className="text-xs text-text-muted">
               {comment.memberId} · {new Date(createdAt).toLocaleDateString("ko-KR")}
             </p>
-            {/* WBS0509/0510: 작성자에게만 수정/삭제 버튼 노출 */}
-            {isAuthor && (
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="text-xs text-text-muted hover:text-primary"
-                >
-                  수정
-                </button>
-                <button
-                  onClick={handleDelete}
-                  disabled={loading}
-                  className="text-xs text-text-muted hover:text-red-500 disabled:opacity-50"
-                >
-                  삭제
-                </button>
-              </div>
-            )}
+            <div className="flex items-center gap-3">
+              <LikeButton targetType="COMMENT" targetId={id} initialLikeCount={likeCount} />
+              {/* WBS0509/0510: 작성자에게만 수정/삭제 버튼 노출 */}
+              {isAuthor && (
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="text-xs text-text-muted hover:text-primary"
+                  >
+                    수정
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    disabled={loading}
+                    className="text-xs text-text-muted hover:text-red-500 disabled:opacity-50"
+                  >
+                    삭제
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </>
       )}

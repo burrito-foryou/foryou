@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FiEye, FiHeart, FiMessageSquare, FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FiEye, FiMessageSquare, FiEdit2, FiTrash2 } from "react-icons/fi";
 import { ROUTES } from "../../../shared/constants/routes";
 import { getQuestionDetail, deleteQuestion, getQuestionImages } from "../api/questionApi";
 import useMemberId from "../hooks/useMemberId";
 import timeAgo from "../../../shared/utils/timeAgo";
 import useScrollHighlight from "../../../shared/hooks/useScrollHighlight";
+import LikeButton from "../../like/components/LikeButton";
+import AnswerList from "../../answer/components/AnswerList"; // TEST: 답변/좋아요 확인용 임시
 
 const QuestionDetailPage = () => {
     const { id } = useParams();           // URL의 :id 추출
@@ -164,13 +166,20 @@ const QuestionDetailPage = () => {
           <span className="flex items-center gap-1">
             <FiEye size={14} /> {question.viewCount}
           </span>
-                    <span className="flex items-center gap-1">
-            <FiHeart size={14} /> {question.likeCount}
-          </span>
+                    <LikeButton
+                        targetType="QUESTION"
+                        targetId={question.id}
+                        initialLikeCount={question.likeCount}
+                    />
                     <span className="flex items-center gap-1">
             <FiMessageSquare size={14} /> {question.answerCount}
           </span>
                 </div>
+            </div>
+
+            {/* TEST: 답변/댓글 확인용 임시 */}
+            <div className="mt-6">
+                <AnswerList questionId={id} questionMemberId={question.memberId} />
             </div>
         </div>
     );
