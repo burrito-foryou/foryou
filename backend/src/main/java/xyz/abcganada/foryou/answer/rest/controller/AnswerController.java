@@ -2,6 +2,7 @@ package xyz.abcganada.foryou.answer.rest.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +17,7 @@ import xyz.abcganada.foryou.global.security.auth.AuthMember;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class AnswerController {
@@ -27,6 +29,7 @@ public class AnswerController {
     @GetMapping("/api/questions/{questionId}/answers")
     public ResponseEntity<ApiResponse<List<AnswerResponse>>> getAnswers(
             @PathVariable Long questionId) {
+        log.debug("[Answer] 답변 목록 조회 요청 - questionId: {}", questionId);
         List<AnswerResponse> responses = answerService.getAnswers(questionId);
         return ResponseEntity.ok(ApiResponse.success(responses, "답변 목록을 조회했습니다."));
     }
@@ -37,6 +40,7 @@ public class AnswerController {
             @PathVariable Long answerId,
             @AuthenticationPrincipal AuthMember authMember,
             @RequestBody @Valid AnswerUpdateRequest request) {
+        log.debug("[Answer] 답변 수정 요청 - answerId: {}, memberId: {}", answerId, authMember.memberId());
         AnswerResponse response = answerService.update(answerId, authMember.memberId(), request);
         return ResponseEntity.ok(ApiResponse.success(response, "답변이 수정되었습니다."));
     }
@@ -46,6 +50,7 @@ public class AnswerController {
     public ResponseEntity<ApiResponse<Void>> acceptAnswer(
             @PathVariable Long answerId,
             @AuthenticationPrincipal AuthMember authMember) {
+        log.debug("[Answer] 답변 채택 요청 - answerId: {}, memberId: {}", answerId, authMember.memberId());
         answerFacade.accept(answerId, authMember.memberId());
         return ResponseEntity.ok(ApiResponse.successWithoutData("답변이 채택되었습니다."));
     }
@@ -55,6 +60,7 @@ public class AnswerController {
     public ResponseEntity<Void> deleteAnswer(
             @PathVariable Long answerId,
             @AuthenticationPrincipal AuthMember authMember) {
+        log.debug("[Answer] 답변 삭제 요청 - answerId: {}, memberId: {}", answerId, authMember.memberId());
         answerService.delete(answerId, authMember.memberId());
         return ResponseEntity.noContent().build();
     }
@@ -65,6 +71,7 @@ public class AnswerController {
             @PathVariable Long questionId,
             @AuthenticationPrincipal AuthMember authMember,
             @RequestBody @Valid AnswerCreateRequest request) {
+        log.debug("[Answer] 답변 등록 요청 - questionId: {}, memberId: {}", questionId, authMember.memberId());
         AnswerResponse response = answerFacade.create(questionId, authMember.memberId(), request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(response, "답변이 등록되었습니다."));
