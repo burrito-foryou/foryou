@@ -5,6 +5,7 @@ import { ROUTES } from "../../../shared/constants/routes";
 import { getQuestionDetail, deleteQuestion, getQuestionImages } from "../api/questionApi";
 import useMemberId from "../hooks/useMemberId";
 import timeAgo from "../../../shared/utils/timeAgo";
+import useScrollHighlight from "../../../shared/hooks/useScrollHighlight";
 
 const QuestionDetailPage = () => {
     const { id } = useParams();           // URL의 :id 추출
@@ -40,6 +41,9 @@ const QuestionDetailPage = () => {
         };
         fetch();
     }, [id]);
+
+    // 알림 클릭으로 이동 시 스크롤 + 하이라이트
+    const { ref: highlightRef, isTarget } = useScrollHighlight("QUESTION", question?.id);
 
     // 삭제 처리 — 확인 후 API 호출, 목록으로 이동
     const handleDelete = async () => {
@@ -100,7 +104,12 @@ const QuestionDetailPage = () => {
             </div>
 
             {/* 질문 본문 */}
-            <div className="rounded-2xl border border-border bg-background p-6">
+            <div
+                ref={highlightRef}
+                className={`rounded-2xl border bg-background p-6 transition-colors ${
+                    isTarget ? "border-primary ring-2 ring-primary" : "border-border"
+                }`}
+            >
                 {/* 채택 뱃지 */}
                 {question.acceptedAnswerId && (
                     <span className="mb-3 inline-block rounded-full bg-primary-light px-3 py-1 text-xs font-semibold text-primary">

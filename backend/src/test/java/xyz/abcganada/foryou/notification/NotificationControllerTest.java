@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import xyz.abcganada.foryou.global.security.jwt.JwtTokenProvider;
 import xyz.abcganada.foryou.member.domain.Member;
 import xyz.abcganada.foryou.member.repository.MemberRepository;
 import xyz.abcganada.foryou.notification.domain.Notification;
@@ -37,9 +38,12 @@ class NotificationControllerTest {
     MemberRepository memberRepository;
     @Autowired
     QuestionRepository questionRepository;
+    @Autowired
+    JwtTokenProvider jwtTokenProvider;
 
     private Long receiverId;
     private Long notification1Id;
+    private String accessToken;
 
     @BeforeEach
     void setUp() {
@@ -61,6 +65,7 @@ class NotificationControllerTest {
         );
 
         receiverId = receiver.getId();
+        accessToken = jwtTokenProvider.generateAccessToken(receiver);
 
         Notification notification1 = notificationRepository.save(
                 Notification.create(receiver, sender, NotificationType.QUESTION_ANSWER_CREATED,
@@ -91,7 +96,7 @@ class NotificationControllerTest {
     @Test
     void getNotificationsTest() throws Exception {
         mockMvc.perform(get("/api/notifications")
-                    .param("receiverId", String.valueOf(receiverId)))
+                    .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data").isArray())
@@ -102,7 +107,7 @@ class NotificationControllerTest {
     @Test
     void markAsReadTest() throws Exception {
         mockMvc.perform(patch("/api/notifications/" + notification1Id + "/read")
-                        .param("receiverId", String.valueOf(receiverId)))
+                        .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk());
 
         Notification notification = notificationRepository.findById(notification1Id)
@@ -115,7 +120,7 @@ class NotificationControllerTest {
     @Test
     void markAllAsReadTest() throws Exception {
         mockMvc.perform(patch("/api/notifications/read-all")
-                        .param("receiverId", String.valueOf(receiverId)))
+                        .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk());
         List<Notification> notifications = notificationRepository.findByReceiverIdOrderByCreatedAtDesc(receiverId);
         assertThat(notifications).isNotEmpty().allMatch(Notification::isRead);
@@ -125,7 +130,7 @@ class NotificationControllerTest {
     @Test
     void deleteNotificationsTest() throws Exception {
         mockMvc.perform(delete("/api/notifications/" + notification1Id)
-                        .param("receiverId", String.valueOf(receiverId)))
+                        .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk());
 
         assertThat(notificationRepository.existsById(notification1Id)).isFalse();
@@ -135,7 +140,7 @@ class NotificationControllerTest {
     @Test
     void deleteAllNotificationsTest() throws Exception {
         mockMvc.perform(delete("/api/notifications")
-                        .param("receiverId", String.valueOf(receiverId)))
+                        .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk());
         List<Notification> notifications = notificationRepository.findByReceiverIdOrderByCreatedAtDesc(receiverId);
         assertThat(notifications).isEmpty();

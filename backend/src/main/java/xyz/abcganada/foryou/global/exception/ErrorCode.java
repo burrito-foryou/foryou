@@ -31,6 +31,10 @@ public enum ErrorCode {
     LIKE_ALREADY_EXISTS(HttpStatus.CONFLICT, "LIKE_001", "좋아요를 이미 누른 대상입니다."),
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "LIKE_002", "좋아요를 찾을 수 없습니다."),
 
+    // bookmark
+    BOOKMARK_ALREADY_EXISTS(HttpStatus.CONFLICT, "BOOKMARK_001", "이미 북마크한 질문입니다."),
+    BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKMARK_002", "북마크를 찾을 수 없습니다."),
+
     //answer
     ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "ANSWER_001", "답변을 찾을 수 없습니다."),
     ANSWER_FORBIDDEN(HttpStatus.FORBIDDEN, "ANSWER_002", "접근 권한이 없습니다."),
@@ -53,6 +57,8 @@ public enum ErrorCode {
     IMAGE_SIZE_EXCEEDED(HttpStatus.BAD_REQUEST, "IMAGE_003", "이미지 크기는 5MB를 초과할 수 없습니다."),
     IMAGE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE_004", "이미지 업로드에 실패했습니다."),
     IMAGE_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE_005", "이미지 삭제에 실패했습니다.");
+
+
 
 
 
