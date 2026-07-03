@@ -3,6 +3,7 @@ import { ROUTES } from "../constants/routes";
 import { FiSearch } from "react-icons/fi";
 import { RxHamburgerMenu } from "react-icons/rx";
 import HeaderUserMenu from "./HeaderUserMenu";
+import NotificationBell from "../../features/notification/components/NotificationBell";
 
 const Header = () => {
   return (
@@ -25,6 +26,7 @@ const Header = () => {
 
         {/* 우측 영역 */}
         <div className="order-2 flex items-center gap-4 sm:order-3">
+          <NotificationBell />
           <HeaderUserMenu />
           <button>
             <RxHamburgerMenu size={22} className="text-gray-600" />
