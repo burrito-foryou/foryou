@@ -1,12 +1,17 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { RiKakaoTalkFill } from "react-icons/ri";
 import { ROUTES } from "../../../shared/constants/routes";
 import useLoginForm from "../hooks/useLoginForm";
 import { getOAuthUrl } from "../utils/oauthUrl";
+import useAuthStore from "../store/authStore";
 
 const LoginPage = () => {
+  const token = useAuthStore((s) => s.token);
   const { form, errors, handleChange, handleSubmit } = useLoginForm();
+
+  // 이미 로그인된 경우 홈으로 redirect
+  if (token) return <Navigate to={ROUTES.HOME} replace />;
 
   return (
     <div className="flex min-h-[calc(100vh-120px)] items-center justify-center bg-surface">
