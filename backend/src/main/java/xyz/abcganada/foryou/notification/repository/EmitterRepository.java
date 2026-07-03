@@ -11,4 +11,6 @@ public interface EmitterRepository {
     Optional<SseEmitter> findById(Long receiverId);
     // 연결 제거
     void deleteById(Long receiverId);
+    // emitter 인스턴스 동일성 체크
+    void deleteIfSame(Long receiverId, SseEmitter emitter);
 }
