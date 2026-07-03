@@ -6,3 +6,20 @@
 # Windows
 Thumbs.db
 Desktop.ini
+
+CLAUDE.md
+.idea
+
+# Local backend environment
+backend/docker-compose.local.yml
+backend/src/main/resources/application-local.yaml
+backend/src/main/resources/application-oauth2.yaml
+backend/src/main/resources/application-dev.yaml
+
+# Local frontend environment
+frontend/.env
+/.idea/
+
+# Local Query Test
+/docs
+

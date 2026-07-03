@@ -1,0 +1,13 @@
+package xyz.abcganada.foryou.member.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import xyz.abcganada.foryou.member.domain.AuthProvider;
+import xyz.abcganada.foryou.member.domain.Member;
+
+import java.util.Optional;
+
+public interface MemberRepository extends JpaRepository<Member, Long> {
+    boolean existsByEmail(String email);
+    Optional<Member> findByEmail(String email);
+    Optional<Member> findByProviderAndProviderId(AuthProvider provider, String providerId);
+}

@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+  flyway:
+    enabled: false
+
+jwt:
+  secret: test-development-secret-key-for-foryou-jwt-token
+  access-token-expiration: 3600000
+
+image:
+  upload:
+    path: /tmp/foryou/images
+    url-prefix: http://localhost:8080/images
+
+cloudinary:
+  cloud-name: test
+  api-key: test
+  api-secret: test
