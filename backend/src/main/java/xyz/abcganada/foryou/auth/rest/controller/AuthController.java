@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import xyz.abcganada.foryou.auth.rest.request.LoginRequest;
 import xyz.abcganada.foryou.auth.rest.request.ReissueRequest;
@@ -13,6 +14,7 @@ import xyz.abcganada.foryou.auth.service.AuthService;
 import xyz.abcganada.foryou.global.response.ApiResponse;
 import xyz.abcganada.foryou.auth.rest.request.SignupRequest;
 import xyz.abcganada.foryou.auth.rest.response.SignupResponse;
+import xyz.abcganada.foryou.global.security.auth.AuthMember;
 import xyz.abcganada.foryou.member.domain.AuthProvider;
 
 @Slf4j
@@ -67,9 +69,9 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout() {
-        log.info("[Auth] 로그아웃 요청");
-        authService.logout();
+    public ResponseEntity<Void> logout(@AuthenticationPrincipal AuthMember member) {
+        log.info("[Auth] 로그아웃 요청 - memberId: {}", member.memberId());
+        authService.logout(member.memberId());
 
         return ResponseEntity.noContent().build();
     }

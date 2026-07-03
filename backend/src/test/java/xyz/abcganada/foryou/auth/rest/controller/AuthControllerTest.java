@@ -1,11 +1,15 @@
 package xyz.abcganada.foryou.auth.rest.controller;
 
 import fixture.AuthFixture;
+import fixture.MemberFixture;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import xyz.abcganada.foryou.auth.rest.request.LoginRequest;
@@ -15,7 +19,10 @@ import xyz.abcganada.foryou.auth.service.AuthService;
 import xyz.abcganada.foryou.common.RestControllerTest;
 import xyz.abcganada.foryou.global.exception.BusinessException;
 import xyz.abcganada.foryou.global.exception.ErrorCode;
+import xyz.abcganada.foryou.global.security.auth.AuthMember;
 import xyz.abcganada.foryou.member.domain.AuthProvider;
+
+import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -30,6 +37,11 @@ class AuthControllerTest extends RestControllerTest {
 
     @MockBean
     private AuthService authService;
+
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
+    }
 
     @Test
     @DisplayName("로그인 요청에 성공하면 200 응답을 반환한다")
@@ -173,6 +185,19 @@ class AuthControllerTest extends RestControllerTest {
     }
 
     @Test
+    @DisplayName("로그아웃 요청에 성공하면 204 응답을 반환한다")
+    void logout() throws Exception {
+        // given
+        authenticateMember();
+
+        // when & then
+        postRequest("/api/auth/logout", null)
+            .andExpect(status().isNoContent());
+
+        verify(authService).logout(MemberFixture.MEMBER_ID);
+    }
+
+    @Test
     @DisplayName("회원가입 요청에 성공하면 201 응답을 반환한다")
     void signup() throws Exception {
         // given
@@ -222,5 +247,15 @@ class AuthControllerTest extends RestControllerTest {
             .andExpect(jsonPath("$.success").value(false))
             .andExpect(jsonPath("$.code").value("COMMON_001"))
             .andExpect(jsonPath("$.message").value("잘못된 입력값입니다."));
+    }
+
+    private void authenticateMember() {
+        SecurityContextHolder.getContext().setAuthentication(
+            new UsernamePasswordAuthenticationToken(
+                new AuthMember(MemberFixture.MEMBER_ID),
+                null,
+                Collections.emptyList()
+            )
+        );
     }
 }

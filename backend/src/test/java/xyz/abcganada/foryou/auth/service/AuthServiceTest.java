@@ -343,6 +343,16 @@ class AuthServiceTest extends ServiceTest {
     }
 
     @Test
+    @DisplayName("로그아웃하면 저장된 리프레시 토큰을 삭제한다")
+    void logout() {
+        // when
+        authService.logout(MemberFixture.MEMBER_ID);
+
+        // then
+        verify(refreshTokenRepository).deleteById(MemberFixture.MEMBER_ID);
+    }
+
+    @Test
     @DisplayName("회원가입에 성공하면 비밀번호를 암호화하고 회원 정보를 반환한다")
     void signup() {
         // given

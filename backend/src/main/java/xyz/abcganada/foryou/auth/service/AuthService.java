@@ -92,9 +92,10 @@ public class AuthService {
         return LoginResponse.of(newAccessToken, newRefreshToken);
     }
 
-    public void logout() {
-        // TODO refresh token 도입
-        // Stateless JWT 방식에서는 서버에서 별도 처리하지 않음.
+    public void logout(Long memberId) {
+        log.info("[Auth] 로그아웃 처리 시작 - memberId: {}", memberId);
+        refreshTokenRepository.deleteById(memberId);
+        log.info("[Auth] 로그아웃 완료 - memberId: {}", memberId);
     }
 
     private Member findMemberByEmail(String email) {
