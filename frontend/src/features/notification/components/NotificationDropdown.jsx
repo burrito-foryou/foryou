@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import NotificationItem from "./NotificationItem";
 
 const NotificationDropdown = ({
@@ -5,6 +6,14 @@ const NotificationDropdown = ({
   handleMarkAllAsRead, updateReadStatus,
   handleDeleteNotification, handleDeleteAllNotifications,
 }) => {
+  // 알림 드롭다운 열려있는 동안 시간 최신으로 유지하기 위한 강제 리렌더링
+  const [, forceRerender] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => 
+      forceRerender((n) => n + 1), 30_000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="w-[380px] rounded-2xl border border-gray-100 bg-white shadow-xl shadow-gray-200/50">
       <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3.5">
