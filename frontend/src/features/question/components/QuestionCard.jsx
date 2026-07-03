@@ -3,14 +3,25 @@ import { Link } from "react-router-dom";
 import { FiBookmark, FiEye, FiHeart, FiMessageSquare } from "react-icons/fi";
 import timeAgo from "../../../shared/utils/timeAgo";
 import { toQuestionDetail } from "../../../shared/constants/routes";
+import { addBookmark, removeBookmark } from "../api/bookmarkApi";
 
 const QuestionCard = ({ question: q }) => {
-  const [isBookmarked, setIsBookmarked] = useState(false); // 북마크 추가
+  // 백엔드 Java boolean 필드 isBookmarked → Jackson이 "bookmarked"로 직렬화
+  const [isBookmarked, setIsBookmarked] = useState(q.bookmarked ?? false);
 
-  // 북마크 토글 (카드 클릭 이벤트 전파 방지)
-  const handleBookmark = (e) => {
+  // 북마크 토글 — 카드 클릭 이벤트 전파 방지 후 API 호출
+  const handleBookmark = async (e) => {
     e.preventDefault();
-    setIsBookmarked((prev) => !prev);
+    try {
+      if (isBookmarked) {
+        await removeBookmark(q.id);
+      } else {
+        await addBookmark(q.id);
+      }
+      setIsBookmarked((prev) => !prev);
+    } catch (err) {
+      console.error("북마크 오류:", err?.response?.status, err?.response?.data ?? err);
+    }
   };
 
   return (

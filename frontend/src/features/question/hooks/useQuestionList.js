@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { getQuestions } from "../api/questionApi";
 import { useSearchParams } from "react-router-dom";
+import useMemberId from "./useMemberId";
 
 const useQuestionList = () => {
   const [searchParams] = useSearchParams();
+  const memberId = useMemberId();
   const [questions, setQuestions] = useState([]);
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState("latest");
@@ -39,6 +41,7 @@ const useQuestionList = () => {
           page,
           size: 10,
           ...(debouncedKeyword && { keyword: debouncedKeyword }), // 빈 값이면 전송 안 함
+          ...(memberId && { memberId }), // 로그인 시 북마크 상태 포함
         };
         const data = await getQuestions(params);
         // 백엔드 응답: Page<QuestionResponse> → content가 질문 배열
@@ -52,7 +55,7 @@ const useQuestionList = () => {
       }
     };
     fetch();
-  }, [filters, sort, page, debouncedKeyword]);
+  }, [filters, sort, page, debouncedKeyword, memberId]);
 
   // 필터/정렬 변경 시 항상 첫 페이지로 초기화
   const removeFilter = (key) => {
