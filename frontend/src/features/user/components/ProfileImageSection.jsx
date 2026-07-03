@@ -7,6 +7,7 @@ const ProfileImageSection = ({
   fileInputRef,
   onImageClick,
   onImageChange,
+  onImageReset,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -69,7 +70,10 @@ const ProfileImageSection = ({
             </button>
             {member.profileImageUrl && (
               <button
-                onClick={() => setMenuOpen(false)}
+                onClick={() => {
+                  setMenuOpen(false);
+                  onImageReset();
+                }}
                 className="w-full px-4 py-3 text-left text-sm text-error hover:bg-gray-50 transition-colors border-t border-gray-100"
               >
                 기본 이미지로 변경
