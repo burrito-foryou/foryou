@@ -1,5 +1,6 @@
 import useAnswerItem from "../hooks/useAnswerItem";
 import CommentList from "../../comment/components/CommentList";
+import useScrollHighlight from "../../../shared/hooks/useScrollHighlight";
 
 const EDIT_FIELDS = [
   { label: "선물 이름", name: "giftName", placeholder: "예) 조말론 향수" },
@@ -8,6 +9,7 @@ const EDIT_FIELDS = [
 
 const AnswerItem = ({ answer, onSuccess, questionMemberId }) => {
   const { giftName, priceRange, content, accepted, memberId, createdAt } = answer;
+  const { ref: highlightRef, isTarget } = useScrollHighlight("ANSWER", answer.id);
   const {
     isEditing,
     setIsEditing,
@@ -23,8 +25,9 @@ const AnswerItem = ({ answer, onSuccess, questionMemberId }) => {
 
   return (
     <div
-      className={`rounded-lg border bg-background p-5 ${
-        accepted ? "border-primary" : "border-border"
+      ref={highlightRef}
+      className={`rounded-lg border bg-background p-5 transition-colors ${
+        isTarget ? "border-primary ring-2 ring-primary" : accepted ? "border-primary" : "border-border"
       }`}
     >
       {accepted && (
