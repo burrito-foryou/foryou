@@ -43,8 +43,8 @@ const HomePage = () => {
     <div>
       {/* Hero */}
       <div className="px-4 py-20">
-        <div className="app-container grid items-center gap-12 md:grid-cols-2">
-          <div>
+        <div className="app-container max-w-[1040px] grid items-center gap-12 md:grid-cols-2">
+          <div className="mt-6">
             <h1 className="mb-4 text-4xl font-black leading-tight text-text sm:text-5xl">
               고민은 짧게,
               <br />
@@ -133,7 +133,7 @@ const HomePage = () => {
       </div>
 
       {/* 특징 카드 */}
-      <div className="app-container px-4 py-16">
+      <div className="app-container max-w-[1040px] px-4 py-16">
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
           {FEATURES.map(({ icon: Icon, title, description }) => (
             <div key={title} className="card p-7">

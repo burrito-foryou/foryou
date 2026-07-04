@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { FiImage } from "react-icons/fi";
+import { FiCamera } from "react-icons/fi";
 
 const ProfileImageSection = ({
   member,
@@ -23,7 +23,7 @@ const ProfileImageSection = ({
   }, []);
 
   return (
-    <div className="mb-4 rounded-xl border border-gray-200 bg-white p-6 flex flex-col items-center gap-3">
+    <div className="relative shrink-0" ref={menuRef}>
       <input
         ref={fileInputRef}
         type="file"
@@ -32,61 +32,54 @@ const ProfileImageSection = ({
         onChange={onImageChange}
       />
 
-      <div className="relative" ref={menuRef}>
-        <button
-          className="group relative"
-          onClick={() => setMenuOpen((v) => !v)}
-          disabled={imageLoading}
-        >
-          {member.profileImageUrl ? (
-            <img
-              src={member.profileImageUrl}
-              alt="프로필 이미지"
-              className="h-24 w-24 rounded-full object-cover"
-            />
-          ) : (
-            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary-light text-3xl font-bold text-primary">
-              {imageLoading ? "..." : member.nickname.charAt(0)}
-            </div>
-          )}
-          <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
-            <FiImage size={22} className="text-white" />
+      <button
+        className="group relative block"
+        onClick={() => setMenuOpen((v) => !v)}
+        disabled={imageLoading}
+      >
+        {member.profileImageUrl ? (
+          <img
+            src={member.profileImageUrl}
+            alt="프로필 이미지"
+            className="h-24 w-24 rounded-full object-cover transition-opacity group-hover:opacity-80"
+          />
+        ) : (
+          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary-light text-3xl font-black text-primary transition-opacity group-hover:opacity-80">
+            {imageLoading ? "..." : member.nickname.charAt(0)}
           </div>
-          <div className="absolute bottom-0 right-0 flex h-7 w-7 items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm">
-            <FiImage size={13} className="text-text-muted" />
-          </div>
-        </button>
+        )}
+        <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+          <FiCamera size={20} className="text-white" />
+        </div>
+        <span className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-soft transition-transform group-hover:scale-110">
+          <FiCamera size={15} />
+        </span>
+      </button>
 
-        {menuOpen && (
-          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-44 rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden z-10">
+      {menuOpen && (
+        <div className="absolute left-1/2 top-full z-10 mt-2 w-44 -translate-x-1/2 overflow-hidden rounded-2xl border border-border bg-background shadow-soft">
+          <button
+            onClick={() => {
+              setMenuOpen(false);
+              onImageClick();
+            }}
+            className="w-full px-4 py-3 text-left text-sm font-bold text-text transition-colors hover:bg-surface"
+          >
+            사진 변경
+          </button>
+          {member.profileImageUrl && (
             <button
               onClick={() => {
                 setMenuOpen(false);
-                onImageClick();
+                onImageReset();
               }}
-              className="w-full px-4 py-3 text-left text-sm text-text hover:bg-gray-50 transition-colors"
+              className="w-full border-t border-border px-4 py-3 text-left text-sm font-bold text-error transition-colors hover:bg-surface"
             >
-              사진 변경
+              기본 이미지로 변경
             </button>
-            {member.profileImageUrl && (
-              <button
-                onClick={() => {
-                  setMenuOpen(false);
-                  onImageReset();
-                }}
-                className="w-full px-4 py-3 text-left text-sm text-error hover:bg-gray-50 transition-colors border-t border-gray-100"
-              >
-                기본 이미지로 변경
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-
-      <div className="text-center">
-        <p className="text-base font-bold text-text">{member.nickname}</p>
-        <p className="mt-1 text-sm text-text-muted">{member.email}</p>
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -6,19 +6,19 @@ export const getMyInfo = () =>
 export const getMyQuestions = (page = 0, size = 20) =>
   instance
     .get("/my/questions", { params: { page, size } })
-    .then((res) => res.data.data.content);
+    .then((res) => res.data.data);
 
 export const getMyAnswers = (page = 0, size = 20) =>
   instance
     .get("/my/answers", { params: { page, size } })
-    .then((res) => res.data.data.content);
+    .then((res) => res.data.data);
 
 export const getMyComments = (page = 0, size = 20) =>
   instance
     .get("/my/comments", { params: { page, size } })
-    .then((res) => res.data.data.content);
+    .then((res) => res.data.data);
 
 export const getMyBookmarks = (page = 0, size = 20) =>
   instance
     .get("/my/bookmarks", { params: { page, size } })
-    .then((res) => res.data.data.content);
+    .then((res) => res.data.data);
