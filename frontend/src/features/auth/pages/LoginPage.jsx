@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { RiKakaoTalkFill } from "react-icons/ri";
 import { FiEye, FiEyeOff } from "react-icons/fi";
@@ -10,8 +10,10 @@ import useAuthStore from "../store/authStore";
 
 const LoginPage = () => {
   const token = useAuthStore((s) => s.token);
+  const location = useLocation();
   const { form, errors, handleChange, handleSubmit } = useLoginForm();
   const [showPassword, setShowPassword] = useState(false);
+  const oauthError = location.state?.oauthError;
 
   // 이미 로그인된 경우 홈으로 redirect
   if (token) return <Navigate to={ROUTES.HOME} replace />;
@@ -27,6 +29,12 @@ const LoginPage = () => {
             선물 고민, 이어서 해결해 볼까요?
           </p>
         </div>
+
+        {oauthError && (
+          <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-center text-sm font-semibold text-red-500">
+            {oauthError}
+          </div>
+        )}
 
         <div className="mb-6 flex flex-col gap-3">
           <button
