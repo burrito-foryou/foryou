@@ -94,8 +94,8 @@ public class NotificationController {
     )
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe(@AuthenticationPrincipal AuthMember member) {
-        return notificationSseService.subscribe(member.memberId());
+    public SseEmitter subscribe(@AuthenticationPrincipal AuthMember member, @RequestParam String tabId) {
+        return notificationSseService.subscribe(member.memberId(), tabId);
     }
 
 }

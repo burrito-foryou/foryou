@@ -18,18 +18,20 @@ public class NotificationSseService {
     private final EmitterRepository emitterRepository;
 
     // 1. 클라이언트 SSE 연결 생성
-    public SseEmitter subscribe(Long receiverId) {
+    public SseEmitter subscribe(Long receiverId, String tabId) {
+        String key = receiverId.toString() + ":" + tabId;
+
         // 1) SSE 연결 객체 생성
         SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
         // 2) 생성한 emitter Map에 저장
-        emitterRepository.save(receiverId, emitter);
+        emitterRepository.save(key, emitter);
 
         // 3) 연결 종료 시 자동 삭제
-        emitter.onCompletion(() -> emitterRepository.deleteIfSame(receiverId, emitter));
+        emitter.onCompletion(() -> emitterRepository.deleteIfSame(key, emitter));
         // 4) timeout 발생 시 삭제
-        emitter.onTimeout(() -> emitterRepository.deleteIfSame(receiverId, emitter));
+        emitter.onTimeout(() -> emitterRepository.deleteIfSame(key, emitter));
         // 5) 에러 발생 시 삭제
-        emitter.onError(e -> emitterRepository.deleteIfSame(receiverId, emitter));
+        emitter.onError(e -> emitterRepository.deleteIfSame(key, emitter));
 
         sendToClient(receiverId, Map.of("status", "connected"));
 
@@ -45,8 +47,8 @@ public class NotificationSseService {
     // 3. 실제 SSE 전송 로직
     private void sendToClient(Long receiverId, Object data) {
         // 1) 연결된 emitter 찾기
-        emitterRepository.findById(receiverId)
-                .ifPresent(emitter -> {
+        emitterRepository.findAllByReceiverId(receiverId)
+                .forEach((key, emitter) -> {
                     try {
                         // 2) 실제 HTTP 스트림으로 데이터 전송
                         emitter.send(SseEmitter.event()
@@ -55,8 +57,8 @@ public class NotificationSseService {
                         );
                     } catch (Exception e) {
                         // 3) 전송 실패 - 연결 제거
-                        log.warn("SSE 전송 실패, emitter 제거. receiverId={}", receiverId);
-                        emitterRepository.deleteById(receiverId);
+                        log.warn("SSE 전송 실패, emitter 제거. key={}", key);
+                        emitter.completeWithError(e);
                     }
                 });
     }
