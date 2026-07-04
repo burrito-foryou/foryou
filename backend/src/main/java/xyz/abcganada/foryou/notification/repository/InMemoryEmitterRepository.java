@@ -25,6 +25,12 @@ public class InMemoryEmitterRepository implements EmitterRepository {
         return Optional.ofNullable(emitters.get(receiverId));
     }
 
+    // 전체 연결 조회
+    @Override
+    public Map<Long, SseEmitter> findAll() {
+        return emitters;
+    }
+
     // 연결 제거
     @Override
     public void deleteById(Long receiverId) {
@@ -35,4 +41,5 @@ public class InMemoryEmitterRepository implements EmitterRepository {
     public void deleteIfSame(Long receiverId, SseEmitter emitter) {
         emitters.remove(receiverId, emitter); // onCompletion의 Emitter와 Map에 등록된 옛 Emitter와 동일할 때만 제거
     }
+
 }
