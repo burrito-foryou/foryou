@@ -1,5 +1,8 @@
 package xyz.abcganada.foryou.answer.rest.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,12 +21,14 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Answer", description = "답변 관련 API")
 public class AnswerController {
 
     private final AnswerService answerService;
     private final AnswerFacade answerFacade;
 
     // WBS0404: 답변 목록 조회
+    @Operation(summary = "답변 목록 조회", description = "질문에 달린 답변 목록을 조회한다.")
     @GetMapping("/api/questions/{questionId}/answers")
     public ResponseEntity<ApiResponse<List<AnswerResponse>>> getAnswers(
             @PathVariable Long questionId) {
@@ -32,6 +37,8 @@ public class AnswerController {
     }
 
     // WBS0405: 답변 수정
+    @Operation(summary = "답변 수정", description = "본인이 작성한 답변을 수정한다.")
+    @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/api/answers/{answerId}")
     public ResponseEntity<ApiResponse<AnswerResponse>> updateAnswer(
             @PathVariable Long answerId,
@@ -42,6 +49,8 @@ public class AnswerController {
     }
 
     // WBS0407/0408: 답변 채택
+    @Operation(summary = "답변 채택", description = "질문 작성자가 답변을 채택 처리한다.")
+    @SecurityRequirement(name = "bearerAuth")
     @PatchMapping("/api/answers/{answerId}/accept")
     public ResponseEntity<ApiResponse<Void>> acceptAnswer(
             @PathVariable Long answerId,
@@ -51,6 +60,8 @@ public class AnswerController {
     }
 
     // WBS0406: 답변 삭제
+    @Operation(summary = "답변 삭제", description = "본인이 작성한 답변을 삭제한다.")
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/api/answers/{answerId}")
     public ResponseEntity<Void> deleteAnswer(
             @PathVariable Long answerId,
@@ -60,6 +71,8 @@ public class AnswerController {
     }
 
     // WBS0403: 답변 등록
+    @Operation(summary = "답변 등록", description = "질문에 답변을 등록한다.")
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/api/questions/{questionId}/answers")
     public ResponseEntity<ApiResponse<AnswerResponse>> createAnswer(
             @PathVariable Long questionId,

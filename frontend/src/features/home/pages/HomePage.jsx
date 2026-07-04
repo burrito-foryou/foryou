@@ -24,12 +24,6 @@ const HomePage = () => {
     <div>
       {/* Hero */}
       <div className="bg-gradient-to-b from-primary/10 to-transparent px-4 py-24 text-center">
-        {/* 뱃지 */}
-        <div className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
-          <span>✦</span>
-          <span>선물 고민 커뮤니티</span>
-        </div>
-
         {/* 제목 */}
         <h1 className="mb-4 text-4xl font-bold leading-tight text-text sm:text-5xl">
           고민은 짧게,{" "}

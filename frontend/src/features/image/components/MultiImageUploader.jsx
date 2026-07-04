@@ -1,9 +1,20 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const MAX_COUNT = 5;
 
-const MultiImageUploader = ({ onUpload, onDelete, maxSize = 5, maxCount = MAX_COUNT }) => {
-  const [previews, setPreviews] = useState([]);
+const MultiImageUploader = ({ onUpload, onDelete, maxSize = 5, maxCount = MAX_COUNT, initialImages = [] }) => {
+    const [previews, setPreviews] = useState([]);
+  useEffect(() => {
+    if (initialImages.length > 0) {
+      setPreviews(
+          initialImages.map((img) => ({
+            url: img.imageUrl,
+            name: String(img.id),
+            existingId: img.id,
+          }))
+      );
+    }
+  }, [initialImages]);
   const [error, setError] = useState(null);
   const inputRef = useRef(null);
 
@@ -45,9 +56,9 @@ const MultiImageUploader = ({ onUpload, onDelete, maxSize = 5, maxCount = MAX_CO
 
   const handleDelete = (index) => {
     const target = previews[index];
-    URL.revokeObjectURL(target.url);
+    if (!target.existingId) URL.revokeObjectURL(target.url);
     setPreviews((prev) => prev.filter((_, i) => i !== index));
-    onDelete?.(index, target.file);
+    onDelete?.(index, target.file ?? null, target.existingId ?? null);
   };
 
   return (

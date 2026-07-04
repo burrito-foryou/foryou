@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import xyz.abcganada.foryou.question.domain.Question;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Getter
@@ -23,8 +23,8 @@ public class QuestionResponse {
     private long answerCount;
     private Long acceptedAnswerId;
     private List<String> tagNames;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
     private boolean isBookmarked;
 
     public static QuestionResponse from(Question question) {

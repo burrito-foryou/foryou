@@ -5,7 +5,7 @@ import xyz.abcganada.foryou.notification.domain.Notification;
 import xyz.abcganada.foryou.notification.domain.NotificationType;
 import xyz.abcganada.foryou.notification.domain.TargetType;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record NotificationResponse(
         Long id,
@@ -16,7 +16,7 @@ public record NotificationResponse(
         Long questionId,
         String content,
         boolean isRead,
-        LocalDateTime createdAt
+        Instant createdAt
 ) {
     // static 메서드 - Entity -> Response DTO 변환
     public static NotificationResponse from(Notification notification) {
