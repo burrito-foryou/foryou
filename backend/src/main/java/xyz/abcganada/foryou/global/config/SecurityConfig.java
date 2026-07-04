@@ -52,6 +52,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/login/*", "/api/auth/reissue").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/questions", "/api/questions/*", "/api/questions/*/answers").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/questions/*/view").permitAll() // 조회수 증가 — 비로그인 사용자도 허용
                 .requestMatchers(HttpMethod.GET, "/api/answers/*/comments").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/tags").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/images/*/*").permitAll()
