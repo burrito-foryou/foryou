@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FiChevronDown } from "react-icons/fi";
+import { FiChevronDown, FiLogOut, FiSettings, FiUser } from "react-icons/fi";
 import { ROUTES } from "../constants/routes";
 import useAuthStore from "../../features/auth/store/authStore";
 import { logout } from "../../features/auth/api/authApi";
@@ -8,8 +8,8 @@ import { getMyInfo } from "../../features/user/api/memberApi";
 import LogoutConfirmModal from "./LogoutConfirmModal";
 
 const DROPDOWN_MENU = [
-  { label: "마이페이지", to: ROUTES.MY_PAGE },
-  { label: "계정 정보", to: ROUTES.MY_ACCOUNT },
+  { label: "마이페이지", to: ROUTES.MY_PAGE, icon: FiUser },
+  { label: "계정 정보", to: ROUTES.MY_ACCOUNT, icon: FiSettings },
 ];
 
 const HeaderUserMenu = () => {
@@ -111,14 +111,15 @@ const HeaderUserMenu = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-40 rounded-2xl border border-border bg-background p-1.5 shadow-soft">
-          {DROPDOWN_MENU.map(({ label, to }) => (
+        <div className="absolute right-0 top-full mt-2 w-44 rounded-2xl border border-border bg-background p-1.5 shadow-soft">
+          {DROPDOWN_MENU.map(({ label, to, icon: Icon }) => (
             <Link
               key={label}
               to={to}
               onClick={() => setIsOpen(false)}
-              className="block rounded-xl px-4 py-2.5 text-sm font-medium text-text hover:bg-surface transition-colors"
+              className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-sm font-bold text-text transition-colors hover:bg-surface"
             >
+              <Icon size={16} className="text-text-muted" />
               {label}
             </Link>
           ))}
@@ -128,8 +129,9 @@ const HeaderUserMenu = () => {
               setIsOpen(false);
               setIsLogoutModalOpen(true);
             }}
-            className="w-full rounded-xl px-4 py-2.5 text-left text-sm font-medium text-red-400 hover:bg-surface transition-colors"
+            className="flex w-full items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm font-bold text-error transition-colors hover:bg-surface"
           >
+            <FiLogOut size={16} />
             로그아웃
           </button>
         </div>

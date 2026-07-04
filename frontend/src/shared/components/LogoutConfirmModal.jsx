@@ -1,30 +1,44 @@
-const LogoutConfirmModal = ({ onConfirm, onClose }) => (
-  <div
-    className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-    onClick={onClose}
-  >
+import { createPortal } from "react-dom";
+import { FiLogOut } from "react-icons/fi";
+
+const LogoutConfirmModal = ({ onConfirm, onClose }) =>
+  createPortal(
     <div
-      className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl"
-      onClick={(e) => e.stopPropagation()}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+      onClick={onClose}
     >
-      <h2 className="mb-4 text-base font-bold text-text">로그아웃</h2>
-      <p className="text-sm text-text-muted">로그아웃 하시겠습니까?</p>
-      <div className="mt-4 flex justify-end gap-2">
-        <button
-          onClick={onClose}
-          className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-text-muted hover:bg-gray-50 transition-colors"
-        >
-          취소
-        </button>
-        <button
-          onClick={onConfirm}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary-hover transition-colors"
-        >
-          로그아웃
-        </button>
+      <div
+        className="card w-full max-w-sm p-7 shadow-soft"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-light text-primary">
+          <FiLogOut size={22} />
+        </span>
+
+        <h2 className="mb-1.5 text-lg font-black text-text">
+          로그아웃 할까요?
+        </h2>
+        <p className="text-sm leading-relaxed text-text-muted">
+          다시 로그인하면 언제든 이어서 고민할 수 있어요.
+        </p>
+
+        <div className="mt-6 flex justify-end gap-2">
+          <button
+            onClick={onClose}
+            className="rounded-full px-5 py-2.5 text-sm font-bold text-text-muted transition-colors hover:bg-surface hover:text-text"
+          >
+            취소
+          </button>
+          <button
+            onClick={onConfirm}
+            className="rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-primary-hover"
+          >
+            로그아웃
+          </button>
+        </div>
       </div>
-    </div>
-  </div>
-);
+    </div>,
+    document.body,
+  );
 
 export default LogoutConfirmModal;

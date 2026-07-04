@@ -24,7 +24,8 @@ const useAccount = () => {
   const [imageLoading, setImageLoading] = useState(false);
   const fileInputRef = useRef(null);
   const { toast, showToast } = useToast();
-  const setNickname = useAuthStore((state) => state.setNickname);
+  const setMemberInfo = useAuthStore((state) => state.setMemberInfo);
+  const setProfileImageUrl = useAuthStore((state) => state.setProfileImageUrl);
   const clearAuth = useAuthStore((state) => state.clearAuth);
 
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
@@ -32,9 +33,12 @@ const useAccount = () => {
 
   useEffect(() => {
     getMyInfo()
-      .then(setMember)
+      .then((member) => {
+        setMember(member);
+        setMemberInfo(member);
+      })
       .finally(() => setLoading(false));
-  }, []);
+  }, [setMemberInfo]);
 
   const handleNicknameEdit = () => {
     setNicknameInput(member.nickname);
@@ -65,7 +69,7 @@ const useAccount = () => {
     try {
       const updated = await updateNickname(trimmed);
       setMember(updated);
-      setNickname(trimmed);
+      setMemberInfo(updated);
       setEditingNickname(false);
       showToast("닉네임이 변경되었습니다.");
     } catch (err) {
@@ -85,6 +89,7 @@ const useAccount = () => {
     try {
       const updated = await resetProfileImage();
       setMember(updated);
+      setProfileImageUrl(updated.profileImageUrl ?? null);
       showToast("기본 이미지로 변경되었습니다.");
     } catch {
       showToast("이미지 초기화에 실패했습니다.", "error");
@@ -100,6 +105,7 @@ const useAccount = () => {
     try {
       const result = await updateProfileImage(file);
       setMember((prev) => ({ ...prev, profileImageUrl: result.imageUrl }));
+      setProfileImageUrl(result.imageUrl);
       showToast("프로필 이미지가 변경되었습니다.");
     } catch {
       showToast("이미지 업로드에 실패했습니다.", "error");
