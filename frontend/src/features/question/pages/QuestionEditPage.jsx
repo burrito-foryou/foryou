@@ -33,6 +33,7 @@ const QuestionEditPage = () => {
   const [existingImages, setExistingImages] = useState([]);
   const [deletedImageIds, setDeletedImageIds] = useState([]);
   const [pendingFiles, setPendingFiles] = useState([]);
+  const [question, setQuestion] = useState(null);
   // 기존 질문 데이터 + 전체 태그 목록 동시 조회
   useEffect(() => {
     const init = async () => {
@@ -43,6 +44,7 @@ const QuestionEditPage = () => {
           getQuestionImages(id),
         ]);
         setExistingImages(images ?? []);
+        setQuestion(question);
         // 기존 데이터로 폼 초기값 세팅
         setTitle(question.title);
         setContent(question.content);
@@ -82,6 +84,12 @@ const QuestionEditPage = () => {
       }
     }
   };
+  // 채택된 질문이면 수정 페이지 접근 차단 — 상세 페이지로 리다이렉트
+  useEffect(() => {
+    if (!initLoading && question?.acceptedAnswerId) {
+      navigate(toQuestionDetail(id), { replace: true });
+    }
+  }, [initLoading, question]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -13,6 +13,7 @@ import {
   getQuestionDetail,
   deleteQuestion,
   getQuestionImages,
+  incrementViewCount,
 } from "../api/questionApi";
 import { getBookmarkStatus } from "../api/bookmarkApi";
 import useMemberId from "../hooks/useMemberId";
@@ -62,6 +63,14 @@ const QuestionDetailPage = () => {
           getQuestionImages(id),
         ]);
         setQuestion(data);
+        // 세션 내 첫 방문일 때만 조회수 증가
+        const sessionKey = `viewed_${id}`;
+        if (!sessionStorage.getItem(sessionKey)) {
+          await incrementViewCount(id);
+          sessionStorage.setItem(sessionKey, "1");
+          // 로컬 state 즉시 반영
+          setQuestion((prev) => ({ ...prev, viewCount: prev.viewCount + 1 }));
+        }
         setImages(imgs);
         // 북마크 상태 초기화 (로그인 시에만)
         if (memberId) {
@@ -129,8 +138,17 @@ const QuestionDetailPage = () => {
         {isAuthor && (
           <div className="flex gap-2">
             <button
-              onClick={() => navigate(`/questions/${id}/edit`)}
-              className="flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-sm text-text-muted transition-colors hover:border-primary hover:text-primary"
+                onClick={() => {
+                  if (question.acceptedAnswerId) return;
+                  navigate(`/questions/${id}/edit`);
+                }}
+                disabled={!!question.acceptedAnswerId}
+                className={`flex items-center gap-1 rounded-lg border px-3 py-1.5 text-sm transition-colors ${
+                    question.acceptedAnswerId
+                        ? "border-border text-text-muted opacity-40 cursor-not-allowed"
+                        : "border-border text-text-muted hover:border-primary hover:text-primary"
+                }`}
+                title={question.acceptedAnswerId ? "채택된 질문은 수정할 수 없습니다" : ""}
             >
               <FiEdit2 size={14} /> 수정
             </button>

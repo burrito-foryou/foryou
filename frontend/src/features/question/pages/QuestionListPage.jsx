@@ -44,6 +44,7 @@ const QuestionListPage = () => {
     removeFilter,
     applyFilters,
     loading,
+    tagSearch,
   } = useQuestionList();
   const [showFilter, setShowFilter] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
@@ -191,7 +192,11 @@ const QuestionListPage = () => {
           <p className="text-center text-sm text-text-muted py-10">불러오는 중...</p>
       ) : displayList.length === 0 ? (
           <p className="text-center text-sm text-text-muted py-10">
-            {keyword ? `"${keyword}" 검색 결과가 없습니다.` : "등록된 질문이 없습니다."}
+            {tagSearch
+                ? `"#${tagSearch}" 태그 검색 결과가 없습니다.`
+                : keyword
+                    ? `"${keyword}" 검색 결과가 없습니다.`
+                    : "등록된 질문이 없습니다."}
           </p>
       ) : (
           <div className="flex flex-col gap-4">
