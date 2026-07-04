@@ -21,3 +21,11 @@ image:
     path: /tmp/foryou/images
     url-prefix: http://localhost:8080/images
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
