@@ -21,3 +21,21 @@ image:
     path: /tmp/foryou/images
     url-prefix: http://localhost:8080/images
 
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+

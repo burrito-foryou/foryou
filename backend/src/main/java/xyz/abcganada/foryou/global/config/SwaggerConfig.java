@@ -2,7 +2,7 @@ package xyz.abcganada.foryou.global.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,14 +15,15 @@ public class SwaggerConfig {
         SecurityScheme securityScheme = new SecurityScheme()
             .type(SecurityScheme.Type.HTTP)
             .scheme("bearer")
-            .bearerFormat("JWT")
-            .in(SecurityScheme.In.HEADER)
-            .name("Authorization");
+            .bearerFormat("JWT");
 
-        SecurityRequirement securityRequirement = new SecurityRequirement().addList("bearerAuth");
+        Info info = new Info()
+            .title("ForYou API")
+            .description("ForYou 서비스 API 명세")
+            .version("v1");
 
         return new OpenAPI()
-            .components(new Components().addSecuritySchemes("bearerAuth", securityScheme))
-            .addSecurityItem(securityRequirement);
+            .info(info)
+            .components(new Components().addSecuritySchemes("bearerAuth", securityScheme));
     }
 }
