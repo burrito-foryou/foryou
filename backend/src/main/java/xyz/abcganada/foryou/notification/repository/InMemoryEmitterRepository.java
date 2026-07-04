@@ -30,4 +30,9 @@ public class InMemoryEmitterRepository implements EmitterRepository {
     public void deleteById(Long receiverId) {
         emitters.remove(receiverId);
     }
+
+    @Override
+    public void deleteIfSame(Long receiverId, SseEmitter emitter) {
+        emitters.remove(receiverId, emitter); // onCompletion의 Emitter와 Map에 등록된 옛 Emitter와 동일할 때만 제거
+    }
 }

@@ -3,7 +3,7 @@ package xyz.abcganada.foryou.answer.rest.response;
 import xyz.abcganada.foryou.answer.domain.Answer;
 import xyz.abcganada.foryou.question.domain.Question;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record AnswerMyResponse(
     Long id,
@@ -14,7 +14,7 @@ public record AnswerMyResponse(
     String content,
     Long likeCount,
     boolean accepted,
-    LocalDateTime createdAt
+    Instant createdAt
 ) {
     public static AnswerMyResponse from(Answer answer, Question question) {
         return new AnswerMyResponse(

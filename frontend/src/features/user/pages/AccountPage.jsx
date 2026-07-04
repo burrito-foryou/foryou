@@ -1,6 +1,7 @@
 import useAccount from "../hooks/useAccount";
 import ProfileImageSection from "../components/ProfileImageSection";
 import NicknameEditModal from "../components/NicknameEditModal";
+import WithdrawConfirmModal from "../components/WithdrawConfirmModal";
 import Toast from "../../../shared/components/Toast";
 
 const PROVIDER_LABEL = {
@@ -27,6 +28,11 @@ const AccountPage = () => {
     handleImageClick,
     handleImageChange,
     handleImageReset,
+    isWithdrawModalOpen,
+    withdrawLoading,
+    handleWithdrawOpen,
+    handleWithdrawClose,
+    handleWithdrawConfirm,
   } = useAccount();
 
   if (loading) {
@@ -95,6 +101,25 @@ const AccountPage = () => {
         </div>
       </div>
 
+      {/* 위험 구역 */}
+      <div className="mt-4 rounded-xl border border-gray-200 bg-white px-6 py-5">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold text-text">회원 탈퇴</p>
+            <p className="mt-1 text-xs text-text-muted">
+              탈퇴 시 작성한 질문, 답변, 댓글 등 모든 활동 내역이 삭제되며
+              복구할 수 없습니다.
+            </p>
+          </div>
+          <button
+            onClick={handleWithdrawOpen}
+            className="shrink-0 text-xs font-medium text-red-400 hover:text-red-500 hover:underline"
+          >
+            탈퇴하기
+          </button>
+        </div>
+      </div>
+
       <Toast toast={toast} />
 
       {editingNickname && (
@@ -105,6 +130,14 @@ const AccountPage = () => {
           onChange={setNicknameInput}
           onSave={handleNicknameSave}
           onClose={handleNicknameCancel}
+        />
+      )}
+
+      {isWithdrawModalOpen && (
+        <WithdrawConfirmModal
+          loading={withdrawLoading}
+          onConfirm={handleWithdrawConfirm}
+          onClose={handleWithdrawClose}
         />
       )}
     </div>

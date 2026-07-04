@@ -1,5 +1,8 @@
 package xyz.abcganada.foryou.image.rest.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,12 +21,15 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/images")
+@Tag(name = "Image", description = "이미지 업로드/조회 관련 API")
 public class ImageController {
 
     private final ImageFacade imageFacade;
     private final ImageService imageService;
 
     // 질문 이미지 업로드
+    @Operation(summary = "질문 이미지 업로드", description = "질문에 이미지를 업로드한다.")
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping(value = "/questions/{questionId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ImageResponse>> uploadQuestionImage(
             @PathVariable Long questionId,
@@ -34,6 +40,8 @@ public class ImageController {
     }
 
     // 답변 이미지 업로드
+    @Operation(summary = "답변 이미지 업로드", description = "답변에 이미지를 업로드한다.")
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping(value = "/answers/{answerId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ImageResponse>> uploadAnswerImage(
             @PathVariable Long answerId,
@@ -44,6 +52,8 @@ public class ImageController {
     }
 
     // 프로필 이미지 업로드 (기존 이미지 교체)
+    @Operation(summary = "프로필 이미지 업로드", description = "로그인한 회원의 프로필 이미지를 업로드(기존 이미지는 교체)한다.")
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ImageResponse>> uploadProfileImage(
             @RequestParam("file") MultipartFile file,
@@ -53,6 +63,7 @@ public class ImageController {
     }
 
     // 이미지 조회
+    @Operation(summary = "이미지 목록 조회", description = "대상 타입/ID에 연결된 이미지 목록을 조회한다.")
     @GetMapping("/{targetType}/{targetId}")
     public ResponseEntity<ApiResponse<List<ImageResponse>>> getImages(
             @PathVariable ImageTargetType targetType,
@@ -62,6 +73,8 @@ public class ImageController {
     }
 
     // 이미지 단건 삭제
+    @Operation(summary = "이미지 삭제", description = "이미지를 단건 삭제한다.")
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{imageId}")
     public ResponseEntity<ApiResponse<Void>> deleteImage(
             @PathVariable Long imageId,

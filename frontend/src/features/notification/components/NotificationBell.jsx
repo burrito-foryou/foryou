@@ -29,7 +29,7 @@ const NotificationBell = () => {
         onClick={() => setIsOpen((prev) => !prev)}
         className="relative rounded-md p-1.5 transition-colors hover:bg-surface"
       >
-        <FiBell size={20} className="text-gray-600" />
+        <FiBell size={21} className="text-gray-600" />
         <NotificationBadge count={notificationData.unreadCount} />
       </button>
 

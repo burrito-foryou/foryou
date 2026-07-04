@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import xyz.abcganada.foryou.answer.domain.Answer;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @Builder
@@ -21,8 +21,8 @@ public class AnswerResponse {
     private String content;
     private Long likeCount;
     private boolean accepted;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 
     public static AnswerResponse from(Answer answer) {
         return AnswerResponse.builder()

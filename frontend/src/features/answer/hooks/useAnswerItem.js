@@ -52,7 +52,6 @@ const useAnswerItem = (answer, onSuccess, questionMemberId) => {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("답변을 삭제하시겠습니까?")) return;
     if (!memberId) return;
     try {
       await deleteAnswer(answer.id);
@@ -63,7 +62,6 @@ const useAnswerItem = (answer, onSuccess, questionMemberId) => {
   };
 
   const handleAccept = async () => {
-    if (!window.confirm("이 답변을 채택하시겠습니까?")) return;
     if (!memberId) return;
     try {
       await acceptAnswer(answer.id);

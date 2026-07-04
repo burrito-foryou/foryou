@@ -16,6 +16,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 class MemberServiceTest extends ServiceTest {
 
@@ -106,6 +107,36 @@ class MemberServiceTest extends ServiceTest {
 
         // when & then
         assertThatThrownBy(() -> memberService.updateMemberNickname(MemberFixture.MEMBER_ID, request))
+            .isInstanceOfSatisfying(BusinessException.class, exception ->
+                assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.MEMBER_NOT_FOUND)
+            );
+    }
+
+    @Test
+    @DisplayName("회원 ID로 회원을 탈퇴 처리한다")
+    void withdraw() {
+        // given
+        Member member = MemberFixture.member();
+
+        given(memberRepository.findById(MemberFixture.MEMBER_ID))
+            .willReturn(Optional.of(member));
+
+        // when
+        memberService.withdraw(MemberFixture.MEMBER_ID);
+
+        // then
+        then(memberRepository).should().delete(member);
+    }
+
+    @Test
+    @DisplayName("회원 ID에 해당하는 회원이 없으면 탈퇴에 실패한다")
+    void withdrawWithUnknownMember() {
+        // given
+        given(memberRepository.findById(MemberFixture.MEMBER_ID))
+            .willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> memberService.withdraw(MemberFixture.MEMBER_ID))
             .isInstanceOfSatisfying(BusinessException.class, exception ->
                 assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.MEMBER_NOT_FOUND)
             );
