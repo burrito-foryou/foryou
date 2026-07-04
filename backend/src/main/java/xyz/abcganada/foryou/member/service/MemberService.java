@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.abcganada.foryou.global.exception.BusinessException;
 import xyz.abcganada.foryou.global.exception.ErrorCode;
+import xyz.abcganada.foryou.image.domain.ImageTargetType;
+import xyz.abcganada.foryou.image.service.ImageService;
 import xyz.abcganada.foryou.member.domain.Member;
 import xyz.abcganada.foryou.member.repository.MemberRepository;
 import xyz.abcganada.foryou.member.rest.request.MemberUpdateRequest;
@@ -18,6 +20,7 @@ import xyz.abcganada.foryou.member.rest.response.MemberInfoResponse;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final ImageService imageService;
 
     @Transactional(readOnly = true)
     public MemberInfoResponse getMemberInfo(Long memberId) {
@@ -42,6 +45,14 @@ public class MemberService {
         member.updateProfileImageUrl(imageUrl);
     }
 
+    public MemberInfoResponse resetProfileImage(Long memberId) {
+        log.info("[Member] 프로필 이미지 초기화 - memberId: {}", memberId);
+        Member member = getMemberById(memberId);
+        imageService.deleteAll(ImageTargetType.MEMBER, memberId);
+        member.updateProfileImageUrl(null);
+        return MemberInfoResponse.from(member);
+    }
+  
     public void withdraw(Long memberId) {
         log.info("[Member] 회원 탈퇴 요청 - memberId: {}", memberId);
         Member member = getMemberById(memberId);

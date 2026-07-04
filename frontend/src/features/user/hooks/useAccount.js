@@ -4,6 +4,7 @@ import {
   getMyInfo,
   updateNickname,
   updateProfileImage,
+  resetProfileImage,
   withdrawMember,
 } from "../api/memberApi";
 import useToast from "../../../shared/hooks/useToast";
@@ -79,6 +80,19 @@ const useAccount = () => {
     fileInputRef.current?.click();
   };
 
+  const handleImageReset = async () => {
+    setImageLoading(true);
+    try {
+      const updated = await resetProfileImage();
+      setMember(updated);
+      showToast("기본 이미지로 변경되었습니다.");
+    } catch {
+      showToast("이미지 초기화에 실패했습니다.", "error");
+    } finally {
+      setImageLoading(false);
+    }
+  };
+
   const handleImageChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -126,6 +140,7 @@ const useAccount = () => {
     handleNicknameSave,
     handleImageClick,
     handleImageChange,
+    handleImageReset,
     isWithdrawModalOpen,
     withdrawLoading,
     handleWithdrawOpen,

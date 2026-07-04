@@ -54,6 +54,18 @@ public class MemberProfileController {
             .body(ApiResponse.success(response, "사용자 정보가 수정되었습니다."));
     }
 
+    @DeleteMapping("/profile-image")
+    public ResponseEntity<ApiResponse<MemberInfoResponse>> resetProfileImage(
+        @AuthenticationPrincipal AuthMember member
+    ) {
+        log.info("[Member] 프로필 이미지 초기화 요청 - memberId: {}", member.memberId());
+        MemberInfoResponse response = memberService.resetProfileImage(member.memberId());
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(ApiResponse.success(response, "프로필 이미지가 초기화되었습니다."));
+    }
+  
     @DeleteMapping
     public ResponseEntity<Void> withdraw(@AuthenticationPrincipal AuthMember member) {
         log.info("[Member] 회원 탈퇴 요청 - memberId: {}", member.memberId());

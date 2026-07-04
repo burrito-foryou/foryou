@@ -27,6 +27,7 @@ const AccountPage = () => {
     handleNicknameSave,
     handleImageClick,
     handleImageChange,
+    handleImageReset,
     isWithdrawModalOpen,
     withdrawLoading,
     handleWithdrawOpen,
@@ -60,6 +61,7 @@ const AccountPage = () => {
         fileInputRef={fileInputRef}
         onImageClick={handleImageClick}
         onImageChange={handleImageChange}
+        onImageReset={handleImageReset}
       />
 
       {/* 기본 정보 */}
