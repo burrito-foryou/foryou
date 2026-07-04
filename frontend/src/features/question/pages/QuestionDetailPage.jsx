@@ -28,6 +28,7 @@ const QuestionDetailPage = () => {
   const { toast, showToast } = useToast();
   const { isBookmarked, setIsBookmarked, toggle: toggleBookmark, loading: bookmarkLoading } = useBookmark(false, showToast);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [question, setQuestion] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -72,12 +73,11 @@ const QuestionDetailPage = () => {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("정말 삭제하시겠습니까?")) return;
     try {
       await deleteQuestion(id, memberId);
       navigate(ROUTES.QUESTIONS);
     } catch {
-      alert("삭제에 실패했습니다. 다시 시도해주세요.");
+      showToast("삭제에 실패했습니다. 다시 시도해주세요.");
     }
   };
 
@@ -117,8 +117,8 @@ const QuestionDetailPage = () => {
               <FiEdit2 size={14} /> 수정
             </button>
             <button
-              onClick={handleDelete}
-              className="flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-sm text-text-muted transition-colors hover:border-red-400 hover:text-red-500"
+                onClick={() => setShowDeleteModal(true)}
+                className="flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-sm text-text-muted transition-colors hover:border-red-400 hover:text-red-500"
             >
               <FiTrash2 size={14} /> 삭제
             </button>
@@ -220,6 +220,31 @@ const QuestionDetailPage = () => {
           onGoLogin={() => navigate(ROUTES.LOGIN)}
           onClose={() => setShowLoginModal(false)}
         />
+      )}
+      {showDeleteModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="w-full max-w-sm rounded-lg border border-border bg-background p-8 text-center shadow-lg">
+              <p className="mb-2 text-base font-bold text-text">질문을 삭제할까요?</p>
+              <p className="mb-6 text-sm text-text-muted">삭제한 질문은 복구할 수 없습니다.</p>
+              <div className="flex gap-3">
+                <button
+                    onClick={() => setShowDeleteModal(false)}
+                    className="flex-1 rounded-md border border-border py-2 text-sm text-text hover:bg-surface"
+                >
+                  취소
+                </button>
+                <button
+                    onClick={() => {
+                      setShowDeleteModal(false);
+                      handleDelete();
+                    }}
+                    className="flex-1 rounded-md bg-red-500 py-2 text-sm font-bold text-white hover:bg-red-600"
+                >
+                  삭제
+                </button>
+              </div>
+            </div>
+          </div>
       )}
     </div>
   );
