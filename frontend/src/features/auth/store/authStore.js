@@ -35,6 +35,7 @@ const useAuthStore = create((set) => ({
   nickname: isStoredTokenValid
     ? (decodeJwt(storedToken)?.nickname ?? null)
     : null,
+  profileImageUrl: null,
   expiresAt: isStoredTokenValid ? storedExpiresAt : null,
 
   setAuth: (token, refreshToken) => {
@@ -42,16 +43,28 @@ const useAuthStore = create((set) => ({
     const expiresAt = getExpiresAt(token);
     localStorage.setItem("token", token);
     localStorage.setItem("refreshToken", refreshToken);
-    set({ token, refreshToken, nickname, expiresAt });
+    set({ token, refreshToken, nickname, profileImageUrl: null, expiresAt });
   },
 
   clearAuth: () => {
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
-    set({ token: null, refreshToken: null, nickname: null, expiresAt: null });
+    set({
+      token: null,
+      refreshToken: null,
+      nickname: null,
+      profileImageUrl: null,
+      expiresAt: null,
+    });
   },
 
   setNickname: (nickname) => set({ nickname }),
+  setProfileImageUrl: (profileImageUrl) => set({ profileImageUrl }),
+  setMemberInfo: (member) =>
+    set({
+      nickname: member.nickname ?? null,
+      profileImageUrl: member.profileImageUrl ?? null,
+    }),
 }));
 
 export default useAuthStore;
