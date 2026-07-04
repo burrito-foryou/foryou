@@ -4,7 +4,7 @@ import xyz.abcganada.foryou.bookmark.domain.Bookmark;
 import xyz.abcganada.foryou.question.domain.Question;
 import xyz.abcganada.foryou.tag.Tag;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 public record BookmarkMyResponse(
@@ -12,7 +12,7 @@ public record BookmarkMyResponse(
     String title,
     List<String> tagNames,
     long answerCount,
-    LocalDateTime createdAt
+    Instant createdAt
 ) {
     public static BookmarkMyResponse from(Bookmark bookmark, Question question) {
         return new BookmarkMyResponse(

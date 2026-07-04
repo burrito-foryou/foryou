@@ -25,11 +25,11 @@ public class NotificationSseService {
         emitterRepository.save(receiverId, emitter);
 
         // 3) 연결 종료 시 자동 삭제
-        emitter.onCompletion(() -> emitterRepository.deleteById(receiverId));
+        emitter.onCompletion(() -> emitterRepository.deleteIfSame(receiverId, emitter));
         // 4) timeout 발생 시 삭제
-        emitter.onTimeout(() -> emitterRepository.deleteById(receiverId));
+        emitter.onTimeout(() -> emitterRepository.deleteIfSame(receiverId, emitter));
         // 5) 에러 발생 시 삭제
-        emitter.onError(e -> emitterRepository.deleteById(receiverId));
+        emitter.onError(e -> emitterRepository.deleteIfSame(receiverId, emitter));
 
         sendToClient(receiverId, Map.of("status", "connected"));
 

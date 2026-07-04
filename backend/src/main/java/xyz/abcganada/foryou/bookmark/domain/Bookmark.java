@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import xyz.abcganada.foryou.member.domain.Member;
 import xyz.abcganada.foryou.question.domain.Question;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Table(name = "bookmarks",
@@ -29,13 +29,13 @@ public class Bookmark {
     private Question question;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @Builder
     public Bookmark(Member member, Question question) {
         this.member = member;
         this.question = question;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = Instant.now();
     }
 
 

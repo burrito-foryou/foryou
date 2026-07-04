@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import xyz.abcganada.foryou.member.domain.Member;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Table(name = "likes",
@@ -38,13 +38,13 @@ public class Like {
     private Long targetId;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @Builder
     public Like(Member member, TargetType targetType, Long targetId) {
         this.member = member;
         this.targetType = targetType;
         this.targetId = targetId;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = Instant.now();
     }
 }
