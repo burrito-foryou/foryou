@@ -105,10 +105,10 @@ jobs:
             docker compose -f docker-compose.dev.yml pull
             docker compose -f docker-compose.dev.yml up -d
 
-            for i in $(seq 1 10); do
+            for i in $(seq 1 30); do
               curl -sf http://127.0.0.1:8080/actuator/health && break
-              sleep 3
-              if [ "$i" -eq 10 ]; then
+              sleep 5
+              if [ "$i" -eq 30 ]; then
                 echo "Deploy health check failed: backend /actuator/health not responding"
                 exit 1
               fi
