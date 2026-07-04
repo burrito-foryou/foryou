@@ -15,10 +15,15 @@ import useBookmark from "../hooks/useBookmark";
 import useToast from "../../../shared/hooks/useToast";
 import Toast from "../../../shared/components/Toast";
 import LikeLoginModal from "../../like/components/LikeLoginModal";
-import timeAgo from "../../../shared/utils/timeAgo";
+
 import useScrollHighlight from "../../../shared/hooks/useScrollHighlight";
 import LikeButton from "../../like/components/LikeButton";
 import AnswerList from "../../answer/components/AnswerList";
+
+const formatDate = (dateStr) => {
+  const d = new Date(dateStr);
+  return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+};
 
 const QuestionDetailPage = () => {
   const { id } = useParams();
@@ -157,7 +162,7 @@ const QuestionDetailPage = () => {
         <div className="mb-4 flex items-center gap-2 text-xs text-text-muted">
           <span>{question.memberNickname}</span>
           <span>·</span>
-          <span>{timeAgo(question.createdAt)}</span>
+          <span>{formatDate(question.createdAt)}</span>
         </div>
 
         {question.tags.length > 0 && (

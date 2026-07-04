@@ -1,6 +1,7 @@
 package xyz.abcganada.foryou.answer.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.abcganada.foryou.answer.domain.Answer;
@@ -17,6 +18,7 @@ import xyz.abcganada.foryou.member.repository.MemberRepository;
 import xyz.abcganada.foryou.question.domain.Question;
 import xyz.abcganada.foryou.question.repository.QuestionRepository;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -28,32 +30,39 @@ public class AnswerService {
 
     // WBS0404: 답변 목록 조회
     public List<AnswerResponse> getAnswers(Long questionId) {
+        log.debug("[Answer] 답변 목록 조회 - questionId: {}", questionId);
         if (!questionRepository.existsById(questionId)) {
             throw new BusinessException(ErrorCode.QUESTION_NOT_FOUND);
         }
-        return answerRepository.findByQuestionIdOrderByAcceptedDescCreatedAtAsc(questionId)
+        List<AnswerResponse> responses = answerRepository.findByQuestionIdOrderByAcceptedDescCreatedAtAsc(questionId)
                 .stream()
                 .map(AnswerResponse::from)
                 .toList();
+        log.debug("[Answer] 답변 목록 조회 완료 - questionId: {}, count: {}", questionId, responses.size());
+        return responses;
     }
 
     // WBS0405: 답변 수정
     @Transactional
     public AnswerResponse update(Long answerId, Long memberId, AnswerUpdateRequest request) {
+        log.debug("[Answer] 답변 수정 - answerId: {}, memberId: {}", answerId, memberId);
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
 
         if (!answer.getMember().getId().equals(memberId)) {
+            log.warn("[Answer] 답변 수정 권한 없음 - answerId: {}, memberId: {}", answerId, memberId);
             throw new BusinessException(ErrorCode.ANSWER_FORBIDDEN);
         }
 
         answer.update(request.getGiftName(), request.getPriceRange(), request.getContent());
+        log.info("[Answer] 답변 수정 완료 - answerId: {}, memberId: {}", answerId, memberId);
         return AnswerResponse.from(answer);
     }
 
     // WBS0407/0408: 답변 채택 및 질문 상태 변경
     @Transactional
     public Answer accept(Long answerId, Long memberId) {
+        log.debug("[Answer] 답변 채택 - answerId: {}, memberId: {}", answerId, memberId);
         Answer answer = answerRepository.findByIdWithQuestionAndMembers(answerId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
 
@@ -61,11 +70,13 @@ public class AnswerService {
 
         // 질문 작성자만 채택 가능
         if (!question.isAuthor(memberId)) {
+            log.warn("[Answer] 답변 채택 권한 없음 - answerId: {}, memberId: {}", answerId, memberId);
             throw new BusinessException(ErrorCode.ANSWER_FORBIDDEN);
         }
 
         // 이미 채택된 질문인지 확인
         if (question.getAcceptedAnswerId() != null) {
+            log.warn("[Answer] 이미 채택된 질문 - questionId: {}, answerId: {}", question.getId(), answerId);
             throw new BusinessException(ErrorCode.ANSWER_ALREADY_ACCEPTED);
         }
 
@@ -75,25 +86,30 @@ public class AnswerService {
         // WBS0408: 질문 채택 답변 ID 설정
         question.accept(answerId);
 
+        log.info("[Answer] 답변 채택 완료 - answerId: {}, questionId: {}, memberId: {}", answerId, question.getId(), memberId);
         return answer;
     }
 
     // WBS0406: 답변 삭제
     @Transactional
     public void delete(Long answerId, Long memberId) {
+        log.debug("[Answer] 답변 삭제 - answerId: {}, memberId: {}", answerId, memberId);
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
 
         if (!answer.getMember().getId().equals(memberId)) {
+            log.warn("[Answer] 답변 삭제 권한 없음 - answerId: {}, memberId: {}", answerId, memberId);
             throw new BusinessException(ErrorCode.ANSWER_FORBIDDEN);
         }
 
         answerRepository.delete(answer);
+        log.info("[Answer] 답변 삭제 완료 - answerId: {}, memberId: {}", answerId, memberId);
     }
 
     // WBS0403: 답변 등록
     @Transactional
     public Answer create(Long questionId, Long memberId, AnswerCreateRequest request) {
+        log.debug("[Answer] 답변 등록 - questionId: {}, memberId: {}", questionId, memberId);
         Question question = questionRepository.findByIdWithMember(questionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
 
@@ -110,7 +126,9 @@ public class AnswerService {
                 .accepted(false)
                 .build();
 
-        return answerRepository.save(answer);
+        Answer saved = answerRepository.save(answer);
+        log.info("[Answer] 답변 등록 완료 - answerId: {}, questionId: {}, memberId: {}", saved.getId(), questionId, memberId);
+        return saved;
     }
 
     // WBS0607: Like 증가
@@ -119,6 +137,7 @@ public class AnswerService {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
         answer.incrementLikeCount();
+        log.debug("[Answer] 좋아요 증가 - answerId: {}, likeCount: {}", answerId, answer.getLikeCount());
         return answer.getLikeCount();
     }
 
@@ -129,6 +148,7 @@ public class AnswerService {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ANSWER_NOT_FOUND));
         answer.decrementLikeCount();
+        log.debug("[Answer] 좋아요 감소 - answerId: {}, likeCount: {}", answerId, answer.getLikeCount());
         return answer.getLikeCount();
     }
 
