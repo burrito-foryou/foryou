@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ROUTES, toQuestionDetail } from "../../../shared/constants/routes";
-import { getQuestionDetail, updateQuestion } from "../api/questionApi";
+import { getQuestionDetail, updateQuestion, getQuestionImages } from "../api/questionApi";
+import { uploadQuestionImage, deleteImage } from "../../image/api/imageApi";
 import { getTags } from "../api/tagApi";
+import MultiImageUploader from "../../image/components/MultiImageUploader";
 import useMemberId from "../hooks/useMemberId";
 
 // 태그 타입 → 한글 라벨 매핑
@@ -28,15 +30,19 @@ const QuestionEditPage = () => {
   const [initLoading, setInitLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [existingImages, setExistingImages] = useState([]);
+  const [deletedImageIds, setDeletedImageIds] = useState([]);
+  const [pendingFiles, setPendingFiles] = useState([]);
   // 기존 질문 데이터 + 전체 태그 목록 동시 조회
   useEffect(() => {
     const init = async () => {
       try {
-        const [question, tags] = await Promise.all([
+        const [question, tags, images] = await Promise.all([
           getQuestionDetail(id),
           getTags(),
+          getQuestionImages(id),
         ]);
-
+        setExistingImages(images ?? []);
         // 기존 데이터로 폼 초기값 세팅
         setTitle(question.title);
         setContent(question.content);
@@ -64,6 +70,18 @@ const QuestionEditPage = () => {
       prev.includes(tagId) ? prev.filter((i) => i !== tagId) : [...prev, tagId],
     );
   };
+  const handleImageChange = (index, file, existingId) => {
+    if (existingId) {
+      // 기존 이미지 삭제 예약
+      setDeletedImageIds((prev) => [...prev, existingId]);
+      setExistingImages((prev) => prev.filter((img) => img.id !== existingId));
+    } else {
+      // 새로 추가된 파일
+      if (file) {
+        setPendingFiles((prev) => [...prev, file]);
+      }
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -79,6 +97,16 @@ const QuestionEditPage = () => {
         content: content.trim(),
         tagIds: selectedTagIds,
       });
+      try {
+        await Promise.all([
+          ...deletedImageIds.map((imgId) => deleteImage(imgId)),
+          ...pendingFiles.map((file) =>
+              uploadQuestionImage(id, file)
+          ),
+        ]);
+      } catch {
+        console.warn("이미지 처리 실패 - 질문 수정은 완료됨");
+      }
       // 수정 완료 후 상세 페이지로 이동
       // `/questions/${id}` => toQuestionDetail(id)
       navigate(toQuestionDetail(id));
@@ -175,6 +203,29 @@ const QuestionEditPage = () => {
               </div>
             ))}
           </div>
+        </div>
+        {/* 이미지 수정 */}
+        <div>
+          <label className="mb-3 block text-sm font-medium text-text">
+            이미지{" "}
+            <span className="text-xs font-normal text-text-muted">(선택)</span>
+          </label>
+          <MultiImageUploader
+              initialImages={existingImages}
+              onUpload={(file) => setPendingFiles((prev) => [...prev, file])}
+              onDelete={(index, file, existingId) => {
+                if (existingId) {
+                  setDeletedImageIds((prev) => [...prev, existingId]);
+                  setExistingImages((prev) => prev.filter((img) => img.id !== existingId));
+                } else {
+                  setPendingFiles((prev) => {
+                    const newIndex = index - existingImages.length;
+                    return prev.filter((_, i) => i !== newIndex);
+                  });
+                }
+              }}
+              maxCount={5}
+          />
         </div>
 
         {error && <p className="text-sm text-red-500">{error}</p>}

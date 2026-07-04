@@ -2,19 +2,23 @@ import { Link } from "react-router-dom";
 import { ROUTES } from "../constants/routes";
 import { FiSearch } from "react-icons/fi";
 import HeaderUserMenu from "./HeaderUserMenu";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import NotificationBell from "../../features/notification/components/NotificationBell";
 
 const Header = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [searchValue, setSearchValue] = useState("");
+
+  useEffect(() => {
+    setSearchValue(searchParams.get("keyword") ?? "");
+    }, [searchParams]);
 
   // 엔터 입력 시 질문 목록 페이지로 검색 이동
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && searchValue.trim()) {
       navigate(`${ROUTES.QUESTIONS}?keyword=${encodeURIComponent(searchValue.trim())}`);
-      setSearchValue("");
     }
   };
   return (

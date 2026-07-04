@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { FiSliders } from "react-icons/fi";
 import { ROUTES } from "../../../shared/constants/routes";
 import useQuestionList from "../hooks/useQuestionList";
+import useAuthStore from "../../../features/auth/store/authStore";
+import LikeLoginModal from "../../like/components/LikeLoginModal";
 import { SORT_OPTIONS } from "../constants/questionConstants";
 import { DUMMY } from "../constants/questionDummy";
 import QuestionFilterModal from "../components/QuestionFilterModal";
 import QuestionCard from "../components/QuestionCard";
+
 
 // 현재 페이지 주변 번호 + 처음/끝 페이지 배열 계산 (... 포함)
 const getPageNumbers = (current, total) => {
@@ -44,8 +47,10 @@ const QuestionListPage = () => {
   } = useQuestionList();
   const [showFilter, setShowFilter] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
-  const [onlyAccepted, setOnlyAccepted] = useState(false);
+  const [acceptedFilter, setAcceptedFilter] = useState(null); // null: 전체, true: 채택됨, false: 미채택
   const sortMenuRef = useRef(null);
+  const token = useAuthStore((state) => state.token);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -68,16 +73,18 @@ const QuestionListPage = () => {
   );
 
   const displayList = useMemo(() => {
-    const base = questions.filter(
-      (q) => !onlyAccepted || !!q.acceptedAnswerId,
-    );
+    const base = questions.filter((q) => {
+      if (acceptedFilter === true) return !!q.acceptedAnswerId;
+      if (acceptedFilter === false) return !q.acceptedAnswerId;
+      return true;
+    });
     return [...base].sort((a, b) => {
       if (sort === "likes") return b.likeCount - a.likeCount;
       if (sort === "answers") return b.answerCount - a.answerCount;
       if (sort === "views") return b.viewCount - a.viewCount;
       return new Date(b.createdAt) - new Date(a.createdAt);
     });
-  }, [questions, filteredDummy, onlyAccepted, sort]);
+  }, [questions, filteredDummy, acceptedFilter, sort]);
 
   const currentSortLabel =
     SORT_OPTIONS.find((o) => o.value === sort)?.label ?? "최신순";
@@ -86,28 +93,43 @@ const QuestionListPage = () => {
     <div className="mx-auto max-w-3xl px-4 py-6">
       {/* 1행: 타이틀 + 질문 작성 */}
       <div className="mb-3 flex items-center justify-between">
-        <h1 className="text-lg font-bold text-text">질문 목록</h1>
-        <button
-          onClick={() => navigate(ROUTES.QUESTION_WRITE)}
-          className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary-hover transition-colors"
-        >
-          + 질문 작성
-        </button>
-      </div>
-
-      {/* 2행: 컨트롤 (항상 오른쪽 고정) */}
-      <div className="mb-2 flex items-center justify-end gap-2">
-        <button
-          onClick={() => setOnlyAccepted((v) => !v)}
-          className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
-            onlyAccepted
-              ? "border-primary bg-primary-light text-primary"
-              : "border-border text-text-muted hover:border-primary hover:text-primary"
-          }`}
-        >
-          채택된 질문
-        </button>
-
+        <Link to={ROUTES.QUESTIONS} className="text-lg font-bold text-text hover:text-primary transition-colors">
+          질문 목록
+        </Link>
+        <div className="flex items-center gap-2">
+          <button
+              onClick={() => setAcceptedFilter(acceptedFilter === true ? null : true)}
+              className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
+                  acceptedFilter === true
+                      ? "border-primary bg-primary-light text-primary"
+                      : "border-border text-text-muted hover:border-primary hover:text-primary"
+              }`}
+          >
+            채택된 질문
+          </button>
+          <button
+              onClick={() => setAcceptedFilter(acceptedFilter === false ? null : false)}
+              className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
+                  acceptedFilter === false
+                      ? "border-primary bg-primary-light text-primary"
+                      : "border-border text-text-muted hover:border-primary hover:text-primary"
+              }`}
+          >
+            채택 안 된 질문
+          </button>
+          <button
+              onClick={() => {
+                if (!token) {
+                  setShowLoginModal(true);
+                  return;
+                }
+                navigate(ROUTES.QUESTION_WRITE);
+              }}
+              className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary-hover transition-colors"
+          >
+            + 질문 작성
+          </button>
+        </div>
       </div>
 
       {/* 3행: 필터 버튼 + 활성 필터 칩 */}
@@ -229,6 +251,12 @@ const QuestionListPage = () => {
           onApply={applyFilters}
           onClose={() => setShowFilter(false)}
         />
+      )}
+      {showLoginModal && (
+          <LikeLoginModal
+              onGoLogin={() => navigate(ROUTES.LOGIN)}
+              onClose={() => setShowLoginModal(false)}
+          />
       )}
     </div>
   );
