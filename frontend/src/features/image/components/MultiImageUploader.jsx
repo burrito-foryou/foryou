@@ -1,17 +1,24 @@
 import { useState, useEffect, useRef } from "react";
+import { FiImage, FiX } from "react-icons/fi";
 
 const MAX_COUNT = 5;
 
-const MultiImageUploader = ({ onUpload, onDelete, maxSize = 5, maxCount = MAX_COUNT, initialImages = [] }) => {
-    const [previews, setPreviews] = useState([]);
+const MultiImageUploader = ({
+  onUpload,
+  onDelete,
+  maxSize = 5,
+  maxCount = MAX_COUNT,
+  initialImages = [],
+}) => {
+  const [previews, setPreviews] = useState([]);
   useEffect(() => {
     if (initialImages.length > 0) {
       setPreviews(
-          initialImages.map((img) => ({
-            url: img.imageUrl,
-            name: String(img.id),
-            existingId: img.id,
-          }))
+        initialImages.map((img) => ({
+          url: img.imageUrl,
+          name: String(img.id),
+          existingId: img.id,
+        })),
       );
     }
   }, [initialImages]);
@@ -65,15 +72,21 @@ const MultiImageUploader = ({ onUpload, onDelete, maxSize = 5, maxCount = MAX_CO
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap gap-2">
         {previews.map((item, index) => (
-          <div key={index} className="relative w-24 h-24 rounded-xl overflow-hidden border border-gray-200">
-            <img src={item.url} alt={item.name} className="w-full h-full object-cover" />
+          <div
+            key={index}
+            className="relative h-24 w-24 overflow-hidden rounded-2xl border border-border"
+          >
+            <img
+              src={item.url}
+              alt={item.name}
+              className="h-full w-full object-cover"
+            />
             <button
+              type="button"
               onClick={() => handleDelete(index)}
-              className="absolute top-1 right-1 bg-black/50 hover:bg-black/70 text-white rounded-full w-5 h-5 flex items-center justify-center transition-colors"
+              className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70"
             >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <FiX size={12} />
             </button>
           </div>
         ))}
@@ -81,18 +94,20 @@ const MultiImageUploader = ({ onUpload, onDelete, maxSize = 5, maxCount = MAX_CO
         {previews.length < maxCount && (
           <div
             onClick={() => inputRef.current?.click()}
-            className="w-24 h-24 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors"
+            className="flex h-24 w-24 flex-col items-center justify-center gap-1 rounded-2xl border-2 border-dashed border-border text-text-muted transition-colors hover:border-primary hover:bg-primary-light hover:text-primary cursor-pointer"
           >
-            <svg className="w-6 h-6 text-gray-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
-            </svg>
-            <span className="text-xs text-gray-400">{previews.length}/{maxCount}</span>
+            <FiImage size={22} />
+            <span className="text-xs font-semibold">
+              {previews.length}/{maxCount}
+            </span>
           </div>
         )}
       </div>
 
       {error && <p className="text-xs text-red-500">{error}</p>}
-      <p className="text-xs text-gray-400">jpg, jpeg, png, webp · 최대 {maxSize}MB · 최대 {maxCount}장</p>
+      <p className="text-xs text-text-muted">
+        jpg, jpeg, png, webp · 최대 {maxSize}MB · 최대 {maxCount}장
+      </p>
 
       <input
         ref={inputRef}
