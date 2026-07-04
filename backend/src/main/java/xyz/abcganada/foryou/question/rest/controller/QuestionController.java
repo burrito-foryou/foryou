@@ -1,5 +1,7 @@
 package xyz.abcganada.foryou.question.rest.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,11 +18,13 @@ import xyz.abcganada.foryou.question.service.QuestionService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/questions")
+@Tag(name = "Question", description = "질문 관련 API")
 public class QuestionController {
 
     private final QuestionService questionService;
 
     // 질문 등록
+    @Operation(summary = "질문 등록", description = "질문을 등록한다.")
     @PostMapping
     public ResponseEntity<ApiResponse<QuestionResponse>> createQuestion(
             @RequestParam Long memberId, // Security 구현 후 @AuthenticationPrincipal로 교체 예정
@@ -32,6 +36,7 @@ public class QuestionController {
     }
 
     // 질문 목록 조회
+    @Operation(summary = "질문 목록 조회", description = "조건에 맞는 질문 목록을 페이지 단위로 조회한다.")
     @GetMapping
     public ResponseEntity<ApiResponse<Page<QuestionResponse>>> getQuestions(
             @RequestParam(required = false) Long memberId,
@@ -53,6 +58,7 @@ public class QuestionController {
     }
 
     // 질문 상세 조회
+    @Operation(summary = "질문 상세 조회", description = "질문 상세 정보를 조회한다.")
     @GetMapping("/{questionId}")
     public ResponseEntity<ApiResponse<QuestionDetailResponse>> getQuestion(
             @PathVariable Long questionId
@@ -62,6 +68,7 @@ public class QuestionController {
     }
 
     // 질문 수정
+    @Operation(summary = "질문 수정", description = "본인이 작성한 질문을 수정한다.")
     @PatchMapping("/{questionId}")
     public ResponseEntity<ApiResponse<QuestionResponse>> updateQuestion(
             @PathVariable Long questionId,
@@ -73,6 +80,7 @@ public class QuestionController {
     }
 
     // 질문 삭제
+    @Operation(summary = "질문 삭제", description = "본인이 작성한 질문을 삭제한다.")
     @DeleteMapping("/{questionId}")
     public ResponseEntity<Void> deleteQuestion(
             @PathVariable Long questionId,

@@ -1,5 +1,8 @@
 package xyz.abcganada.foryou.my.rest.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,10 +25,13 @@ import xyz.abcganada.foryou.question.rest.response.QuestionResponse;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/my")
+@Tag(name = "My", description = "내 활동 내역 조회 API")
 public class MyController {
 
     private final MyService myService;
 
+    @Operation(summary = "내 질문 목록 조회", description = "로그인한 회원이 작성한 질문 목록을 페이지 단위로 조회한다.")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/questions")
     public ResponseEntity<ApiResponse<Page<QuestionResponse>>> getMyQuestions(
             @AuthenticationPrincipal AuthMember member,
@@ -40,6 +46,8 @@ public class MyController {
             .body(ApiResponse.success(responses, "내 질문 목록이 조회되었습니다."));
     }
 
+    @Operation(summary = "내 답변 목록 조회", description = "로그인한 회원이 작성한 답변 목록을 페이지 단위로 조회한다.")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/answers")
     public ResponseEntity<ApiResponse<Page<AnswerMyResponse>>> getMyAnswers(
             @AuthenticationPrincipal AuthMember member,
@@ -54,6 +62,8 @@ public class MyController {
             .body(ApiResponse.success(responses, "내 답변 목록이 조회되었습니다."));
     }
 
+    @Operation(summary = "내 댓글 목록 조회", description = "로그인한 회원이 작성한 댓글 목록을 페이지 단위로 조회한다.")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/comments")
     public ResponseEntity<ApiResponse<Page<CommentMyResponse>>> getMyComments(
             @AuthenticationPrincipal AuthMember member,
@@ -68,6 +78,8 @@ public class MyController {
             .body(ApiResponse.success(responses, "내 댓글 목록이 조회되었습니다."));
     }
 
+    @Operation(summary = "내 북마크 목록 조회", description = "로그인한 회원이 북마크한 질문 목록을 페이지 단위로 조회한다.")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/bookmarks")
     public ResponseEntity<ApiResponse<Page<BookmarkMyResponse>>> getMyBookmarks(
         @AuthenticationPrincipal AuthMember member,
