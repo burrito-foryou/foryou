@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FiBookmark, FiEye, FiHeart, FiMessageSquare } from "react-icons/fi";
+import {
+  FiBookmark,
+  FiCheckCircle,
+  FiEye,
+  FiHeart,
+  FiMessageSquare,
+} from "react-icons/fi";
 import timeAgo from "../../../shared/utils/timeAgo";
 import { toQuestionDetail, ROUTES } from "../../../shared/constants/routes";
 import useBookmark from "../hooks/useBookmark";
@@ -42,7 +48,8 @@ const QuestionCard = ({ question: q }) => {
             <p className="font-bold text-text leading-snug">{q.title}</p>
             <div className="flex items-center gap-2 shrink-0">
               {q.acceptedAnswerId && (
-                <span className="rounded-full bg-primary-light px-3 py-1 text-xs font-semibold text-primary">
+                <span className="flex items-center gap-1 rounded-full bg-primary-light px-3 py-1 text-xs font-semibold text-primary">
+                  <FiCheckCircle size={12} />
                   채택완료
                 </span>
               )}

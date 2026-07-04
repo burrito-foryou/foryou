@@ -12,6 +12,7 @@ public record BookmarkMyResponse(
     String title,
     List<String> tagNames,
     long answerCount,
+    Long acceptedAnswerId,
     Instant createdAt
 ) {
     public static BookmarkMyResponse from(Bookmark bookmark, Question question) {
@@ -20,6 +21,7 @@ public record BookmarkMyResponse(
             question.getTitle(),
             question.getTags().stream().map(Tag::getName).toList(),
             question.getAnswerCount(),
+            question.getAcceptedAnswerId(),
             bookmark.getCreatedAt()
         );
     }
