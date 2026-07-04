@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   FiChevronRight,
-  FiBell,
   FiUser,
   FiMessageSquare,
   FiBookmark,
@@ -117,7 +116,10 @@ const BookmarkItem = ({ item }) => (
       <p className="text-sm font-semibold text-text leading-snug">
         {item.title}
       </p>
-      <FiBookmark size={14} className="shrink-0 text-primary fill-primary mt-0.5" />
+      <FiBookmark
+        size={14}
+        className="shrink-0 text-primary fill-primary mt-0.5"
+      />
     </div>
     <div className="mb-2 flex flex-wrap gap-1">
       {item.tagNames.map((tag) => (
@@ -264,18 +266,6 @@ const MyPage = () => {
           </div>
           <FiChevronRight size={18} className="text-text-muted" />
         </Link>
-        <div className="border-t border-gray-100">
-          <Link
-            to={ROUTES.NOTIFICATIONS}
-            className="flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <FiBell size={18} className="text-text-muted" />
-              <span className="text-sm font-medium text-text">알림</span>
-            </div>
-            <FiChevronRight size={18} className="text-text-muted" />
-          </Link>
-        </div>
       </div>
 
       {/* 활동 탭 */}

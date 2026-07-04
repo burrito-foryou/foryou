@@ -16,6 +16,7 @@ import xyz.abcganada.foryou.global.security.auth.AuthMember;
 import xyz.abcganada.foryou.member.domain.AuthProvider;
 import xyz.abcganada.foryou.member.rest.request.MemberUpdateRequest;
 import xyz.abcganada.foryou.member.rest.response.MemberInfoResponse;
+import xyz.abcganada.foryou.member.service.MemberFacade;
 import xyz.abcganada.foryou.member.service.MemberService;
 
 import java.time.LocalDateTime;
@@ -34,6 +35,9 @@ class MemberProfileControllerTest extends RestControllerTest {
 
     @MockBean
     private MemberService memberService;
+
+    @MockBean
+    private MemberFacade memberFacade;
 
     @AfterEach
     void tearDown() {
@@ -144,6 +148,19 @@ class MemberProfileControllerTest extends RestControllerTest {
             .andExpect(jsonPath("$.message").value("현재 닉네임과 동일한 닉네임입니다."));
 
         verify(memberService).updateMemberNickname(MemberFixture.MEMBER_ID, request);
+    }
+
+    @Test
+    @DisplayName("인증된 사용자가 회원 탈퇴를 요청한다")
+    void withdraw() throws Exception {
+        // given
+        authenticateMember();
+
+        // when & then
+        deleteRequest("/api/members/me")
+            .andExpect(status().isNoContent());
+
+        verify(memberFacade).withdraw(MemberFixture.MEMBER_ID);
     }
 
     private void authenticateMember() {

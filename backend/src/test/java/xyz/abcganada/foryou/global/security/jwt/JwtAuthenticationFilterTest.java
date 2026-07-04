@@ -1,6 +1,7 @@
 package xyz.abcganada.foryou.global.security.jwt;
 
 import fixture.MemberFixture;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import xyz.abcganada.foryou.global.exception.ErrorCode;
 import xyz.abcganada.foryou.global.security.auth.AuthMember;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,6 +24,7 @@ class JwtAuthenticationFilterTest {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String ACCESS_TOKEN = "access-token";
+    private static final String ROLE = "USER";
 
     private JwtTokenProvider jwtTokenProvider;
     private JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -52,7 +55,7 @@ class JwtAuthenticationFilterTest {
 
         // then
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
-        verify(jwtTokenProvider, never()).validateToken(ACCESS_TOKEN);
+        verify(jwtTokenProvider, never()).getMemberId(ACCESS_TOKEN);
         verify(filterChain).doFilter(request, response);
     }
 
@@ -61,8 +64,8 @@ class JwtAuthenticationFilterTest {
     void doFilterWithValidToken() throws Exception {
         // given
         request.addHeader(AUTHORIZATION_HEADER, "Bearer " + ACCESS_TOKEN);
-        given(jwtTokenProvider.validateToken(ACCESS_TOKEN)).willReturn(true);
         given(jwtTokenProvider.getMemberId(ACCESS_TOKEN)).willReturn(MemberFixture.MEMBER_ID);
+        given(jwtTokenProvider.getRole(ACCESS_TOKEN)).willReturn(ROLE);
 
         // when
         jwtAuthenticationFilter.doFilter(request, response, filterChain);
@@ -77,18 +80,37 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
-    @DisplayName("유효하지 않은 Bearer 토큰이면 인증을 설정하지 않고 다음 필터로 진행한다")
+    @DisplayName("유효하지 않은 Bearer 토큰이면 인증을 설정하지 않고 UNAUTHORIZED를 request에 담는다")
     void doFilterWithInvalidToken() throws Exception {
         // given
         request.addHeader(AUTHORIZATION_HEADER, "Bearer " + ACCESS_TOKEN);
-        given(jwtTokenProvider.validateToken(ACCESS_TOKEN)).willReturn(false);
+        given(jwtTokenProvider.getMemberId(ACCESS_TOKEN)).willThrow(new IllegalArgumentException("invalid token"));
 
         // when
         jwtAuthenticationFilter.doFilter(request, response, filterChain);
 
         // then
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
-        verify(jwtTokenProvider, never()).getMemberId(ACCESS_TOKEN);
+        assertThat(request.getAttribute(JwtAuthenticationFilter.JWT_ERROR_CODE_ATTRIBUTE))
+            .isEqualTo(ErrorCode.UNAUTHORIZED);
+        verify(filterChain).doFilter(request, response);
+    }
+
+    @Test
+    @DisplayName("만료된 Bearer 토큰이면 인증을 설정하지 않고 EXPIRED_TOKEN을 request에 담는다")
+    void doFilterWithExpiredToken() throws Exception {
+        // given
+        request.addHeader(AUTHORIZATION_HEADER, "Bearer " + ACCESS_TOKEN);
+        given(jwtTokenProvider.getMemberId(ACCESS_TOKEN))
+            .willThrow(new ExpiredJwtException(null, null, "expired token"));
+
+        // when
+        jwtAuthenticationFilter.doFilter(request, response, filterChain);
+
+        // then
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
+        assertThat(request.getAttribute(JwtAuthenticationFilter.JWT_ERROR_CODE_ATTRIBUTE))
+            .isEqualTo(ErrorCode.EXPIRED_TOKEN);
         verify(filterChain).doFilter(request, response);
     }
 }

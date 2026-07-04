@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getMyInfo,
   updateNickname,
   updateProfileImage,
+  withdrawMember,
 } from "../api/memberApi";
 import useToast from "../../../shared/hooks/useToast";
 import useAuthStore from "../../auth/store/authStore";
+import { ROUTES } from "../../../shared/constants/routes";
 
 const useAccount = () => {
+  const navigate = useNavigate();
   const [member, setMember] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -20,6 +24,10 @@ const useAccount = () => {
   const fileInputRef = useRef(null);
   const { toast, showToast } = useToast();
   const setNickname = useAuthStore((state) => state.setNickname);
+  const clearAuth = useAuthStore((state) => state.clearAuth);
+
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+  const [withdrawLoading, setWithdrawLoading] = useState(false);
 
   useEffect(() => {
     getMyInfo()
@@ -87,6 +95,21 @@ const useAccount = () => {
     }
   };
 
+  const handleWithdrawOpen = () => setIsWithdrawModalOpen(true);
+  const handleWithdrawClose = () => setIsWithdrawModalOpen(false);
+
+  const handleWithdrawConfirm = async () => {
+    setWithdrawLoading(true);
+    try {
+      await withdrawMember();
+      clearAuth();
+      navigate(ROUTES.HOME);
+    } catch {
+      showToast("회원 탈퇴에 실패했습니다.", "error");
+      setWithdrawLoading(false);
+    }
+  };
+
   return {
     toast,
     member,
@@ -103,6 +126,11 @@ const useAccount = () => {
     handleNicknameSave,
     handleImageClick,
     handleImageChange,
+    isWithdrawModalOpen,
+    withdrawLoading,
+    handleWithdrawOpen,
+    handleWithdrawClose,
+    handleWithdrawConfirm,
   };
 };
 

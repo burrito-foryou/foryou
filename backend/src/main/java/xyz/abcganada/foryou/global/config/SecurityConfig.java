@@ -1,6 +1,7 @@
 package xyz.abcganada.foryou.global.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,7 +13,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import xyz.abcganada.foryou.global.security.handler.CustomAccessDeniedHandler;
+import xyz.abcganada.foryou.global.security.handler.CustomAuthenticationEntryPoint;
 import xyz.abcganada.foryou.global.security.jwt.JwtAuthenticationFilter;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -20,6 +28,11 @@ import xyz.abcganada.foryou.global.security.jwt.JwtAuthenticationFilter;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
+
+    @Value("${app.front-url}")
+    private String frontUrl;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -27,34 +40,40 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .formLogin(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
+            .exceptionHandling(e -> e
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .accessDeniedHandler(accessDeniedHandler)
+            )
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/signup").permitAll()
-                .requestMatchers("/api/auth/login", "/api/auth/login/*").permitAll()
-                .requestMatchers("/api/auth/reissue").permitAll()
-                .requestMatchers("/api/auth/logout").authenticated()
-                .requestMatchers(HttpMethod.POST, "/api/images/**").authenticated()
-                .requestMatchers(HttpMethod.DELETE, "/api/images/**").authenticated()
-                .requestMatchers("/api/members/me").authenticated()
-                .requestMatchers("/api/notifications/subscribe/**").authenticated()
-                .requestMatchers("/api/notifications/**").authenticated()
-                .requestMatchers("/api/likes/**").authenticated()
-                .requestMatchers("/api/my/**").authenticated()
-                // 답변: 등록/수정/삭제/채택은 인증 필요, 목록 조회는 공개
-                .requestMatchers(HttpMethod.POST, "/api/questions/*/answers").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/api/answers/*").authenticated()
-                .requestMatchers(HttpMethod.DELETE, "/api/answers/*").authenticated()
-                .requestMatchers(HttpMethod.PATCH, "/api/answers/*/accept").authenticated()
-                // 댓글: 등록/수정/삭제는 인증 필요, 목록 조회는 공개
-                .requestMatchers(HttpMethod.POST, "/api/answers/*/comments").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/api/comments/*").authenticated()
-                .requestMatchers(HttpMethod.DELETE, "/api/comments/*").authenticated()
-                .anyRequest().permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/login/*", "/api/auth/reissue").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/questions", "/api/questions/*", "/api/questions/*/answers").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/answers/*/comments").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/tags").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/images/*/*").permitAll()
+                .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
+                .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of(frontUrl));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+        config.setExposedHeaders(List.of("Authorization"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
     @Bean
