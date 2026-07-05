@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { FiCheckCircle, FiGift } from "react-icons/fi";
+import { useEffect, useRef, useState } from "react";
+import { FiCheckCircle, FiGift, FiImage, FiX } from "react-icons/fi";
 import useAnswerItem from "../hooks/useAnswerItem";
 import CommentList from "../../comment/components/CommentList";
 import useScrollHighlight from "../../../shared/hooks/useScrollHighlight";
@@ -7,7 +7,7 @@ import LikeButton from "../../like/components/LikeButton";
 import ConfirmModal from "../../../shared/components/ConfirmModal";
 import Avatar from "../../../shared/components/Avatar";
 import timeAgo from "../../../shared/utils/timeAgo";
-import { getAnswerImages } from "../../image/api/imageApi";
+import { getAnswerImages, deleteImage } from "../../image/api/imageApi";
 
 const EDIT_FIELDS = [
   { label: "선물 이름", name: "giftName", placeholder: "예) 조말론 향수" },
@@ -50,12 +50,47 @@ const AnswerItem = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showAcceptModal, setShowAcceptModal] = useState(false);
   const [images, setImages] = useState([]);
+  const [pendingImage, setPendingImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     getAnswerImages(answer.id)
       .then(setImages)
       .catch(() => setImages([]));
   }, [answer.id]);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPendingImage(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    e.target.value = "";
+  };
+
+  const handleRemovePendingImage = () => {
+    URL.revokeObjectURL(previewUrl);
+    setPendingImage(null);
+    setPreviewUrl(null);
+  };
+
+  const handleRemoveExistingImage = async (imageId) => {
+    try {
+      await deleteImage(imageId);
+      setImages((prev) => prev.filter((img) => img.id !== imageId));
+    } catch {
+      // 삭제 실패는 무시
+    }
+  };
+
+  const handleUpdateSubmit = async (e) => {
+    await handleUpdate(e, pendingImage);
+    setPendingImage(null);
+    setPreviewUrl(null);
+    getAnswerImages(answer.id)
+      .then(setImages)
+      .catch(() => {});
+  };
 
   return (
     <>
@@ -85,11 +120,11 @@ const AnswerItem = ({
 
         {isEditing ? (
           // WBS0411: 수정 폼
-          <form onSubmit={handleUpdate} className="flex flex-col gap-3">
-            <div className="grid grid-cols-2 gap-3">
+          <form onSubmit={handleUpdateSubmit} className="flex flex-col gap-4">
+            <div className="grid grid-cols-2 gap-4">
               {EDIT_FIELDS.map(({ label, name, placeholder }) => (
                 <div key={name}>
-                  <label className="mb-1 block text-xs text-text-muted">
+                  <label className="mb-1.5 block text-sm font-bold text-text">
                     {label}
                   </label>
                   <input
@@ -98,35 +133,97 @@ const AnswerItem = ({
                     value={form[name]}
                     onChange={handleChange}
                     placeholder={placeholder}
-                    className="w-full rounded-md border border-border px-3 py-2 text-sm outline-none focus:border-primary"
+                    className="h-11 w-full rounded-xl border border-border bg-white px-4 text-sm outline-none transition-colors focus:border-primary"
                   />
                 </div>
               ))}
             </div>
             <div>
-              <label className="mb-1 block text-xs text-text-muted">내용</label>
+              <label className="mb-1.5 block text-sm font-bold text-text">
+                추천 이유
+              </label>
               <textarea
                 name="content"
                 value={form.content}
                 onChange={handleChange}
                 rows={3}
-                className="w-full rounded-md border border-border px-3 py-2 text-sm outline-none focus:border-primary"
+                className="w-full resize-none rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-primary"
               />
             </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-bold text-text">
+                사진
+              </label>
+              <div className="flex flex-wrap items-center gap-2">
+                {images.map((img) => (
+                  <div
+                    key={img.id}
+                    className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-border"
+                  >
+                    <img
+                      src={img.imageUrl}
+                      alt={img.originalName}
+                      className="h-full w-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveExistingImage(img.id)}
+                      className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 transition-opacity hover:opacity-100"
+                    >
+                      <FiX size={14} />
+                    </button>
+                  </div>
+                ))}
+
+                {previewUrl && (
+                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-border">
+                    <img
+                      src={previewUrl}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemovePendingImage}
+                      className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 transition-opacity hover:opacity-100"
+                    >
+                      <FiX size={14} />
+                    </button>
+                  </div>
+                )}
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/webp"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-surface-muted text-text-muted transition-colors hover:text-primary"
+                >
+                  <FiImage size={18} />
+                </button>
+              </div>
+            </div>
+
             <div className="flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="rounded-md border border-border px-4 py-1.5 text-sm text-text-muted hover:bg-surface"
+                className="rounded-full px-5 py-2.5 text-sm font-bold text-text-muted transition-colors hover:bg-surface hover:text-text"
               >
                 취소
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="rounded-md bg-primary px-4 py-1.5 text-sm font-bold text-white hover:bg-primary-hover disabled:opacity-50"
+                className="rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
               >
-                {loading ? "저장 중..." : "저장"}
+                {loading ? "수정 중..." : "수정"}
               </button>
             </div>
           </form>
@@ -145,9 +242,17 @@ const AnswerItem = ({
                     accepted ? "text-text-primary" : "text-text-muted"
                   }`}
                 />
-                <span className="font-bold text-text-primary">{giftName}</span>
+                <span
+                  className={`font-bold ${accepted ? "text-text-primary" : "text-text"}`}
+                >
+                  {giftName}
+                </span>
                 <span className="h-3.5 w-px shrink-0 bg-border" />
-                <span className="text-text-primary">{priceRange}</span>
+                <span
+                  className={accepted ? "text-text-primary" : "text-text-muted"}
+                >
+                  {priceRange}
+                </span>
               </div>
 
               {!accepted && (
