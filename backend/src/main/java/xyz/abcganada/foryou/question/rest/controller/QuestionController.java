@@ -50,12 +50,13 @@ public class QuestionController {
             @RequestParam(required = false) String ageGroup,
             @RequestParam(required = false) String situation,
             @RequestParam(required = false) String giftType,
+            @RequestParam(required = false) Boolean acceptedOnly,
             @RequestParam(defaultValue = "latest") String sort,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Page<QuestionResponse> response = questionService.getList(
-                memberId, keyword, tagName, target, budget, gender, ageGroup, situation, giftType, sort, page, size
+                memberId, keyword, tagName, target, budget, gender, ageGroup, situation, giftType, acceptedOnly, sort, page, size
         );
         return ResponseEntity.ok(ApiResponse.success(response));
     }

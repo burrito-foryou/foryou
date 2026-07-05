@@ -18,6 +18,7 @@ public class QuestionResponse {
     private String content;
     private Long memberId;
     private String memberNickname;
+    private String memberProfileImageUrl;
     private long viewCount;
     private long likeCount;
     private long answerCount;
@@ -38,6 +39,7 @@ public class QuestionResponse {
                 .content(question.getContent())
                 .memberId(question.getMember().getId()) // N+1 문제
                 .memberNickname(question.getMember().getNickname())
+                .memberProfileImageUrl(question.getMember().getProfileImageUrl())
                 .viewCount(question.getViewCount())
                 .likeCount(question.getLikeCount())
                 .answerCount(question.getAnswerCount())
