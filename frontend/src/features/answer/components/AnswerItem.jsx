@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useAnswerItem from "../hooks/useAnswerItem";
 import CommentList from "../../comment/components/CommentList";
 import useScrollHighlight from "../../../shared/hooks/useScrollHighlight";
 import LikeButton from "../../like/components/LikeButton";
 import ConfirmModal from "../../../shared/components/ConfirmModal";
 import timeAgo from "../../../shared/utils/timeAgo";
+import { getAnswerImages } from "../../image/api/imageApi";
 
 const EDIT_FIELDS = [
   { label: "선물 이름", name: "giftName", placeholder: "예) 조말론 향수" },
@@ -29,6 +30,13 @@ const AnswerItem = ({ answer, onSuccess, questionMemberId, hasAcceptedAnswer }) 
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const [images, setImages] = useState([]);
+
+  useEffect(() => {
+    getAnswerImages(answer.id)
+      .then(setImages)
+      .catch(() => setImages([]));
+  }, [answer.id]);
 
   return (
     <>
@@ -102,6 +110,19 @@ const AnswerItem = ({ answer, onSuccess, questionMemberId, hasAcceptedAnswer }) 
             </div>
 
             <p className="text-sm leading-relaxed text-text">{content}</p>
+
+            {images.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {images.map((img) => (
+                  <img
+                    key={img.id}
+                    src={img.imageUrl}
+                    alt={img.originalName}
+                    className="h-24 w-24 rounded-xl border border-border object-cover"
+                  />
+                ))}
+              </div>
+            )}
 
             <div className="mt-3 flex items-center justify-between">
               <p className="text-xs text-text-muted">

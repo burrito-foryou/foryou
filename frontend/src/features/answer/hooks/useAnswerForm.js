@@ -29,10 +29,10 @@ const useAnswerForm = (questionId, onSuccess) => {
 
     setLoading(true);
     try {
-      await createAnswer(questionId, form);
+      const { data } = await createAnswer(questionId, form);
       setForm(INITIAL_FORM);
       setErrors({});
-      onSuccess?.();
+      onSuccess?.(data.data);
     } catch (error) {
       const message = error.response?.data?.message ?? "답변 등록에 실패했습니다.";
       setErrors((prev) => ({ ...prev, server: message }));
