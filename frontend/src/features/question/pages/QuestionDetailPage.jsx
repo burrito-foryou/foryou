@@ -22,6 +22,7 @@ import useBookmark from "../hooks/useBookmark";
 import useToast from "../../../shared/hooks/useToast";
 import Toast from "../../../shared/components/Toast";
 import LikeLoginModal from "../../like/components/LikeLoginModal";
+import ConfirmModal from "../../../shared/components/ConfirmModal";
 
 import useScrollHighlight from "../../../shared/hooks/useScrollHighlight";
 import LikeButton from "../../like/components/LikeButton";
@@ -309,33 +310,18 @@ const QuestionDetailPage = () => {
         />
       )}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="w-full max-w-sm rounded-lg border border-border bg-background p-8 text-center shadow-lg">
-            <p className="mb-2 text-base font-bold text-text">
-              질문을 삭제할까요?
-            </p>
-            <p className="mb-6 text-sm text-text-muted">
-              삭제한 질문은 복구할 수 없습니다.
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="flex-1 rounded-md border border-border py-2 text-sm text-text hover:bg-surface"
-              >
-                취소
-              </button>
-              <button
-                onClick={() => {
-                  setShowDeleteModal(false);
-                  handleDelete();
-                }}
-                className="flex-1 rounded-md bg-red-500 py-2 text-sm font-bold text-white hover:bg-red-600"
-              >
-                삭제
-              </button>
-            </div>
-          </div>
-        </div>
+        <ConfirmModal
+          icon={FiTrash2}
+          variant="danger"
+          title="질문을 삭제할까요?"
+          message="삭제한 질문은 복구할 수 없어요."
+          confirmText="삭제"
+          onConfirm={() => {
+            setShowDeleteModal(false);
+            handleDelete();
+          }}
+          onClose={() => setShowDeleteModal(false)}
+        />
       )}
     </div>
   );
