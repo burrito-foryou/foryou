@@ -30,7 +30,9 @@ const NotificationItem = ({ notification, updateReadStatus, onDelete }) => {
 
       <div className="flex-1">
         <p className="text-[10px] text-text">
-          {notification.content}
+          <b>{notification.senderNickname}</b>{notification.messagePrefix}
+          {notification.questionTitle && <b>{notification.questionTitle}</b>}
+          {notification.messageSuffix}
         </p>
 
         <span className="text-[10px] text-gray-500">
