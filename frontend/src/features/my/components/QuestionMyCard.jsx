@@ -17,7 +17,7 @@ const QuestionMyCard = ({ item }) => (
         </span>
       ) : (
         <span className="rounded-full bg-surface-muted px-3 py-1 text-xs font-bold text-text-muted">
-          답변 대기
+          채택 대기
         </span>
       )}
       <span className="text-xs font-semibold text-text-muted/70">
