@@ -22,7 +22,7 @@ const BookmarkCard = ({ item }) => {
     >
       <div className="mb-3 flex items-center justify-between gap-2">
         {item.acceptedAnswerId ? (
-          <span className="flex items-center gap-1 rounded-full bg-primary-light px-3 py-1 text-xs font-bold text-primary">
+          <span className="flex items-center gap-1 rounded-full bg-primary-light px-3 py-1 text-xs font-bold text-text-primary">
             <FiCheckCircle size={12} />
             채택완료
           </span>

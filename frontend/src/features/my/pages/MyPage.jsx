@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FiSettings } from "react-icons/fi";
+import Avatar from "../../../shared/components/Avatar";
 import { ROUTES } from "../../../shared/constants/routes";
 import {
   getMyInfo,
@@ -148,17 +149,12 @@ const MyPage = () => {
       {/* 프로필 요약 */}
       <div className="card flex items-center justify-between gap-4 p-8">
         <div className="flex items-center gap-4">
-          {member.profileImageUrl ? (
-            <img
-              src={member.profileImageUrl}
-              alt="프로필 이미지"
-              className="h-16 w-16 shrink-0 rounded-full object-cover"
-            />
-          ) : (
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary-light text-2xl font-black text-primary">
-              {member.nickname.charAt(0)}
-            </div>
-          )}
+          <Avatar
+            src={member.profileImageUrl}
+            name={member.nickname}
+            size={64}
+            textSize="text-2xl"
+          />
           <div className="min-w-0">
             <p className="truncate text-lg font-black text-text">
               {member.nickname}

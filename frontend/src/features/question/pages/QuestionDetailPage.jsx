@@ -138,17 +138,21 @@ const QuestionDetailPage = () => {
         {isAuthor && (
           <div className="flex gap-2">
             <button
-                onClick={() => {
-                  if (question.acceptedAnswerId) return;
-                  navigate(`/questions/${id}/edit`);
-                }}
-                disabled={!!question.acceptedAnswerId}
-                className={`flex items-center gap-1 rounded-lg border px-3 py-1.5 text-sm transition-colors ${
-                    question.acceptedAnswerId
-                        ? "border-border text-text-muted opacity-40 cursor-not-allowed"
-                        : "border-border text-text-muted hover:border-primary hover:text-primary"
-                }`}
-                title={question.acceptedAnswerId ? "채택된 질문은 수정할 수 없습니다" : ""}
+              onClick={() => {
+                if (question.acceptedAnswerId) return;
+                navigate(`/questions/${id}/edit`);
+              }}
+              disabled={!!question.acceptedAnswerId}
+              className={`flex items-center gap-1 rounded-lg border px-3 py-1.5 text-sm transition-colors ${
+                question.acceptedAnswerId
+                  ? "border-border text-text-muted opacity-40 cursor-not-allowed"
+                  : "border-border text-text-muted hover:border-primary hover:text-primary"
+              }`}
+              title={
+                question.acceptedAnswerId
+                  ? "채택된 질문은 수정할 수 없습니다"
+                  : ""
+              }
             >
               <FiEdit2 size={14} /> 수정
             </button>
@@ -170,7 +174,7 @@ const QuestionDetailPage = () => {
         }`}
       >
         {question.acceptedAnswerId && (
-          <span className="mb-3 inline-flex items-center gap-1 rounded-full bg-primary-light px-3 py-1 text-xs font-semibold text-primary">
+          <span className="mb-3 inline-flex items-center gap-1 rounded-full bg-primary-light px-3 py-1 text-xs font-semibold text-text-primary">
             <FiCheckCircle size={12} />
             채택완료
           </span>

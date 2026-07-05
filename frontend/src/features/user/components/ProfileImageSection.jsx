@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { FiCamera } from "react-icons/fi";
+import Avatar from "../../../shared/components/Avatar";
 
 const ProfileImageSection = ({
   member,
@@ -37,17 +38,15 @@ const ProfileImageSection = ({
         onClick={() => setMenuOpen((v) => !v)}
         disabled={imageLoading}
       >
-        {member.profileImageUrl ? (
-          <img
-            src={member.profileImageUrl}
-            alt="프로필 이미지"
-            className="h-24 w-24 rounded-full object-cover transition-opacity group-hover:opacity-80"
-          />
-        ) : (
-          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary-light text-3xl font-black text-primary transition-opacity group-hover:opacity-80">
-            {imageLoading ? "..." : member.nickname.charAt(0)}
-          </div>
-        )}
+        <Avatar
+          src={member.profileImageUrl}
+          name={member.nickname}
+          size={96}
+          textSize="text-3xl"
+          className="transition-opacity group-hover:opacity-80"
+        >
+          {imageLoading ? "..." : null}
+        </Avatar>
         <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
           <FiCamera size={20} className="text-white" />
         </div>

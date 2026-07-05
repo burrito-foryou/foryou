@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../../features/auth/store/authStore";
 import LikeLoginModal from "../../like/components/LikeLoginModal";
+import Avatar from "../../../shared/components/Avatar";
 
 const FEATURES = [
   {
@@ -70,22 +71,22 @@ const HomePage = () => {
 
             <div className="flex flex-col gap-3 sm:flex-row">
               <button
-                  onClick={() => {
-                    // 비로그인 시 모달, 로그인 시 작성 페이지 이동
-                    if (!token) {
-                      setShowLoginModal(true);
-                      return;
-                    }
-                    navigate(ROUTES.QUESTION_WRITE);
-                  }}
-                  className="btn btn-primary text-base"
+                onClick={() => {
+                  // 비로그인 시 모달, 로그인 시 작성 페이지 이동
+                  if (!token) {
+                    setShowLoginModal(true);
+                    return;
+                  }
+                  navigate(ROUTES.QUESTION_WRITE);
+                }}
+                className="btn btn-primary text-base"
               >
                 질문 작성하기
                 <FiArrowRight
-                    size={16}
-                    strokeWidth={2.5}
-                    className="shrink-0 -translate-y-[1px]"
-                    aria-hidden
+                  size={16}
+                  strokeWidth={2.5}
+                  className="shrink-0 -translate-y-[1px]"
+                  aria-hidden
                 />
               </button>
               <Link
@@ -100,9 +101,11 @@ const HomePage = () => {
           <div className="hidden md:block">
             <div className="card p-7 shadow-card">
               <div className="mb-4 flex items-center gap-3">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-light text-lg font-black text-primary">
-                  {SAMPLE_QUESTION.nickname.charAt(0).toUpperCase()}
-                </span>
+                <Avatar
+                  name={SAMPLE_QUESTION.nickname}
+                  size={44}
+                  textSize="text-lg"
+                />
                 <div>
                   <p className="font-bold text-text">
                     {SAMPLE_QUESTION.nickname}
@@ -165,10 +168,10 @@ const HomePage = () => {
       </div>
       {/* 비로그인 질문 작성 시도 시 로그인 유도 모달 */}
       {showLoginModal && (
-          <LikeLoginModal
-              onGoLogin={() => navigate(ROUTES.LOGIN)}
-              onClose={() => setShowLoginModal(false)}
-          />
+        <LikeLoginModal
+          onGoLogin={() => navigate(ROUTES.LOGIN)}
+          onClose={() => setShowLoginModal(false)}
+        />
       )}
     </div>
   );
