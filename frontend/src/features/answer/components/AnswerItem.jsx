@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { FiCheckCircle, FiGift } from "react-icons/fi";
 import useAnswerItem from "../hooks/useAnswerItem";
 import CommentList from "../../comment/components/CommentList";
 import useScrollHighlight from "../../../shared/hooks/useScrollHighlight";
 import LikeButton from "../../like/components/LikeButton";
 import ConfirmModal from "../../../shared/components/ConfirmModal";
+import Avatar from "../../../shared/components/Avatar";
 import timeAgo from "../../../shared/utils/timeAgo";
 import { getAnswerImages } from "../../image/api/imageApi";
 
@@ -12,9 +14,26 @@ const EDIT_FIELDS = [
   { label: "가격대", name: "priceRange", placeholder: "예) 5만원~10만원" },
 ];
 
-const AnswerItem = ({ answer, onSuccess, questionMemberId, hasAcceptedAnswer }) => {
-  const { giftName, priceRange, content, accepted, memberId, memberNickname, createdAt, likeCount } = answer;
-  const { ref: highlightRef, isTarget } = useScrollHighlight("ANSWER", answer.id);
+const AnswerItem = ({
+  answer,
+  onSuccess,
+  questionMemberId,
+  hasAcceptedAnswer,
+}) => {
+  const {
+    giftName,
+    priceRange,
+    content,
+    accepted,
+    memberNickname,
+    memberProfileImageUrl,
+    createdAt,
+    likeCount,
+  } = answer;
+  const { ref: highlightRef, isTarget } = useScrollHighlight(
+    "ANSWER",
+    answer.id,
+  );
   const {
     isEditing,
     setIsEditing,
@@ -42,14 +61,26 @@ const AnswerItem = ({ answer, onSuccess, questionMemberId, hasAcceptedAnswer }) 
     <>
       <div
         ref={highlightRef}
-        className={`rounded-lg border bg-background p-5 transition-colors ${
-          isTarget ? "border-primary ring-2 ring-primary" : accepted ? "border-primary" : "border-border"
+        className={`card p-7 transition-colors ${
+          isTarget
+            ? "border-primary ring-2 ring-primary"
+            : accepted
+              ? "border-primary"
+              : ""
         }`}
       >
         {accepted && (
-          <span className="mb-3 inline-block rounded-full bg-primary-light px-3 py-0.5 text-xs font-bold text-primary">
-            ✓ 채택된 답변
-          </span>
+          <div className="mb-4 flex items-center justify-between gap-2">
+            <span className="flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-black text-white">
+              <FiCheckCircle size={12} />
+              채택된 답변
+            </span>
+            <LikeButton
+              targetType="ANSWER"
+              targetId={answer.id}
+              initialLikeCount={likeCount}
+            />
+          </div>
         )}
 
         {isEditing ? (
@@ -58,7 +89,9 @@ const AnswerItem = ({ answer, onSuccess, questionMemberId, hasAcceptedAnswer }) 
             <div className="grid grid-cols-2 gap-3">
               {EDIT_FIELDS.map(({ label, name, placeholder }) => (
                 <div key={name}>
-                  <label className="mb-1 block text-xs text-text-muted">{label}</label>
+                  <label className="mb-1 block text-xs text-text-muted">
+                    {label}
+                  </label>
                   <input
                     type="text"
                     name={name}
@@ -100,19 +133,65 @@ const AnswerItem = ({ answer, onSuccess, questionMemberId, hasAcceptedAnswer }) 
         ) : (
           // 일반 보기
           <>
-            <div className="mb-3 flex flex-wrap gap-2">
-              <span className="rounded-full border border-border bg-surface px-3 py-0.5 text-xs text-primary">
-                🎁 {giftName}
-              </span>
-              <span className="rounded-full border border-border bg-surface px-3 py-0.5 text-xs text-text-muted">
-                {priceRange}
-              </span>
+            <div className="mb-4 flex items-center justify-between gap-2">
+              <div
+                className={`flex items-center gap-3 rounded-2xl px-4 py-2.5 text-sm ${
+                  accepted ? "bg-primary-light" : "bg-surface-muted"
+                }`}
+              >
+                <FiGift
+                  size={16}
+                  className={`shrink-0 -translate-y-px ${
+                    accepted ? "text-text-primary" : "text-text-muted"
+                  }`}
+                />
+                <span className="font-bold text-text-primary">{giftName}</span>
+                <span className="h-3.5 w-px shrink-0 bg-border" />
+                <span className="text-text-primary">{priceRange}</span>
+              </div>
+
+              {!accepted && (
+                <div className="flex shrink-0 items-center gap-3">
+                  <LikeButton
+                    targetType="ANSWER"
+                    targetId={answer.id}
+                    initialLikeCount={likeCount}
+                  />
+                  {/* WBS0413: 질문 작성자에게만 채택 버튼 노출 */}
+                  {isQuestionAuthor && !hasAcceptedAnswer && (
+                    <button
+                      onClick={() => setShowAcceptModal(true)}
+                      className="flex items-center gap-1 rounded-full border border-primary px-4 py-1.5 text-sm font-bold text-primary transition-colors hover:bg-primary-light"
+                    >
+                      <FiCheckCircle size={14} />
+                      채택하기
+                    </button>
+                  )}
+                  {/* WBS0411/0412: 작성자에게만 수정/삭제 버튼 노출 */}
+                  {isAuthor && (
+                    <>
+                      <button
+                        onClick={() => setIsEditing(true)}
+                        className="text-sm font-bold text-text-muted/60 transition-colors hover:text-primary"
+                      >
+                        수정
+                      </button>
+                      <button
+                        onClick={() => setShowDeleteModal(true)}
+                        className="text-sm font-bold text-text-muted/60 transition-colors hover:text-red-500"
+                      >
+                        삭제
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
 
-            <p className="text-sm leading-relaxed text-text">{content}</p>
+            <p className="mb-4 text-sm leading-relaxed text-text">{content}</p>
 
             {images.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className="mb-4 flex flex-wrap gap-2">
                 {images.map((img) => (
                   <img
                     key={img.id}
@@ -124,43 +203,17 @@ const AnswerItem = ({ answer, onSuccess, questionMemberId, hasAcceptedAnswer }) 
               </div>
             )}
 
-            <div className="mt-3 flex items-center justify-between">
-              <p className="text-xs text-text-muted">
-                {memberNickname} · {timeAgo(createdAt)}
-              </p>
-              <div className="flex items-center gap-3">
-                <LikeButton
-                  targetType="ANSWER"
-                  targetId={answer.id}
-                  initialLikeCount={likeCount}
-                />
-                {/* WBS0413: 질문 작성자에게만 채택 버튼 노출 */}
-                {isQuestionAuthor && !accepted && !hasAcceptedAnswer && (
-                  <button
-                    onClick={() => setShowAcceptModal(true)}
-                    className="text-xs font-bold text-primary hover:underline"
-                  >
-                    채택하기
-                  </button>
-                )}
-                {/* WBS0411/0412: 작성자에게만 수정/삭제 버튼 노출 */}
-                {isAuthor && !accepted && (
-                  <>
-                    <button
-                      onClick={() => setIsEditing(true)}
-                      className="text-xs text-text-muted hover:text-primary"
-                    >
-                      수정
-                    </button>
-                    <button
-                      onClick={() => setShowDeleteModal(true)}
-                      className="text-xs text-text-muted hover:text-red-500"
-                    >
-                      삭제
-                    </button>
-                  </>
-                )}
-              </div>
+            <div className="flex items-center gap-2">
+              <Avatar
+                src={memberProfileImageUrl}
+                name={memberNickname}
+                size={28}
+                textSize="text-xs"
+              />
+              <p className="text-sm font-bold text-text">{memberNickname}</p>
+              <span className="text-xs text-text-muted">
+                · {timeAgo(createdAt)}
+              </span>
             </div>
           </>
         )}

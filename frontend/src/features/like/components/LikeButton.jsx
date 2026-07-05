@@ -32,7 +32,7 @@ const LikeButton = ({ targetType, targetId, initialLikeCount, label }) => {
       >
         <FiHeart
           size={14}
-          className={liked ? "fill-primary text-primary" : "text-primary"}
+          className={liked ? "fill-primary text-primary" : "text-text-muted"}
         />
         {label && <span>{label}</span>}
         {likeCount}

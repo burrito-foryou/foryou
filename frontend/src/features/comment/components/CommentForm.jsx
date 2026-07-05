@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FiArrowUp } from "react-icons/fi";
 import useCommentForm from "../hooks/useCommentForm";
 import useAuthStore from "../../auth/store/authStore";
 import LikeLoginModal from "../../like/components/LikeLoginModal";
 import { ROUTES } from "../../../shared/constants/routes";
 
 const CommentForm = ({ answerId, onSuccess }) => {
-  const { content, error, loading, handleChange, handleSubmit } = useCommentForm(
-    answerId,
-    onSuccess,
-  );
+  const { content, error, loading, handleChange, handleSubmit } =
+    useCommentForm(answerId, onSuccess);
   const token = useAuthStore((state) => state.token);
   const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -25,31 +24,36 @@ const CommentForm = ({ answerId, onSuccess }) => {
 
   return (
     <>
-      <form onSubmit={handleFormSubmit} className="mt-3 flex flex-col gap-2">
-        <textarea
-          value={content}
-          onChange={handleChange}
-          placeholder="댓글을 입력하세요."
-          rows={2}
-          maxLength={50}
-          className="w-full rounded-md border border-border px-3 py-2 text-sm outline-none focus:border-primary"
-        />
-        <div className="flex items-center justify-between">
-          <span className={`text-xs ${content.length >= 50 ? "text-red-500" : "text-text-muted"}`}>
-            {content.length} / 50
-          </span>
-          {error && <p className="text-xs text-red-500">{error}</p>}
-        </div>
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={loading}
-            className="rounded-md bg-primary px-4 py-1.5 text-sm font-bold text-white hover:bg-primary-hover disabled:opacity-50"
+      <form
+        onSubmit={handleFormSubmit}
+        className="mt-2 flex items-center gap-2"
+      >
+        <div className="relative flex-1">
+          <input
+            type="text"
+            value={content}
+            onChange={handleChange}
+            placeholder="댓글을 입력하세요"
+            maxLength={50}
+            className="h-10 w-full rounded-full border border-border bg-white px-4 pr-14 text-sm outline-none transition-colors focus:border-primary"
+          />
+          <span
+            className={`absolute right-4 top-1/2 -translate-y-1/2 text-xs ${
+              content.length >= 50 ? "text-red-500" : "text-text-muted"
+            }`}
           >
-            {loading ? "등록 중..." : "댓글 등록"}
-          </button>
+            {content.length}/50
+          </span>
         </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
+        >
+          <FiArrowUp size={18} />
+        </button>
       </form>
+      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
 
       {showLoginModal && (
         <LikeLoginModal

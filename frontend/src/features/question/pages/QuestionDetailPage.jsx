@@ -297,7 +297,7 @@ const QuestionDetailPage = () => {
       </div>
 
       {/* 답변 목록 */}
-      <div className="mt-6">
+      <div className="mt-10">
         <AnswerList questionId={id} questionMemberId={question.memberId} />
       </div>
 
