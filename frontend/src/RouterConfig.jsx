@@ -14,6 +14,7 @@ const QuestionDetailPage = lazy(() => import("./features/question/pages/Question
 const QuestionWritePage = lazy(() => import("./features/question/pages/QuestionWritePage"));
 const QuestionEditPage = lazy(() => import("./features/question/pages/QuestionEditPage"));
 const NotificationPage = lazy(() => import("./features/notification/pages/NotificationPage"));
+const GuidePage = lazy(() => import("./features/guide/pages/GuidePage"));
 const OAuthCallbackPage = lazy(() => import("./features/auth/pages/OAuthCallbackPage"));
 const ImageTestPage = lazy(() => import("./features/image/pages/ImageTestPage"));
 
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
       { path: ROUTES.OAUTH_CALLBACK, element: <OAuthCallbackPage /> },
       { path: ROUTES.QUESTIONS, element: <QuestionListPage /> },
       { path: ROUTES.QUESTION_DETAIL, element: <QuestionDetailPage /> },
+      { path: ROUTES.GUIDE, element: <GuidePage /> },
       { path: "/image-test", element: <ImageTestPage /> },
 
       // 로그인 필요

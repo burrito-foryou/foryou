@@ -13,6 +13,8 @@ export const ROUTES = {
   QUESTION_WRITE: "/questions/write",
   QUESTION_EDIT: "/questions/:id/edit",
 
+  GUIDE: "/guide",
+
   NOTIFICATIONS: "/notifications",
 };
 
