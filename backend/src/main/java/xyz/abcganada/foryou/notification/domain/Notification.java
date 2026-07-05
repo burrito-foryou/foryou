@@ -42,6 +42,9 @@ public class Notification {
     @Column(name = "question_id")
     private Long questionId;
 
+    @Column(name = "question_title", length = 20)
+    private String questionTitle;
+
     @Column(nullable = false, length = 500)
     private String content;
 
@@ -52,13 +55,14 @@ public class Notification {
     private Instant createdAt;
 
     @Builder(access = AccessLevel.PRIVATE) // 생성 경로 강제 위해 Builder는 private
-    public Notification(Member receiver, Member sender, NotificationType type, TargetType targetType, Long targetId, Long questionId, String content) {
+    public Notification(Member receiver, Member sender, NotificationType type, TargetType targetType, Long targetId, Long questionId, String questionTitle, String content) {
         this.receiver = receiver;
         this.sender = sender;
         this.type = type;
         this.targetType = targetType;
         this.targetId = targetId;
         this.questionId = questionId;
+        this.questionTitle = questionTitle;
         this.content = content;
         this.isRead = false;
         this.createdAt = Instant.now();
@@ -70,7 +74,7 @@ public class Notification {
         this.isRead = true;
     }
 
-    public static Optional<Notification> create(Member receiver, Member sender, NotificationType type, TargetType targetType, Long targetId, Long questionId) {
+    public static Optional<Notification> create(Member receiver, Member sender, NotificationType type, TargetType targetType, Long targetId, Long questionId, String questionTitle) {
         if (receiver.getId().equals(sender.getId())) {
             return Optional.empty();
         }
@@ -82,7 +86,8 @@ public class Notification {
                 .targetType(targetType)
                 .targetId(targetId)
                 .questionId(questionId)
-                .content(type.buildContent(sender.getNickname(), questionId))
+                .questionTitle(NotificationMessageComposer.truncateTitle(questionTitle))
+                .content(NotificationMessageComposer.buildContent(type, sender.getNickname(), questionTitle))
                 .build());
     }
 
