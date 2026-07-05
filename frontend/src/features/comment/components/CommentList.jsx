@@ -7,7 +7,7 @@ const CommentList = ({ answerId }) => {
 
   return (
     <div className="mt-4 rounded-2xl bg-surface-muted p-4">
-      <p className="mb-3 text-sm font-bold text-text-muted">
+      <p className="mb-3 text-sm font-black text-text">
         댓글{" "}
         <span
           className={comments.length > 0 ? "text-primary" : "text-text-muted"}
