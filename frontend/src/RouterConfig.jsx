@@ -17,6 +17,7 @@ const NotificationPage = lazy(() => import("./features/notification/pages/Notifi
 const GuidePage = lazy(() => import("./features/guide/pages/GuidePage"));
 const OAuthCallbackPage = lazy(() => import("./features/auth/pages/OAuthCallbackPage"));
 const ImageTestPage = lazy(() => import("./features/image/pages/ImageTestPage"));
+const GuidePage = lazy(() => import("./features/guide/page/GuidePage"));
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,7 @@ const router = createBrowserRouter([
       { path: ROUTES.QUESTION_DETAIL, element: <QuestionDetailPage /> },
       { path: ROUTES.GUIDE, element: <GuidePage /> },
       { path: "/image-test", element: <ImageTestPage /> },
+      { path: ROUTES.GUIDE, element: <GuidePage /> },
 
       // 로그인 필요
       {

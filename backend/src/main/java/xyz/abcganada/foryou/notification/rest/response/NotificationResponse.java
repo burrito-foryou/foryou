@@ -2,6 +2,7 @@ package xyz.abcganada.foryou.notification.rest.response;
 
 import xyz.abcganada.foryou.member.domain.Member;
 import xyz.abcganada.foryou.notification.domain.Notification;
+import xyz.abcganada.foryou.notification.domain.NotificationMessageComposer;
 import xyz.abcganada.foryou.notification.domain.NotificationType;
 import xyz.abcganada.foryou.notification.domain.TargetType;
 
@@ -14,7 +15,9 @@ public record NotificationResponse(
         TargetType targetType,
         Long targetId,
         Long questionId,
-        String content,
+        String messagePrefix,
+        String questionTitle,
+        String messageSuffix,
         boolean isRead,
         Instant createdAt
 ) {
@@ -22,15 +25,19 @@ public record NotificationResponse(
     public static NotificationResponse from(Notification notification) {
 
         Member sender = notification.getSender();
+        NotificationType type = notification.getType();
+        NotificationMessageComposer.MessageParts parts = NotificationMessageComposer.buildParts(type, notification.getQuestionTitle());
 
         return new NotificationResponse(
                 notification.getId(),
                 sender != null ? sender.getNickname() : "탈퇴한 사용자",
-                notification.getType(),
+                type,
                 notification.getTargetType(),
                 notification.getTargetId(),
                 notification.getQuestionId(),
-                notification.getContent(),
+                parts.prefix(),
+                parts.questionTitle(),
+                parts.suffix(),
                 notification.isRead(),
                 notification.getCreatedAt()
         );

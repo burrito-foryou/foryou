@@ -16,6 +16,8 @@ export const ROUTES = {
   GUIDE: "/guide",
 
   NOTIFICATIONS: "/notifications",
+
+  GUIDE: "/guide",
 };
 
 // 동적 경로 헬퍼 — id를 받아서 실제 URL 문자열로 변환
