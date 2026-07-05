@@ -344,7 +344,9 @@ const AnswerItem = ({
 
       {showAcceptModal && (
         <ConfirmModal
-          message="이 답변을 채택하시겠습니까? 채택 후에는 변경할 수 없습니다."
+          icon={FiCheckCircle}
+          title="이 답변으로 고민을 마무리할까요?"
+          message="채택은 한 번만 가능해요"
           confirmText="채택하기"
           onConfirm={() => {
             setShowAcceptModal(false);
