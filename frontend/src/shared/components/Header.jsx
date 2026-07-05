@@ -8,7 +8,7 @@ import NotificationBell from "../../features/notification/components/Notificatio
 
 const NAV_ITEMS = [
   { label: "질문 피드", to: ROUTES.QUESTIONS },
-  { label: "가이드", to: ROUTES.QUESTIONS },
+  { label: "가이드", to: ROUTES.GUIDE },
 ];
 
 const Header = () => {
