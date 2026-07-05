@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { FiCheckCircle, FiGift, FiImage, FiX } from "react-icons/fi";
+import { FiCheckCircle, FiGift, FiImage, FiTrash2, FiX } from "react-icons/fi";
 import useAnswerItem from "../hooks/useAnswerItem";
 import CommentList from "../../comment/components/CommentList";
 import useScrollHighlight from "../../../shared/hooks/useScrollHighlight";
@@ -329,7 +329,10 @@ const AnswerItem = ({
 
       {showDeleteModal && (
         <ConfirmModal
-          message="답변을 삭제하시겠습니까?"
+          icon={FiTrash2}
+          variant="danger"
+          title="답변을 삭제할까요?"
+          message="삭제한 답변은 복구할 수 없어요."
           confirmText="삭제"
           onConfirm={() => {
             setShowDeleteModal(false);
