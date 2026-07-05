@@ -85,7 +85,7 @@ const AnswerForm = ({ questionId, onSuccess }) => {
 
   return (
     <>
-      <p className="text-lg font-black text-text">답변 작성하기</p>
+      <p className="mb-3 text-lg font-black text-text">답변 작성하기</p>
 
       <div className="card p-7">
         <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">

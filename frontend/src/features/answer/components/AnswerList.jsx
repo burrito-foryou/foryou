@@ -51,7 +51,9 @@ const AnswerList = ({ questionId, questionMemberId }) => {
       )}
 
       {!hasAcceptedAnswer && (
-        <AnswerForm questionId={questionId} onSuccess={refetch} />
+        <div className="mt-5">
+          <AnswerForm questionId={questionId} onSuccess={refetch} />
+        </div>
       )}
     </div>
   );
