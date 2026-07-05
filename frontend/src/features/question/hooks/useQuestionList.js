@@ -8,12 +8,13 @@ const useQuestionList = () => {
   const memberId = useMemberId();
   const [questions, setQuestions] = useState([]);
   const [filters, setFilters] = useState({});
+  const [acceptedOnly, setAcceptedOnlyState] = useState(false);
   const [sort, setSort] = useState("latest");
   const [keyword, setKeyword] = useState(searchParams.get("keyword") ?? "");
   const [tagSearch, setTagSearch] = useState(searchParams.get("tag") ?? "");
   const [debouncedTagSearch, setDebouncedTagSearch] = useState(""); // 태그 검색 API 호출용
   const [debouncedKeyword, setDebouncedKeyword] = useState(""); // 실제 API 호출용
-  const [page, setPage] = useState(0);         // 현재 페이지 (0-indexed)
+  const [page, setPage] = useState(0); // 현재 페이지 (0-indexed)
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -47,6 +48,7 @@ const useQuestionList = () => {
           ...(debouncedKeyword && { keyword: debouncedKeyword }), // 빈 값이면 전송 안 함
           ...(debouncedTagSearch && { tagName: debouncedTagSearch }),
           ...(memberId && { memberId }), // 로그인 시 북마크 상태 포함
+          ...(acceptedOnly && { acceptedOnly: true }),
         };
         const data = await getQuestions(params);
         // 백엔드 응답: Page<QuestionResponse> → content가 질문 배열
@@ -60,8 +62,16 @@ const useQuestionList = () => {
       }
     };
     fetch();
-// debouncedTagSearch 추가 — 태그 검색어 변경 시 재호출
-  }, [filters, sort, page, debouncedKeyword, debouncedTagSearch, memberId]);
+    // debouncedTagSearch 추가 — 태그 검색어 변경 시 재호출
+  }, [
+    filters,
+    acceptedOnly,
+    sort,
+    page,
+    debouncedKeyword,
+    debouncedTagSearch,
+    memberId,
+  ]);
 
   // 필터/정렬 변경 시 항상 첫 페이지로 초기화
   const removeFilter = (key) => {
@@ -83,9 +93,16 @@ const useQuestionList = () => {
     setPage(0);
   };
 
+  const setAcceptedOnly = (value) => {
+    setAcceptedOnlyState(value);
+    setPage(0);
+  };
+
   return {
     questions,
     filters,
+    acceptedOnly,
+    setAcceptedOnly,
     sort,
     setSort: handleSetSort,
     keyword,

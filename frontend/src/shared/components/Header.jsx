@@ -20,8 +20,9 @@ const Header = () => {
   useEffect(() => {
     const keyword = searchParams.get("keyword");
     const tag = searchParams.get("tag");
-    if (tag) setSearchValue(`#${tag}`);    // 태그면 # 붙여서 표시
-    else setSearchValue(keyword ?? "");    // 키워드면 그대로
+    if (tag)
+      setSearchValue(`#${tag}`); // 태그면 # 붙여서 표시
+    else setSearchValue(keyword ?? ""); // 키워드면 그대로
   }, [searchParams]);
 
   // 엔터 입력 시 질문 목록 페이지로 검색 이동
@@ -56,9 +57,7 @@ const Header = () => {
             aria-label="주요 메뉴"
           >
             {NAV_ITEMS.map(({ label, to }) => {
-              const isActive =
-                label === "질문 피드" &&
-                location.pathname.startsWith(ROUTES.QUESTIONS);
+              const isActive = location.pathname.startsWith(to);
 
               return (
                 <Link
@@ -102,9 +101,7 @@ const Header = () => {
 
         <div className="order-4 flex w-full items-center gap-5 overflow-x-auto md:hidden">
           {NAV_ITEMS.map(({ label, to }) => {
-            const isActive =
-              label === "질문 피드" &&
-              location.pathname.startsWith(ROUTES.QUESTIONS);
+            const isActive = location.pathname.startsWith(to);
 
             return (
               <Link

@@ -16,6 +16,7 @@ public class CommentResponse {
     private Long answerId;
     private Long memberId;
     private String memberNickname;
+    private String memberProfileImageUrl;
     private String content;
     private Long likeCount;
     private Instant createdAt;
@@ -27,6 +28,7 @@ public class CommentResponse {
                 .answerId(comment.getAnswer().getId())
                 .memberId(comment.getMember().getId())
                 .memberNickname(comment.getMember().getNickname())
+                .memberProfileImageUrl(comment.getMember().getProfileImageUrl())
                 .content(comment.getContent())
                 .likeCount(comment.getLikeCount())
                 .createdAt(comment.getCreatedAt())

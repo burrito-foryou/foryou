@@ -11,13 +11,13 @@ const QuestionMyCard = ({ item }) => (
   >
     <div className="mb-3 flex items-center justify-between gap-2">
       {item.acceptedAnswerId ? (
-        <span className="flex items-center gap-1 rounded-full bg-primary-light px-3 py-1 text-xs font-black text-primary">
+        <span className="flex items-center gap-1 rounded-full bg-primary-light px-3 py-1 text-xs font-black text-text-primary">
           <FiCheckCircle size={12} />
           채택완료
         </span>
       ) : (
         <span className="rounded-full bg-surface-muted px-3 py-1 text-xs font-bold text-text-muted">
-          답변 대기
+          채택 대기
         </span>
       )}
       <span className="text-xs font-semibold text-text-muted/70">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FiSettings } from "react-icons/fi";
+import Avatar from "../../../shared/components/Avatar";
 import { ROUTES } from "../../../shared/constants/routes";
 import {
   getMyInfo,
@@ -94,7 +95,7 @@ const MyPage = () => {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-10 text-center text-sm text-text-muted">
+      <div className="mx-auto max-w-3xl px-4 py-16 text-center text-sm text-text-muted">
         불러오는 중...
       </div>
     );
@@ -102,7 +103,7 @@ const MyPage = () => {
 
   if (!member) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-10 text-center text-sm text-text-muted">
+      <div className="mx-auto max-w-3xl px-4 py-16 text-center text-sm text-text-muted">
         사용자 정보를 불러올 수 없습니다.
       </div>
     );
@@ -142,23 +143,18 @@ const MyPage = () => {
   const items = tabItems[activeTab];
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-10">
+    <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-16">
       <h1 className="text-3xl font-black text-text">마이페이지</h1>
 
       {/* 프로필 요약 */}
       <div className="card flex items-center justify-between gap-4 p-8">
         <div className="flex items-center gap-4">
-          {member.profileImageUrl ? (
-            <img
-              src={member.profileImageUrl}
-              alt="프로필 이미지"
-              className="h-16 w-16 shrink-0 rounded-full object-cover"
-            />
-          ) : (
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary-light text-2xl font-black text-primary">
-              {member.nickname.charAt(0)}
-            </div>
-          )}
+          <Avatar
+            src={member.profileImageUrl}
+            name={member.nickname}
+            size={64}
+            textSize="text-2xl"
+          />
           <div className="min-w-0">
             <p className="truncate text-lg font-black text-text">
               {member.nickname}

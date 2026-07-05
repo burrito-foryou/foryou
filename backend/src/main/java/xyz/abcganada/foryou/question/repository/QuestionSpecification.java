@@ -46,6 +46,11 @@ public class QuestionSpecification {
         };
     }
 
+    // 채택완료 질문만 조회
+    public static Specification<Question> hasAcceptedAnswer() {
+        return (root, query, cb) -> cb.isNotNull(root.get("acceptedAnswerId"));
+    }
+
     // 태그 ID 기반 검색
     public static Specification<Question> hasTagIds(List<Long> tagIds) {
         return (root, query, cb) -> {

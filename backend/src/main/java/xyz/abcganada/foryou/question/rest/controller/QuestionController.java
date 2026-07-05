@@ -4,15 +4,17 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
 import xyz.abcganada.foryou.global.response.ApiResponse;
+import xyz.abcganada.foryou.global.security.auth.AuthMember;
 import xyz.abcganada.foryou.question.rest.request.QuestionCreateRequest;
-import xyz.abcganada.foryou.question.rest.response.QuestionResponse;
-import xyz.abcganada.foryou.question.rest.response.QuestionDetailResponse;
 import xyz.abcganada.foryou.question.rest.request.QuestionUpdateRequest;
+import xyz.abcganada.foryou.question.rest.response.QuestionDetailResponse;
+import xyz.abcganada.foryou.question.rest.response.QuestionResponse;
 import xyz.abcganada.foryou.question.service.QuestionService;
 
 @RestController
@@ -27,10 +29,10 @@ public class QuestionController {
     @Operation(summary = "질문 등록", description = "질문을 등록한다.")
     @PostMapping
     public ResponseEntity<ApiResponse<QuestionResponse>> createQuestion(
-            @RequestParam Long memberId, // Security 구현 후 @AuthenticationPrincipal로 교체 예정
+            @AuthenticationPrincipal AuthMember member,
             @RequestBody @Valid QuestionCreateRequest request
     ) {
-        QuestionResponse response = questionService.create(memberId, request);
+        QuestionResponse response = questionService.create(member.memberId(), request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(response, "질문이 등록되었습니다."));
     }
@@ -48,12 +50,13 @@ public class QuestionController {
             @RequestParam(required = false) String ageGroup,
             @RequestParam(required = false) String situation,
             @RequestParam(required = false) String giftType,
+            @RequestParam(required = false) Boolean acceptedOnly,
             @RequestParam(defaultValue = "latest") String sort,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Page<QuestionResponse> response = questionService.getList(
-                memberId, keyword, tagName, target, budget, gender, ageGroup, situation, giftType, sort, page, size
+                memberId, keyword, tagName, target, budget, gender, ageGroup, situation, giftType, acceptedOnly, sort, page, size
         );
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -73,10 +76,10 @@ public class QuestionController {
     @PatchMapping("/{questionId}")
     public ResponseEntity<ApiResponse<QuestionResponse>> updateQuestion(
             @PathVariable Long questionId,
-            @RequestParam Long memberId, // Security 구현 후 @AuthenticationPrincipal로 교체 예정
+            @AuthenticationPrincipal AuthMember member,
             @RequestBody @Valid QuestionUpdateRequest request
     ) {
-        QuestionResponse response = questionService.update(questionId, memberId, request);
+        QuestionResponse response = questionService.update(questionId, member.memberId(), request);
         return ResponseEntity.ok(ApiResponse.success(response, "질문이 수정되었습니다."));
     }
 
@@ -85,9 +88,9 @@ public class QuestionController {
     @DeleteMapping("/{questionId}")
     public ResponseEntity<Void> deleteQuestion(
             @PathVariable Long questionId,
-            @RequestParam Long memberId // Security 구현 후 @AuthenticationPrincipal로 교체 예정
+            @AuthenticationPrincipal AuthMember member
     ) {
-        questionService.delete(questionId, memberId);
+        questionService.delete(questionId, member.memberId());
         return ResponseEntity.noContent().build();
     }
 

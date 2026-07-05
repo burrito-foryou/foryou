@@ -16,7 +16,7 @@ const QuestionEditPage = lazy(() => import("./features/question/pages/QuestionEd
 const NotificationPage = lazy(() => import("./features/notification/pages/NotificationPage"));
 const OAuthCallbackPage = lazy(() => import("./features/auth/pages/OAuthCallbackPage"));
 const ImageTestPage = lazy(() => import("./features/image/pages/ImageTestPage"));
-const GuidePage = lazy(() => import("./features/guide/page/GuidePage"));
+const GuidePage = lazy(() => import("./features/guide/pages/GuidePage"));
 
 const router = createBrowserRouter([
   {

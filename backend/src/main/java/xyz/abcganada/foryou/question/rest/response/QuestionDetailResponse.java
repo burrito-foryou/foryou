@@ -18,6 +18,7 @@ public class QuestionDetailResponse {
     private String content;
     private Long memberId;
     private String memberNickname;
+    private String memberProfileImageUrl;
     private long viewCount;
     private long likeCount;
     private long answerCount;
@@ -42,6 +43,7 @@ public class QuestionDetailResponse {
                 .content(question.getContent())
                 .memberId(question.getMember().getId())
                 .memberNickname(question.getMember().getNickname())
+                .memberProfileImageUrl(question.getMember().getProfileImageUrl())
                 .viewCount(question.getViewCount())
                 .likeCount(question.getLikeCount())
                 .answerCount(question.getAnswerCount())

@@ -114,7 +114,7 @@ const QuestionWritePage = () => {
   const tagTypes = TAG_TYPE_ORDER.filter((type) => tagsByType[type]?.length);
 
   return (
-    <div className="app-container px-4 py-10">
+    <div className="mx-auto max-w-3xl px-4 py-10">
       {/* 헤더 */}
       <button
         onClick={() => navigate(ROUTES.QUESTIONS)}
@@ -205,7 +205,7 @@ const QuestionWritePage = () => {
               onChange={(e) => setTitle(e.target.value)}
               placeholder="예) 부모님 결혼기념일 선물, 건강 관련으로 뭐가 좋을까요?"
               maxLength={100}
-              className="h-12 w-full rounded-2xl border border-border bg-background px-5 text-sm outline-none transition-colors focus:border-primary"
+              className="h-12 w-full rounded-2xl border border-border bg-white px-5 text-sm outline-none transition-colors focus:border-primary"
             />
           </div>
 
@@ -224,7 +224,7 @@ const QuestionWritePage = () => {
               placeholder="받는 분의 취향, 이미 드려본 선물, 피하고 싶은 것 등을 적어주시면 더 좋은 답변을 받을 수 있어요"
               maxLength={500}
               rows={6}
-              className="w-full resize-none rounded-2xl border border-border bg-background px-5 py-4 text-sm outline-none transition-colors focus:border-primary"
+              className="w-full resize-none rounded-2xl border border-border bg-white px-5 py-4 text-sm outline-none transition-colors focus:border-primary"
             />
           </div>
 

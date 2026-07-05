@@ -72,6 +72,7 @@ public class QuestionService {
             String ageGroup,
             String situation,
             String giftType,
+            Boolean acceptedOnly,
             String sort,
             int page,
             int size
@@ -106,6 +107,10 @@ public class QuestionService {
         // 태그 이름 부분 검색
         if (tagName != null && !tagName.isBlank()) {
             spec = spec.and(QuestionSpecification.containsTagName(tagName));
+        }
+        // 채택완료 질문만 조회
+        if (Boolean.TRUE.equals(acceptedOnly)) {
+            spec = spec.and(QuestionSpecification.hasAcceptedAnswer());
         }
 
         // 정렬 + 페이징

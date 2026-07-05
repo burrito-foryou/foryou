@@ -2,16 +2,19 @@
 
 @theme {
   /* Colors */
-  --color-primary: #ec4f82;
+  --color-primary: #e9557f;
   --color-primary-hover: #d93d72;
-  --color-primary-light: #fde8f0;
+  --color-primary-light: #fbedf2;
   --color-secondary: #f4c9d9;
-  --color-background: #fffdfd;
+  --color-background: #fdfbfb;
+  --color-background-avatar: #f5dde6;
   --color-surface: #fff6f9;
   --color-surface-muted: #f8f2f4;
+  --color-text-primary: #c93a67;
   --color-text: #211b20;
   --color-text-muted: #766873;
   --color-border: #f3dde6;
+  --color-white: #ffffff;
   --color-error: #e53935;
 
   /* Typography */
@@ -168,7 +171,7 @@
   .search-input {
     width: 100%;
     border-radius: var(--radius-pill);
-    background-color: var(--color-surface-muted);
+    background-color: #f3f4f6;
     color: var(--color-text);
     outline: none;
     transition:

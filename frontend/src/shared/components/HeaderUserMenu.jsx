@@ -6,6 +6,7 @@ import useAuthStore from "../../features/auth/store/authStore";
 import { logout } from "../../features/auth/api/authApi";
 import { getMyInfo } from "../../features/user/api/memberApi";
 import LogoutConfirmModal from "./LogoutConfirmModal";
+import Avatar from "./Avatar";
 
 const DROPDOWN_MENU = [
   { label: "마이페이지", to: ROUTES.MY_PAGE, icon: FiUser },
@@ -24,7 +25,6 @@ const HeaderUserMenu = () => {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const dropdownRef = useRef(null);
   const displayName = nickname ?? "마이페이지";
-  const fallbackInitial = displayName.charAt(0);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -92,17 +92,13 @@ const HeaderUserMenu = () => {
         onClick={() => setIsOpen((prev) => !prev)}
         className="flex h-10 items-center gap-2 rounded-full px-2.5 pr-3 text-sm font-extrabold text-text transition-colors hover:bg-surface"
       >
-        {profileImageUrl ? (
-          <img
-            src={profileImageUrl}
-            alt=""
-            className="h-7 w-7 rounded-full border border-border object-cover"
-          />
-        ) : (
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary-light text-xs font-black text-primary">
-            {fallbackInitial}
-          </span>
-        )}
+        <Avatar
+          src={profileImageUrl}
+          name={displayName}
+          size={28}
+          textSize="text-xs"
+          bordered
+        />
         <span>{nickname ? `${nickname}님` : "마이페이지"}</span>
         <FiChevronDown
           size={14}
