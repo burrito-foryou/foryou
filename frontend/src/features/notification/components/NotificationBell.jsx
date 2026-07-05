@@ -34,7 +34,7 @@ const NotificationBell = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full z-40 mt-2">
+        <div className="absolute right-[-300px] top-full z-40 mt-2">
           <NotificationDropdown {...notificationData} />
         </div>
       )}
