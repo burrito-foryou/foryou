@@ -55,4 +55,13 @@ public class QuestionSpecification {
             return tags.get("id").in(tagIds);
         };
     }
+    // 태그 이름 부분 검색 — # 검색 시 사용
+    public static Specification<Question> containsTagName(String tagName) {
+        return (root, query, cb) -> {
+            if (tagName == null || tagName.isBlank()) return null;
+            query.distinct(true);
+            Join<Question, Tag> tags = root.join("tags", JoinType.LEFT);
+            return cb.like(tags.get("name"), "%" + tagName + "%");
+        };
+    }
 }

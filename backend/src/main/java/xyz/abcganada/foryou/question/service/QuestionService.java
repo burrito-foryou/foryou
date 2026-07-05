@@ -65,6 +65,7 @@ public class QuestionService {
     public Page<QuestionResponse> getList(
             Long memberId,
             String keyword,
+            String tagName,
             String target,
             String budget,
             String gender,
@@ -102,6 +103,10 @@ public class QuestionService {
         if (giftType != null && !giftType.isBlank()) {
             spec = spec.and(QuestionSpecification.hasTagOfType(TagType.GIFT_TYPE, List.of(giftType)));
         }
+        // 태그 이름 부분 검색
+        if (tagName != null && !tagName.isBlank()) {
+            spec = spec.and(QuestionSpecification.containsTagName(tagName));
+        }
 
         // 정렬 + 페이징
         Pageable pageable = PageRequest.of(page, size, toSort(sort));
@@ -113,17 +118,22 @@ public class QuestionService {
         });
     }
 
-    // 질문 상세 조회 (조회수 증가 포함)
+    // 질문 상세 조회
     @Transactional
     public QuestionDetailResponse getDetail(Long questionId) {
         // 질문 조회
         Question question = questionRepository.findWithDetailsById(questionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
-
-        // 조회수 증가
-        question.incrementViewCount();
-
+        // incrementViewCount는 별도 엔드포인트에서 처리
         return QuestionDetailResponse.from(question);
+    }
+
+    // 조회수 증가 — 세션당 1회 호출 (중복 방지는 프론트에서 처리)
+    @Transactional
+    public void incrementViewCount(Long questionId) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
+        question.incrementViewCount();
     }
 
     // 질문 수정

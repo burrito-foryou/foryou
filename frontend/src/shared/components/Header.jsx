@@ -18,15 +18,24 @@ const Header = () => {
   const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
-    setSearchValue(searchParams.get("keyword") ?? "");
+    const keyword = searchParams.get("keyword");
+    const tag = searchParams.get("tag");
+    if (tag) setSearchValue(`#${tag}`);    // 태그면 # 붙여서 표시
+    else setSearchValue(keyword ?? "");    // 키워드면 그대로
   }, [searchParams]);
 
   // 엔터 입력 시 질문 목록 페이지로 검색 이동
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && searchValue.trim()) {
-      navigate(
-        `${ROUTES.QUESTIONS}?keyword=${encodeURIComponent(searchValue.trim())}`,
-      );
+      const value = searchValue.trim();
+
+      // # 으로 시작하면 태그 검색, 아니면 키워드 검색
+      if (value.startsWith("#")) {
+        const tagName = value.slice(1);
+        navigate(`${ROUTES.QUESTIONS}?tag=${encodeURIComponent(tagName)}`);
+      } else {
+        navigate(`${ROUTES.QUESTIONS}?keyword=${encodeURIComponent(value)}`);
+      }
     }
   };
 

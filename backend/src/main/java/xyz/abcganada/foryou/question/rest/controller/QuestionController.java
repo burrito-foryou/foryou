@@ -41,6 +41,7 @@ public class QuestionController {
     public ResponseEntity<ApiResponse<Page<QuestionResponse>>> getQuestions(
             @RequestParam(required = false) Long memberId,
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String tagName, // 태그 이름 부분 검색
             @RequestParam(required = false) String target,
             @RequestParam(required = false) String budget,
             @RequestParam(required = false) String gender,
@@ -52,7 +53,7 @@ public class QuestionController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Page<QuestionResponse> response = questionService.getList(
-                memberId, keyword, target, budget, gender, ageGroup, situation, giftType, sort, page, size
+                memberId, keyword, tagName, target, budget, gender, ageGroup, situation, giftType, sort, page, size
         );
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -88,5 +89,12 @@ public class QuestionController {
     ) {
         questionService.delete(questionId, memberId);
         return ResponseEntity.noContent().build();
+    }
+
+    // 조회수 증가 — 프론트에서 세션당 1회만 호출
+    @PostMapping("/{questionId}/view")
+    public ResponseEntity<Void> incrementViewCount(@PathVariable Long questionId) {
+        questionService.incrementViewCount(questionId);
+        return ResponseEntity.ok().build();
     }
 }

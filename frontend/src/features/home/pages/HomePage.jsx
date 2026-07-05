@@ -9,6 +9,10 @@ import {
   FiZap,
 } from "react-icons/fi";
 import { ROUTES } from "../../../shared/constants/routes";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import useAuthStore from "../../../features/auth/store/authStore";
+import LikeLoginModal from "../../like/components/LikeLoginModal";
 
 const FEATURES = [
   {
@@ -39,6 +43,10 @@ const SAMPLE_QUESTION = {
 };
 
 const HomePage = () => {
+  // 로그인 상태 및 모달 제어
+  const navigate = useNavigate();
+  const token = useAuthStore((state) => state.token);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   return (
     <div>
       {/* Hero */}
@@ -61,18 +69,25 @@ const HomePage = () => {
             </p>
 
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Link
-                to={ROUTES.QUESTION_WRITE}
-                className="btn btn-primary text-base"
+              <button
+                  onClick={() => {
+                    // 비로그인 시 모달, 로그인 시 작성 페이지 이동
+                    if (!token) {
+                      setShowLoginModal(true);
+                      return;
+                    }
+                    navigate(ROUTES.QUESTION_WRITE);
+                  }}
+                  className="btn btn-primary text-base"
               >
                 질문 작성하기
                 <FiArrowRight
-                  size={16}
-                  strokeWidth={2.5}
-                  className="shrink-0 -translate-y-[1px]"
-                  aria-hidden
+                    size={16}
+                    strokeWidth={2.5}
+                    className="shrink-0 -translate-y-[1px]"
+                    aria-hidden
                 />
-              </Link>
+              </button>
               <Link
                 to={ROUTES.QUESTIONS}
                 className="btn btn-secondary text-base"
@@ -148,6 +163,13 @@ const HomePage = () => {
           ))}
         </div>
       </div>
+      {/* 비로그인 질문 작성 시도 시 로그인 유도 모달 */}
+      {showLoginModal && (
+          <LikeLoginModal
+              onGoLogin={() => navigate(ROUTES.LOGIN)}
+              onClose={() => setShowLoginModal(false)}
+          />
+      )}
     </div>
   );
 };
