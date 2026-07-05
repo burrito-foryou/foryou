@@ -66,7 +66,7 @@ const AccountPage = () => {
   const ProviderIcon = provider.icon;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
+    <div className="mx-auto max-w-3xl px-4 py-16">
       <h1 className="mb-6 text-3xl font-black text-text">계정 정보</h1>
 
       {/* 프로필 요약 */}

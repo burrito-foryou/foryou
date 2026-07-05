@@ -95,7 +95,7 @@ const MyPage = () => {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-10 text-center text-sm text-text-muted">
+      <div className="mx-auto max-w-3xl px-4 py-16 text-center text-sm text-text-muted">
         불러오는 중...
       </div>
     );
@@ -103,7 +103,7 @@ const MyPage = () => {
 
   if (!member) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-10 text-center text-sm text-text-muted">
+      <div className="mx-auto max-w-3xl px-4 py-16 text-center text-sm text-text-muted">
         사용자 정보를 불러올 수 없습니다.
       </div>
     );
@@ -143,7 +143,7 @@ const MyPage = () => {
   const items = tabItems[activeTab];
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-10">
+    <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-16">
       <h1 className="text-3xl font-black text-text">마이페이지</h1>
 
       {/* 프로필 요약 */}

@@ -114,7 +114,7 @@ const QuestionWritePage = () => {
   const tagTypes = TAG_TYPE_ORDER.filter((type) => tagsByType[type]?.length);
 
   return (
-    <div className="app-container px-4 py-10">
+    <div className="mx-auto max-w-3xl px-4 py-10">
       {/* 헤더 */}
       <button
         onClick={() => navigate(ROUTES.QUESTIONS)}
