@@ -23,7 +23,8 @@ public class NotificationCreator {
                 NotificationType.QUESTION_ANSWER_CREATED,
                 TargetType.ANSWER,
                 answer.getId(),
-                answer.getQuestion().getId()
+                answer.getQuestion().getId(),
+                answer.getQuestion().getTitle()
         );
     }
 
@@ -35,7 +36,8 @@ public class NotificationCreator {
                 NotificationType.QUESTION_COMMENT_CREATED,
                 TargetType.COMMENT,
                 comment.getId(),
-                comment.getAnswer().getQuestion().getId()
+                comment.getAnswer().getQuestion().getId(),
+                comment.getAnswer().getQuestion().getTitle()
         );
     }
 
@@ -47,7 +49,8 @@ public class NotificationCreator {
                 NotificationType.ANSWER_COMMENT_CREATED,
                 TargetType.COMMENT,
                 comment.getId(),
-                comment.getAnswer().getQuestion().getId()
+                comment.getAnswer().getQuestion().getId(),
+                comment.getAnswer().getQuestion().getTitle()
         );
     }
 
@@ -59,7 +62,8 @@ public class NotificationCreator {
                 NotificationType.ANSWER_ACCEPTED,
                 TargetType.ANSWER,
                 answer.getId(),
-                answer.getQuestion().getId()
+                answer.getQuestion().getId(),
+                answer.getQuestion().getTitle()
         );
     }
 
@@ -70,7 +74,8 @@ public class NotificationCreator {
                 NotificationType.QUESTION_LIKED,
                 TargetType.QUESTION,
                 question.getId(),
-                question.getId()
+                question.getId(),
+                question.getTitle()
         );
     }
 
@@ -81,7 +86,8 @@ public class NotificationCreator {
                 NotificationType.ANSWER_LIKED,
                 TargetType.ANSWER,
                 answer.getId(),
-                answer.getQuestion().getId()
+                answer.getQuestion().getId(),
+                answer.getQuestion().getTitle()
         );
     }
 
@@ -92,7 +98,8 @@ public class NotificationCreator {
                 NotificationType.COMMENT_LIKED,
                 TargetType.COMMENT,
                 comment.getId(),
-                comment.getAnswer().getQuestion().getId()
+                comment.getAnswer().getQuestion().getId(),
+                comment.getAnswer().getQuestion().getTitle()
         );
     }
 
