@@ -78,7 +78,7 @@ const QuestionListPage = () => {
   };
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
+    <div className="mx-auto max-w-3xl px-4 pb-10 pt-16">
       {/* 타이틀 + 질문 작성 */}
       <div className="mb-6 flex items-center justify-between">
         <div>
@@ -100,7 +100,7 @@ const QuestionListPage = () => {
       <div className="mb-5 flex flex-wrap items-center gap-2">
         <button
           onClick={() => setShowFilter(true)}
-          className="flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-bold text-text transition-colors hover:border-primary hover:text-primary"
+          className="flex items-center gap-1.5 rounded-full border border-border bg-white px-4 py-2 text-sm font-bold text-text transition-colors hover:border-primary hover:text-primary"
         >
           <FiSliders size={14} /> 필터
         </button>
@@ -108,7 +108,7 @@ const QuestionListPage = () => {
         <div className="relative" ref={sortMenuRef}>
           <button
             onClick={() => setShowSortMenu((v) => !v)}
-            className="flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-bold text-text transition-colors hover:border-primary hover:text-primary"
+            className="flex items-center gap-1.5 rounded-full border border-border bg-white px-4 py-2 text-sm font-bold text-text transition-colors hover:border-primary hover:text-primary"
           >
             <span className="whitespace-nowrap">{currentSortLabel}</span>
             <FiChevronDown
@@ -142,7 +142,7 @@ const QuestionListPage = () => {
           className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold transition-colors ${
             acceptedOnly
               ? "border border-secondary bg-primary-light text-text-primary"
-              : "border border-border text-text hover:border-primary"
+              : "border border-border bg-white text-text hover:border-primary"
           }`}
         >
           {acceptedOnly && <FiCheck size={14} />}
