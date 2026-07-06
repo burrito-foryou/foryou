@@ -1,28 +1,38 @@
-const SignupSuccessModal = ({ onGoHome, onGoLogin }) => {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-sm rounded-lg border border-border bg-background p-8 text-center shadow-lg">
-        <p className="mb-2 text-3xl">✓</p>
-        <p className="mb-1 text-lg font-bold text-text">회원가입 완료!</p>
-        <p className="mb-6 text-sm text-text-muted">ForU의 회원이 되었어요.</p>
+import { createPortal } from "react-dom";
+import { FiCheckCircle } from "react-icons/fi";
 
-        <div className="flex gap-3">
+const SignupSuccessModal = ({ onGoHome, onGoLogin }) =>
+  createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+      <div className="card w-full max-w-sm p-7 shadow-soft">
+        <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-light text-primary">
+          <FiCheckCircle size={22} />
+        </span>
+
+        <h2 className="mb-1.5 text-lg font-black text-text">
+          가입이 완료됐어요!
+        </h2>
+        <p className="text-sm leading-relaxed text-text-muted">
+          당신의 고민에 딱 맞는 선물을 함께 찾아볼까요?
+        </p>
+
+        <div className="mt-6 flex justify-end gap-2">
           <button
             onClick={onGoHome}
-            className="flex-1 rounded-md border border-border py-2 text-sm text-text hover:bg-surface"
+            className="rounded-full px-5 py-2.5 text-sm font-bold text-text-muted transition-colors hover:bg-surface hover:text-text"
           >
             홈으로
           </button>
           <button
             onClick={onGoLogin}
-            className="flex-1 rounded-md bg-primary py-2 text-sm font-bold text-white hover:bg-primary-hover"
+            className="rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-primary-hover"
           >
             로그인하기
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
-};
 
 export default SignupSuccessModal;

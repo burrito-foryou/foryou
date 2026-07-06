@@ -7,7 +7,13 @@ const useNotificationSse = (onNotification) => {
     useEffect(() => {                                                                                                                                                  
     if (!token) return; // 로그인 안 된 상태에서는 SSE 연결 시도 X                                                                                                                                          
                                                                                                                                                                      
-    const eventSource = new EventSource(`/api/notifications/subscribe?token=${token}`); // 연결 생성                                                                             
+    let tabId = sessionStorage.getItem("sse-tab-id"); // 탭마다 고유, 새로고침에도 유지
+    if (!tabId) {
+      tabId = crypto.randomUUID();
+      sessionStorage.setItem("sse-tab-id", tabId);
+    }
+
+    const eventSource = new EventSource(`/api/notifications/subscribe?token=${token}&tabId=${tabId}`); // 연결 생성                                                                           
                                                                                                                                                                      
     eventSource.addEventListener("notification", (e) => { // 서버에서 SSE 이벤트 도착 시 listener 실행                                                                                                    
       const data = JSON.parse(e.data);                                                                                                                               

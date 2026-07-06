@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import xyz.abcganada.foryou.question.domain.Question;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Getter
@@ -18,13 +18,14 @@ public class QuestionDetailResponse {
     private String content;
     private Long memberId;
     private String memberNickname;
+    private String memberProfileImageUrl;
     private long viewCount;
     private long likeCount;
     private long answerCount;
     private Long acceptedAnswerId;
     private List<TagInfo> tags;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 
     @Getter
     @Builder
@@ -42,6 +43,7 @@ public class QuestionDetailResponse {
                 .content(question.getContent())
                 .memberId(question.getMember().getId())
                 .memberNickname(question.getMember().getNickname())
+                .memberProfileImageUrl(question.getMember().getProfileImageUrl())
                 .viewCount(question.getViewCount())
                 .likeCount(question.getLikeCount())
                 .answerCount(question.getAnswerCount())

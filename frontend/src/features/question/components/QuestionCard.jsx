@@ -1,12 +1,19 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FiBookmark, FiEye, FiHeart, FiMessageSquare } from "react-icons/fi";
+import {
+  FiBookmark,
+  FiCheckCircle,
+  FiEye,
+  FiHeart,
+  FiMessageSquare,
+} from "react-icons/fi";
 import timeAgo from "../../../shared/utils/timeAgo";
 import { toQuestionDetail, ROUTES } from "../../../shared/constants/routes";
 import useBookmark from "../hooks/useBookmark";
 import useAuthStore from "../../auth/store/authStore";
 import LikeLoginModal from "../../like/components/LikeLoginModal";
 import useMemberId from "../hooks/useMemberId";
+import Avatar from "../../../shared/components/Avatar";
 
 const QuestionCard = ({ question: q }) => {
   const navigate = useNavigate();
@@ -37,44 +44,59 @@ const QuestionCard = ({ question: q }) => {
       )}
       {/* `/questions/${q.id}` => toQuestionDetail(q.id) */}
       <Link to={toQuestionDetail(q.id)}>
-        <div className="rounded-2xl border border-border bg-background p-5 transition-all hover:border-primary hover:shadow-sm">
-          <div className="mb-2 flex items-start justify-between gap-3">
-            <p className="font-bold text-text leading-snug">{q.title}</p>
-            <div className="flex items-center gap-2 shrink-0">
-              {q.acceptedAnswerId && (
-                <span className="rounded-full bg-primary-light px-3 py-1 text-xs font-semibold text-primary">
-                  채택완료
-                </span>
-              )}
-              {q.memberId !== memberId && (
-                <button
-                  onClick={handleBookmark}
-                  disabled={loading}
-                  className="text-text-muted hover:text-primary transition-colors disabled:opacity-50"
-                >
-                  <FiBookmark
-                    size={20}
-                    className={isBookmarked ? "fill-primary text-primary" : ""}
-                  />
-                </button>
-              )}
-            </div>
+        <div className="card p-6 transition-colors hover:border-primary">
+          <div className="mb-4 flex items-center justify-between gap-2">
+            {q.acceptedAnswerId ? (
+              <span className="flex items-center gap-1 rounded-full bg-primary-light px-3 py-1 text-xs font-black text-text-primary">
+                <FiCheckCircle size={12} />
+                채택완료
+              </span>
+            ) : (
+              <span className="rounded-full bg-surface-muted px-3 py-1 text-xs font-bold text-text-muted">
+                채택 대기
+              </span>
+            )}
+            {q.memberId !== memberId && (
+              <button
+                onClick={handleBookmark}
+                disabled={loading}
+                className="shrink-0 text-text-muted transition-colors hover:text-primary disabled:opacity-50"
+              >
+                <FiBookmark
+                  size={18}
+                  className={isBookmarked ? "fill-primary text-primary" : ""}
+                />
+              </button>
+            )}
           </div>
-          <p className="mb-3 line-clamp-1 text-sm text-text-muted">
+
+          <p className="mb-2 text-base font-bold leading-snug text-text">
+            {q.title}
+          </p>
+
+          <p className="mb-4 line-clamp-1 text-sm text-text-muted">
             {q.content}
           </p>
-          <div className="mb-3 flex flex-wrap gap-1.5">
+
+          <div className="mb-4 flex flex-wrap gap-1.5">
             {q.tagNames.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full bg-surface px-2.5 py-1 text-xs text-primary"
+                className="rounded-full bg-surface-muted px-2.5 py-1 text-xs font-semibold text-text-muted"
               >
                 #{tag}
               </span>
             ))}
           </div>
-          <div className="flex items-center justify-between pt-1">
-            <span className="text-xs text-text-muted">
+
+          <div className="flex items-center justify-between border-t border-border/60 pt-4">
+            <span className="flex items-center gap-2 text-xs text-text-muted">
+              <Avatar
+                src={q.memberProfileImageUrl}
+                name={q.memberNickname}
+                size={20}
+                textSize="text-[10px]"
+              />
               {q.memberNickname} · {timeAgo(q.createdAt)}
             </span>
             <div className="flex items-center gap-3 text-xs font-medium text-text-muted">
@@ -84,8 +106,12 @@ const QuestionCard = ({ question: q }) => {
               <span className="flex items-center gap-1">
                 <FiHeart size={14} /> {q.likeCount}
               </span>
-              <span className="flex items-center gap-1">
-                <FiMessageSquare size={14} /> {q.answerCount}
+              <span
+                className={`flex items-center gap-1 font-bold ${
+                  q.answerCount > 0 ? "text-primary" : "text-text-muted"
+                }`}
+              >
+                <FiMessageSquare size={14} /> 답변 {q.answerCount}
               </span>
             </div>
           </div>

@@ -1,0 +1,1 @@
+ALTER TABLE notifications ADD COLUMN question_title VARCHAR(20);

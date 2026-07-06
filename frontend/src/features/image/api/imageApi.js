@@ -24,5 +24,8 @@ export const uploadAnswerImage = (answerId, file) => {
   }).then((res) => res.data.data);
 };
 
+export const getAnswerImages = (answerId) =>
+  instance.get(`/images/ANSWER/${answerId}`).then((res) => res.data.data);
+
 export const deleteImage = (imageId) =>
   instance.delete(`/images/${imageId}`).then((res) => res.data);

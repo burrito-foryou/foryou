@@ -7,6 +7,7 @@ const useCommentForm = (answerId, onSuccess) => {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
+    if (e.target.value.length > 50) return;
     setContent(e.target.value);
     if (error) setError("");
   };
@@ -15,6 +16,10 @@ const useCommentForm = (answerId, onSuccess) => {
     e.preventDefault();
     if (!content.trim()) {
       setError("내용을 입력해주세요.");
+      return;
+    }
+    if (content.length > 50) {
+      setError("댓글은 50자 이하로 입력해주세요.");
       return;
     }
 

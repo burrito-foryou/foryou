@@ -3,7 +3,7 @@ package xyz.abcganada.foryou.member.rest.response;
 import xyz.abcganada.foryou.member.domain.AuthProvider;
 import xyz.abcganada.foryou.member.domain.Member;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record MemberInfoResponse(
     Long memberId,
@@ -11,7 +11,7 @@ public record MemberInfoResponse(
     String email,
     String profileImageUrl,
     AuthProvider provider,
-    LocalDateTime createdAt
+    Instant createdAt
 ) {
     public static MemberInfoResponse from(Member member) {
         return new MemberInfoResponse(

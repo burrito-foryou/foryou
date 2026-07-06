@@ -1,78 +1,164 @@
 import { Link } from "react-router-dom";
+import {
+  FiArrowRight,
+  FiEye,
+  FiGift,
+  FiHeart,
+  FiMessageCircle,
+  FiMessageSquare,
+  FiZap,
+} from "react-icons/fi";
 import { ROUTES } from "../../../shared/constants/routes";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import useAuthStore from "../../../features/auth/store/authStore";
+import LikeLoginModal from "../../like/components/LikeLoginModal";
+import Avatar from "../../../shared/components/Avatar";
 
 const FEATURES = [
   {
-    icon: "💬",
+    icon: FiMessageSquare,
     title: "질문하기",
     description: "선물 고민을 올리면 다양한 사람들의 의견을 들을 수 있어요",
   },
   {
-    icon: "🎯",
+    icon: FiGift,
     title: "맞춤 추천",
     description: "상황과 예산에 맞는 선물을 추천받을 수 있어요",
   },
   {
-    icon: "⚡",
+    icon: FiZap,
     title: "빠른 답변",
     description: "활발한 커뮤니티가 빠르게 고민을 해결해 드려요",
   },
 ];
 
+const SAMPLE_QUESTION = {
+  nickname: "burrito",
+  createdAt: "10분 전",
+  title: "여자친구 100일 선물, 향수 vs 목걸이 뭐가 나을까요?",
+  tags: ["#기념일", "#20대", "#여자친구", "#5~10만원"],
+  viewCount: 234,
+  likeCount: 18,
+  answerCount: 12,
+};
+
 const HomePage = () => {
+  // 로그인 상태 및 모달 제어
+  const navigate = useNavigate();
+  const token = useAuthStore((state) => state.token);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   return (
     <div>
       {/* Hero */}
-      <div className="bg-gradient-to-b from-primary/10 to-transparent px-4 py-24 text-center">
-        {/* 뱃지 */}
-        <div className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
-          <span>✦</span>
-          <span>선물 고민 커뮤니티</span>
-        </div>
+      <div className="px-4 py-20">
+        <div className="app-container max-w-[1040px] grid items-center gap-12 md:grid-cols-2">
+          <div className="mt-6">
+            <h1 className="mb-4 text-4xl font-black leading-tight text-text sm:text-5xl">
+              고민은 짧게,
+              <br />
+              감동은{" "}
+              <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">
+                길게
+              </span>
+            </h1>
 
-        {/* 제목 */}
-        <h1 className="mb-4 text-4xl font-bold leading-tight text-text sm:text-5xl">
-          고민은 짧게,{" "}
-          <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">
-            감동은 길게
-          </span>
-        </h1>
+            <p className="mb-10 text-base text-text-muted sm:text-lg">
+              받는 사람이 진심으로 기뻐할 선물, 혼자 고민하지 마세요.
+              <br />
+              커뮤니티가 함께 찾아드려요.
+            </p>
 
-        {/* 서브텍스트 */}
-        <p className="mb-10 text-base text-text-muted sm:text-lg">
-          받는 사람이 진심으로 기뻐할 선물을
-          <br />
-          함께 찾아드려요
-        </p>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <button
+                onClick={() => {
+                  // 비로그인 시 모달, 로그인 시 작성 페이지 이동
+                  if (!token) {
+                    setShowLoginModal(true);
+                    return;
+                  }
+                  navigate(ROUTES.QUESTION_WRITE);
+                }}
+                className="btn btn-primary text-base"
+              >
+                질문 작성하기
+                <FiArrowRight
+                  size={16}
+                  strokeWidth={2.5}
+                  className="shrink-0 -translate-y-[1px]"
+                  aria-hidden
+                />
+              </button>
+              <Link
+                to={ROUTES.QUESTIONS}
+                className="btn btn-secondary text-base"
+              >
+                질문 둘러보기
+              </Link>
+            </div>
+          </div>
 
-        {/* 버튼 */}
-        <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link
-            to={ROUTES.QUESTIONS}
-            className="rounded-full bg-primary px-8 py-3 text-sm font-bold text-white hover:bg-primary-hover transition-colors"
-          >
-            질문 둘러보기
-          </Link>
-          <Link
-            to={ROUTES.QUESTION_WRITE}
-            className="flex items-center gap-1 rounded-full border border-primary px-8 py-3 text-sm font-bold text-primary hover:bg-primary/5 transition-colors"
-          >
-            질문 작성하기
-            <span>→</span>
-          </Link>
+          <div className="hidden md:block">
+            <div className="card p-7 shadow-card">
+              <div className="mb-4 flex items-center gap-3">
+                <Avatar
+                  name={SAMPLE_QUESTION.nickname}
+                  size={44}
+                  textSize="text-lg"
+                />
+                <div>
+                  <p className="font-bold text-text">
+                    {SAMPLE_QUESTION.nickname}
+                  </p>
+                  <p className="text-xs text-text-muted">
+                    {SAMPLE_QUESTION.createdAt}
+                  </p>
+                </div>
+              </div>
+
+              <p className="mb-5 text-lg font-bold leading-snug text-text">
+                {SAMPLE_QUESTION.title}
+              </p>
+
+              <div className="mb-5 flex flex-wrap gap-2">
+                {SAMPLE_QUESTION.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full bg-surface-muted px-3 py-1 text-xs font-semibold text-text-muted"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-4 border-t border-border pt-4 text-sm font-bold text-text-muted">
+                <span className="flex items-center gap-1.5">
+                  <FiEye size={16} />
+                  조회 {SAMPLE_QUESTION.viewCount}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <FiHeart size={16} />
+                  좋아요 {SAMPLE_QUESTION.likeCount}
+                </span>
+                <span className="flex items-center gap-1.5 text-primary">
+                  <FiMessageCircle size={16} />
+                  답변 {SAMPLE_QUESTION.answerCount}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* 특징 카드 */}
-      <div className="mx-auto max-w-3xl px-6 py-12">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {FEATURES.map(({ icon, title, description }) => (
-            <div
-              key={title}
-              className="rounded-2xl border border-border bg-background p-6 text-center"
-            >
-              <p className="mb-3 text-3xl">{icon}</p>
-              <p className="mb-2 font-bold text-text">{title}</p>
+      <div className="app-container max-w-[1040px] px-4 py-16">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+          {FEATURES.map(({ icon: Icon, title, description }) => (
+            <div key={title} className="card p-7">
+              <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-light text-primary">
+                <Icon size={22} />
+              </span>
+              <p className="mb-2 text-lg font-bold text-text">{title}</p>
               <p className="text-sm leading-relaxed text-text-muted">
                 {description}
               </p>
@@ -80,6 +166,13 @@ const HomePage = () => {
           ))}
         </div>
       </div>
+      {/* 비로그인 질문 작성 시도 시 로그인 유도 모달 */}
+      {showLoginModal && (
+        <LikeLoginModal
+          onGoLogin={() => navigate(ROUTES.LOGIN)}
+          onClose={() => setShowLoginModal(false)}
+        />
+      )}
     </div>
   );
 };

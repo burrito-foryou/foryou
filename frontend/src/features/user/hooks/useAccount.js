@@ -1,14 +1,18 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getMyInfo,
   updateNickname,
   updateProfileImage,
   resetProfileImage,
+  withdrawMember,
 } from "../api/memberApi";
 import useToast from "../../../shared/hooks/useToast";
 import useAuthStore from "../../auth/store/authStore";
+import { ROUTES } from "../../../shared/constants/routes";
 
 const useAccount = () => {
+  const navigate = useNavigate();
   const [member, setMember] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -20,13 +24,21 @@ const useAccount = () => {
   const [imageLoading, setImageLoading] = useState(false);
   const fileInputRef = useRef(null);
   const { toast, showToast } = useToast();
-  const setNickname = useAuthStore((state) => state.setNickname);
+  const setMemberInfo = useAuthStore((state) => state.setMemberInfo);
+  const setProfileImageUrl = useAuthStore((state) => state.setProfileImageUrl);
+  const clearAuth = useAuthStore((state) => state.clearAuth);
+
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+  const [withdrawLoading, setWithdrawLoading] = useState(false);
 
   useEffect(() => {
     getMyInfo()
-      .then(setMember)
+      .then((member) => {
+        setMember(member);
+        setMemberInfo(member);
+      })
       .finally(() => setLoading(false));
-  }, []);
+  }, [setMemberInfo]);
 
   const handleNicknameEdit = () => {
     setNicknameInput(member.nickname);
@@ -57,7 +69,7 @@ const useAccount = () => {
     try {
       const updated = await updateNickname(trimmed);
       setMember(updated);
-      setNickname(trimmed);
+      setMemberInfo(updated);
       setEditingNickname(false);
       showToast("닉네임이 변경되었습니다.");
     } catch (err) {
@@ -77,6 +89,7 @@ const useAccount = () => {
     try {
       const updated = await resetProfileImage();
       setMember(updated);
+      setProfileImageUrl(updated.profileImageUrl ?? null);
       showToast("기본 이미지로 변경되었습니다.");
     } catch {
       showToast("이미지 초기화에 실패했습니다.", "error");
@@ -92,12 +105,28 @@ const useAccount = () => {
     try {
       const result = await updateProfileImage(file);
       setMember((prev) => ({ ...prev, profileImageUrl: result.imageUrl }));
+      setProfileImageUrl(result.imageUrl);
       showToast("프로필 이미지가 변경되었습니다.");
     } catch {
       showToast("이미지 업로드에 실패했습니다.", "error");
     } finally {
       setImageLoading(false);
       e.target.value = "";
+    }
+  };
+
+  const handleWithdrawOpen = () => setIsWithdrawModalOpen(true);
+  const handleWithdrawClose = () => setIsWithdrawModalOpen(false);
+
+  const handleWithdrawConfirm = async () => {
+    setWithdrawLoading(true);
+    try {
+      await withdrawMember();
+      clearAuth();
+      navigate(ROUTES.HOME);
+    } catch {
+      showToast("회원 탈퇴에 실패했습니다.", "error");
+      setWithdrawLoading(false);
     }
   };
 
@@ -118,6 +147,11 @@ const useAccount = () => {
     handleImageClick,
     handleImageChange,
     handleImageReset,
+    isWithdrawModalOpen,
+    withdrawLoading,
+    handleWithdrawOpen,
+    handleWithdrawClose,
+    handleWithdrawConfirm,
   };
 };
 

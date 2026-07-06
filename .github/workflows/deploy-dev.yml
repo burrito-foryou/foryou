@@ -5,10 +5,15 @@ on:
     branches:
       - dev
 
+concurrency:
+  group: deploy-dev
+  cancel-in-progress: false
+
 jobs:
   build-and-push:
     name: Build and Push Docker Images
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     permissions:
       contents: read
@@ -72,6 +77,7 @@ jobs:
   deploy:
     name: Deploy to Dev Server
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: build-and-push
 
     steps:
@@ -98,4 +104,14 @@ jobs:
             echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u burrito-foryou --password-stdin
             docker compose -f docker-compose.dev.yml pull
             docker compose -f docker-compose.dev.yml up -d
+
+            for i in $(seq 1 30); do
+              curl -sf http://127.0.0.1:8080/actuator/health && break
+              sleep 5
+              if [ "$i" -eq 30 ]; then
+                echo "Deploy health check failed: backend /actuator/health not responding"
+                exit 1
+              fi
+            done
+
             docker image prune -f
