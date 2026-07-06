@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getQuestions } from "../api/questionApi";
 import { useSearchParams } from "react-router-dom";
 import useMemberId from "./useMemberId";
@@ -25,6 +25,7 @@ const useQuestionList = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const isMounted = useRef(false);
 
   const page = parseInt(searchParams.get("page") ?? "0", 10);
   const sort = searchParams.get("sort") ?? "latest";
@@ -81,7 +82,8 @@ const useQuestionList = () => {
     const timer = setTimeout(() => {
       setDebouncedKeyword(keyword);
       setDebouncedTagSearch(tagSearch);
-      setPage(0);
+      if (isMounted.current) setPage(0);
+      else isMounted.current = true;
     }, 300);
     return () => clearTimeout(timer);
   }, [keyword, tagSearch]);
