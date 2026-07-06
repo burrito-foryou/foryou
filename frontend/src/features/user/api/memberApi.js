@@ -15,3 +15,8 @@ export const updateProfileImage = (file) => {
     })
     .then((res) => res.data.data);
 };
+
+export const resetProfileImage = () =>
+  instance.delete("/members/me/profile-image").then((res) => res.data.data);
+
+export const withdrawMember = () => instance.delete("/members/me");

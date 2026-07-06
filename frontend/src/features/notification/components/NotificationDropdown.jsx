@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { FiBellOff } from "react-icons/fi";
 import NotificationItem from "./NotificationItem";
 
 const NotificationDropdown = ({
@@ -5,8 +7,16 @@ const NotificationDropdown = ({
   handleMarkAllAsRead, updateReadStatus,
   handleDeleteNotification, handleDeleteAllNotifications,
 }) => {
+  // 알림 드롭다운 열려있는 동안 시간 최신으로 유지하기 위한 강제 리렌더링
+  const [, forceRerender] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => 
+      forceRerender((n) => n + 1), 30_000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="w-[380px] rounded-2xl border border-gray-100 bg-white shadow-xl shadow-gray-200/50">
+    <div className="w-[338px] rounded-2xl border border-gray-100 bg-white shadow-xl shadow-gray-200/50">
       <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3.5">
         <h2 className="text-base font-semibold text-gray-900">알림</h2>
 
@@ -26,7 +36,17 @@ const NotificationDropdown = ({
         {loading ? (
           <p className="p-6 text-center text-sm text-gray-400">불러오는 중...</p>
         ) : notifications.length === 0 ? (
-          <p className="p-6 text-center text-sm text-gray-400">새로운 알림이 없습니다.</p>
+          <div className="flex flex-col items-center justify-center gap-3 px-6 py-14">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+              <FiBellOff size={22} className="text-gray-400" />
+            </div>
+            <p className="text-sm font-bold text-gray-900">새로운 알림이 없어요</p>
+            <p className="text-center text-xs leading-relaxed text-gray-400">
+              질문을 올리면 답변 소식을
+              <br />
+              여기서 알려드릴게요
+            </p>
+          </div>
         ) : (
           notifications.map((notification) => (
             <NotificationItem

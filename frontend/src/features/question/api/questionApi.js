@@ -31,6 +31,10 @@ export const getQuestionDetail = (questionId) =>
       throw err;
     });
 
+// 조회수 증가 — 세션당 1회만 호출
+export const incrementViewCount = (questionId) =>
+    instance.post(`/questions/${questionId}/view`).then((res) => res.data);
+
 // 질문 작성
 export const createQuestion = (memberId, data) =>
     instance

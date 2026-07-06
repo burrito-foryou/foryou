@@ -69,26 +69,26 @@ class NotificationControllerTest {
 
         Notification notification1 = notificationRepository.save(
                 Notification.create(receiver, sender, NotificationType.QUESTION_ANSWER_CREATED,
-                        TargetType.ANSWER, 1L, question.getId())
+                        TargetType.ANSWER, 1L, question.getId(), question.getTitle())
                         .orElseThrow()
         );
         notification1Id = notification1.getId();
 
         notificationRepository.save(
                 Notification.create(receiver, sender, NotificationType.QUESTION_COMMENT_CREATED,
-                        TargetType.COMMENT, 2L, question.getId())
+                        TargetType.COMMENT, 2L, question.getId(), question.getTitle())
                         .orElseThrow()
         );
 
         notificationRepository.save(
                 Notification.create(sender, receiver, NotificationType.ANSWER_COMMENT_CREATED,
-                        TargetType.COMMENT, 1L, question.getId())
+                        TargetType.COMMENT, 1L, question.getId(), question.getTitle())
                         .orElseThrow()
         );
 
         notificationRepository.save(
                 Notification.create(sender, receiver, NotificationType.ANSWER_ACCEPTED,
-                        TargetType.ANSWER, 1L, question.getId())
+                        TargetType.ANSWER, 1L, question.getId(), question.getTitle())
                         .orElseThrow()
         );
     }

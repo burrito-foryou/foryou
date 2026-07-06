@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import xyz.abcganada.foryou.answer.domain.Answer;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @Builder
@@ -16,13 +16,14 @@ public class AnswerResponse {
     private Long questionId;
     private Long memberId;
     private String memberNickname;
+    private String memberProfileImageUrl;
     private String giftName;
     private String priceRange;
     private String content;
     private Long likeCount;
     private boolean accepted;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 
     public static AnswerResponse from(Answer answer) {
         return AnswerResponse.builder()
@@ -30,6 +31,7 @@ public class AnswerResponse {
                 .questionId(answer.getQuestion().getId())
                 .memberId(answer.getMember().getId())
                 .memberNickname(answer.getMember().getNickname())
+                .memberProfileImageUrl(answer.getMember().getProfileImageUrl())
                 .giftName(answer.getGiftName())
                 .priceRange(answer.getPriceRange())
                 .content(answer.getContent())

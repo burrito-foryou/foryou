@@ -27,8 +27,17 @@ const OAuthCallbackPage = () => {
         setAuth(data.data.accessToken, data.data.refreshToken);
         navigate(ROUTES.HOME, { replace: true });
       })
-      .catch(() => {
-        navigate(ROUTES.LOGIN, { replace: true });
+      .catch((error) => {
+        const message =
+          error.response?.data?.code === "MEMBER_001"
+            ? "이미 가입된 이메일이에요. 처음 가입했던 방법으로 로그인해주세요."
+            : (error.response?.data?.message ??
+              "로그인에 실패했어요. 다시 시도해주세요.");
+
+        navigate(ROUTES.LOGIN, {
+          replace: true,
+          state: { oauthError: message },
+        });
       });
   }, []);
 

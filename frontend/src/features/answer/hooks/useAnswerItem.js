@@ -1,6 +1,7 @@
 import { useState } from "react";
 import useAuthStore from "../../auth/store/authStore";
 import { updateAnswer, deleteAnswer, acceptAnswer } from "../api/answerApi";
+import { uploadAnswerImage } from "../../image/api/imageApi";
 
 const getMemberIdFromToken = (token) => {
   try {
@@ -36,12 +37,19 @@ const useAnswerItem = (answer, onSuccess, questionMemberId) => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleUpdate = async (e) => {
+  const handleUpdate = async (e, pendingImage) => {
     e.preventDefault();
     if (!memberId) return;
     setLoading(true);
     try {
       await updateAnswer(answer.id, form);
+      if (pendingImage) {
+        try {
+          await uploadAnswerImage(answer.id, pendingImage);
+        } catch {
+          // 이미지 업로드 실패는 무시하고 답변 수정은 완료된 것으로 처리
+        }
+      }
       setIsEditing(false);
       onSuccess?.();
     } catch {
@@ -52,7 +60,6 @@ const useAnswerItem = (answer, onSuccess, questionMemberId) => {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("답변을 삭제하시겠습니까?")) return;
     if (!memberId) return;
     try {
       await deleteAnswer(answer.id);
@@ -63,7 +70,6 @@ const useAnswerItem = (answer, onSuccess, questionMemberId) => {
   };
 
   const handleAccept = async () => {
-    if (!window.confirm("이 답변을 채택하시겠습니까?")) return;
     if (!memberId) return;
     try {
       await acceptAnswer(answer.id);

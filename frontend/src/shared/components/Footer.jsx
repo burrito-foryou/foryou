@@ -13,7 +13,7 @@ const Footer = () => {
           <FiGithub size={16} />
           <span>burrito-foryou/foryou</span>
         </a>
-        <span>© 2024 ForU · Team Burrito</span>
+        <span>© ForU · Team Burrito</span>
       </div>
     </footer>
   );

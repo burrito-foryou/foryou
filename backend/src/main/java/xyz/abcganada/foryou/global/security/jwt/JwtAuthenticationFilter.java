@@ -1,5 +1,7 @@
 package xyz.abcganada.foryou.global.security.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -7,17 +9,21 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import xyz.abcganada.foryou.global.exception.ErrorCode;
 import xyz.abcganada.foryou.global.security.auth.AuthMember;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    public static final String JWT_ERROR_CODE_ATTRIBUTE = "jwtErrorCode";
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
@@ -29,9 +35,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         throws ServletException, IOException {
         String token = resolveToken(request);
 
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            Long memberId = jwtTokenProvider.getMemberId(token);
-            setAuthentication(memberId);
+        if (token != null) {
+            try {
+                Long memberId = jwtTokenProvider.getMemberId(token);
+                String role = jwtTokenProvider.getRole(token);
+                setAuthentication(memberId, role);
+            } catch (ExpiredJwtException e) {
+                request.setAttribute(JWT_ERROR_CODE_ATTRIBUTE, ErrorCode.EXPIRED_TOKEN);
+            } catch (JwtException | IllegalArgumentException e) {
+                request.setAttribute(JWT_ERROR_CODE_ATTRIBUTE, ErrorCode.UNAUTHORIZED);
+            }
         }
 
         filterChain.doFilter(request, response);
@@ -47,7 +60,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
-        // 일반 API는 헤더 JWT
         String authorization = request.getHeader(AUTHORIZATION_HEADER);
 
         if (authorization == null || !authorization.startsWith(BEARER_PREFIX)) {
@@ -57,13 +69,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return authorization.substring(BEARER_PREFIX.length());
     }
 
-    private void setAuthentication(Long memberId) {
+    private void setAuthentication(Long memberId, String role) {
         AuthMember authMember = new AuthMember(memberId);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(
             authMember,
             null,
-            Collections.emptyList()
+            List.of(new SimpleGrantedAuthority("ROLE_" + role))
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);

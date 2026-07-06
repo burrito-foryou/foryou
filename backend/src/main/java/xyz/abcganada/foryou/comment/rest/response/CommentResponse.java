@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import xyz.abcganada.foryou.comment.domain.Comment;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @Builder
@@ -16,10 +16,11 @@ public class CommentResponse {
     private Long answerId;
     private Long memberId;
     private String memberNickname;
+    private String memberProfileImageUrl;
     private String content;
     private Long likeCount;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 
     public static CommentResponse from(Comment comment) {
         return CommentResponse.builder()
@@ -27,6 +28,7 @@ public class CommentResponse {
                 .answerId(comment.getAnswer().getId())
                 .memberId(comment.getMember().getId())
                 .memberNickname(comment.getMember().getNickname())
+                .memberProfileImageUrl(comment.getMember().getProfileImageUrl())
                 .content(comment.getContent())
                 .likeCount(comment.getLikeCount())
                 .createdAt(comment.getCreatedAt())

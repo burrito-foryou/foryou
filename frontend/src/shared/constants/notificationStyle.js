@@ -2,24 +2,31 @@ import { FiHeart, FiMessageCircle, FiCheckCircle } from "react-icons/fi";
 import { NOTIFICATION_TYPE } from "./notificationType";
 
 const LIKE_STYLE = {
-  bg: "bg-pink-50",
-  border: "border-pink-200",
   icon: FiHeart,
+  iconBg: "bg-pink-100",
   iconColor: "text-pink-500",
+  cardBg: "bg-pink-50/60",
 };
 
 const COMMENT_STYLE = {
-  bg: "bg-sky-50",
-  border: "border-sky-200",
   icon: FiMessageCircle,
-  iconColor: "text-sky-500",
+  iconBg: "bg-pink-100",
+  iconColor: "text-pink-500",
+  cardBg: "bg-pink-50/60",
 };
 
 const ACCEPT_STYLE = {
-  bg: "bg-violet-50",
-  border: "border-violet-200",
   icon: FiCheckCircle,
-  iconColor: "text-violet-500",
+  iconBg: "bg-pink-100",
+  iconColor: "text-pink-500",
+  cardBg: "bg-pink-50/60",
+};
+
+export const DEFAULT_STYLE = {
+  icon: FiHeart,
+  iconBg: "bg-gray-100",
+  iconColor: "text-gray-400",
+  cardBg: "bg-white",
 };
 
 export const NOTIFICATION_STYLE = {

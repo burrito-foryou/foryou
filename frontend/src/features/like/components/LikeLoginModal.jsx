@@ -1,19 +1,33 @@
+import { FiLogIn } from "react-icons/fi";
+
 const LikeLoginModal = ({ onGoLogin, onClose }) => {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-sm rounded-lg border border-border bg-background p-8 text-center shadow-lg">
-        <p className="mb-6 text-sm text-text">로그인이 필요한 기능입니다</p>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+      onClick={onClose}
+    >
+      <div
+        className="card w-full max-w-sm p-7 shadow-soft"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-light text-primary">
+          <FiLogIn size={22} />
+        </span>
 
-        <div className="flex gap-3">
+        <h2 className="mb-6 text-lg font-black text-text">
+          로그인이 필요한 기능이에요
+        </h2>
+
+        <div className="flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="flex-1 rounded-md border border-border py-2 text-sm text-text hover:bg-surface"
+            className="rounded-full px-5 py-2.5 text-sm font-bold text-text-muted transition-colors hover:bg-surface hover:text-text"
           >
             계속 구경하기
           </button>
           <button
             onClick={onGoLogin}
-            className="flex-1 rounded-md bg-primary py-2 text-sm font-bold text-white hover:bg-primary-hover"
+            className="rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-primary-hover"
           >
             로그인 하러 가기
           </button>

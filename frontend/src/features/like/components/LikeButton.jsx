@@ -6,10 +6,14 @@ import useLike from "../hooks/useLike";
 import { ROUTES } from "../../../shared/constants/routes";
 import LikeLoginModal from "./LikeLoginModal";
 
-const LikeButton = ({ targetType, targetId, initialLikeCount }) => {
+const LikeButton = ({ targetType, targetId, initialLikeCount, label }) => {
   const navigate = useNavigate();
   const token = useAuthStore((state) => state.token);
-  const { liked, likeCount, toggleLike } = useLike(targetType, targetId, initialLikeCount);
+  const { liked, likeCount, toggleLike } = useLike(
+    targetType,
+    targetId,
+    initialLikeCount,
+  );
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const handleClick = () => {
@@ -22,11 +26,15 @@ const LikeButton = ({ targetType, targetId, initialLikeCount }) => {
 
   return (
     <>
-      <button onClick={handleClick} className="flex items-center gap-1 text-xs">
+      <button
+        onClick={handleClick}
+        className="flex items-center gap-1 text-xs font-bold text-text-muted"
+      >
         <FiHeart
           size={14}
-          className={liked ? "fill-pink-500 text-pink-500" : "text-gray-400"}
+          className={liked ? "fill-primary text-primary" : "text-text-muted"}
         />
+        {label && <span>{label}</span>}
         {likeCount}
       </button>
 

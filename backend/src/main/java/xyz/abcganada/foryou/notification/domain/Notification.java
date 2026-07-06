@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import xyz.abcganada.foryou.member.domain.Member;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Optional;
 
 @Entity
@@ -42,6 +42,9 @@ public class Notification {
     @Column(name = "question_id")
     private Long questionId;
 
+    @Column(name = "question_title", length = 20)
+    private String questionTitle;
+
     @Column(nullable = false, length = 500)
     private String content;
 
@@ -49,20 +52,20 @@ public class Notification {
     private boolean isRead;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @Builder(access = AccessLevel.PRIVATE) // 생성 경로 강제 위해 Builder는 private
-    public Notification(Member receiver, Member sender, NotificationType type, TargetType targetType, Long targetId, Long questionId, String content) {
+    public Notification(Member receiver, Member sender, NotificationType type, TargetType targetType, Long targetId, Long questionId, String questionTitle, String content) {
         this.receiver = receiver;
         this.sender = sender;
         this.type = type;
         this.targetType = targetType;
         this.targetId = targetId;
         this.questionId = questionId;
+        this.questionTitle = questionTitle;
         this.content = content;
         this.isRead = false;
-        // TODO 운영 서버 타임존 미설정 시 KST 불일치 가능
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = Instant.now();
     }
 
     // 현재는 JPQL UPDATE로 읽음 처리하지만,
@@ -71,7 +74,7 @@ public class Notification {
         this.isRead = true;
     }
 
-    public static Optional<Notification> create(Member receiver, Member sender, NotificationType type, TargetType targetType, Long targetId, Long questionId) {
+    public static Optional<Notification> create(Member receiver, Member sender, NotificationType type, TargetType targetType, Long targetId, Long questionId, String questionTitle) {
         if (receiver.getId().equals(sender.getId())) {
             return Optional.empty();
         }
@@ -83,7 +86,8 @@ public class Notification {
                 .targetType(targetType)
                 .targetId(targetId)
                 .questionId(questionId)
-                .content(type.buildContent(sender.getNickname()))
+                .questionTitle(NotificationMessageComposer.truncateTitle(questionTitle))
+                .content(NotificationMessageComposer.buildContent(type, sender.getNickname(), questionTitle))
                 .build());
     }
 

@@ -46,6 +46,11 @@ public class QuestionSpecification {
         };
     }
 
+    // 채택완료 질문만 조회
+    public static Specification<Question> hasAcceptedAnswer() {
+        return (root, query, cb) -> cb.isNotNull(root.get("acceptedAnswerId"));
+    }
+
     // 태그 ID 기반 검색
     public static Specification<Question> hasTagIds(List<Long> tagIds) {
         return (root, query, cb) -> {
@@ -53,6 +58,15 @@ public class QuestionSpecification {
             query.distinct(true);
             Join<Question, Tag> tags = root.join("tags");
             return tags.get("id").in(tagIds);
+        };
+    }
+    // 태그 이름 부분 검색 — # 검색 시 사용
+    public static Specification<Question> containsTagName(String tagName) {
+        return (root, query, cb) -> {
+            if (tagName == null || tagName.isBlank()) return null;
+            query.distinct(true);
+            Join<Question, Tag> tags = root.join("tags", JoinType.LEFT);
+            return cb.like(tags.get("name"), "%" + tagName + "%");
         };
     }
 }
