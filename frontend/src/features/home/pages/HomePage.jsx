@@ -115,7 +115,7 @@ const HomePage = () => {
                   style={{ boxShadow: "8px 8px 0px rgba(236,79,130,0.1)" }}
                 >
                   <div className="mb-4 flex items-center gap-3">
-                    <Avatar name={activeQuestion.memberNickname} size={44} textSize="text-lg" />
+                    <Avatar src={activeQuestion.memberProfileImageUrl} name={activeQuestion.memberNickname} size={44} textSize="text-lg" />
                     <div>
                       <p className="font-bold text-text">{activeQuestion.memberNickname}</p>
                       <p className="text-xs text-text-muted">{timeAgo(activeQuestion.createdAt)}</p>
