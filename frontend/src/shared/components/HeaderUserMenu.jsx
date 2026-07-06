@@ -72,7 +72,7 @@ const HeaderUserMenu = () => {
       <>
         <Link
           to={ROUTES.LOGIN}
-          className="text-sm font-bold text-text-muted transition-colors hover:text-text"
+          className="text-sm font-extrabold text-text transition-colors hover:text-primary"
         >
           로그인
         </Link>

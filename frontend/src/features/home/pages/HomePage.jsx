@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   FiArrowRight,
   FiEye,
@@ -9,11 +10,11 @@ import {
   FiZap,
 } from "react-icons/fi";
 import { ROUTES } from "../../../shared/constants/routes";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../../features/auth/store/authStore";
 import LikeLoginModal from "../../like/components/LikeLoginModal";
 import Avatar from "../../../shared/components/Avatar";
+import { getQuestions } from "../../question/api/questionApi";
+import timeAgo from "../../../shared/utils/timeAgo";
 
 const FEATURES = [
   {
@@ -33,27 +34,38 @@ const FEATURES = [
   },
 ];
 
-const SAMPLE_QUESTION = {
-  nickname: "burrito",
-  createdAt: "10분 전",
-  title: "여자친구 100일 선물, 향수 vs 목걸이 뭐가 나을까요?",
-  tags: ["#기념일", "#20대", "#여자친구", "#5~10만원"],
-  viewCount: 234,
-  likeCount: 18,
-  answerCount: 12,
-};
-
 const HomePage = () => {
-  // 로그인 상태 및 모달 제어
   const navigate = useNavigate();
   const token = useAuthStore((state) => state.token);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [questions, setQuestions] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    getQuestions({ page: 0, size: 5, sort: "likes" })
+      .then((res) => {
+        const list = res.content ?? [];
+        if (list.length > 0) setQuestions(list);
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (questions.length <= 1) return;
+    intervalRef.current = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % questions.length);
+    }, 3000);
+    return () => clearInterval(intervalRef.current);
+  }, [questions]);
+
+  const activeQuestion = questions[activeIndex];
+
   return (
     <div>
-      {/* Hero */}
-      <div className="px-4 py-20">
-        <div className="app-container max-w-[1040px] grid items-center gap-12 md:grid-cols-2">
-          <div className="mt-6">
+      <div className="py-20">
+        <div className="app-container max-w-[1040px] px-4 grid items-start gap-12 md:grid-cols-2">
+          <div>
             <h1 className="mb-4 text-4xl font-black leading-tight text-text sm:text-5xl">
               고민은 짧게,
               <br />
@@ -72,7 +84,6 @@ const HomePage = () => {
             <div className="flex flex-col gap-3 sm:flex-row">
               <button
                 onClick={() => {
-                  // 비로그인 시 모달, 로그인 시 작성 페이지 이동
                   if (!token) {
                     setShowLoginModal(true);
                     return;
@@ -89,68 +100,83 @@ const HomePage = () => {
                   aria-hidden
                 />
               </button>
-              <Link
-                to={ROUTES.QUESTIONS}
-                className="btn btn-secondary text-base"
-              >
+              <Link to={ROUTES.QUESTIONS} className="btn btn-secondary text-base">
                 질문 둘러보기
               </Link>
             </div>
           </div>
 
           <div className="hidden md:block">
-            <div className="card p-7 shadow-card">
-              <div className="mb-4 flex items-center gap-3">
-                <Avatar
-                  name={SAMPLE_QUESTION.nickname}
-                  size={44}
-                  textSize="text-lg"
-                />
-                <div>
-                  <p className="font-bold text-text">
-                    {SAMPLE_QUESTION.nickname}
+            {activeQuestion && (
+              <div className="relative">
+                <Link
+                  to={`/questions/${activeQuestion.id}`}
+                  className="card block p-7 transition-colors hover:border-primary/40"
+                  style={{ boxShadow: "8px 8px 0px rgba(236,79,130,0.1)" }}
+                >
+                  <div className="mb-4 flex items-center gap-3">
+                    <Avatar name={activeQuestion.memberNickname} size={44} textSize="text-lg" />
+                    <div>
+                      <p className="font-bold text-text">{activeQuestion.memberNickname}</p>
+                      <p className="text-xs text-text-muted">{timeAgo(activeQuestion.createdAt)}</p>
+                    </div>
+                  </div>
+
+                  <p className="mb-5 text-lg font-bold leading-snug text-text">
+                    {activeQuestion.title}
                   </p>
-                  <p className="text-xs text-text-muted">
-                    {SAMPLE_QUESTION.createdAt}
-                  </p>
-                </div>
-              </div>
 
-              <p className="mb-5 text-lg font-bold leading-snug text-text">
-                {SAMPLE_QUESTION.title}
-              </p>
+                  <div className="mb-5 flex flex-wrap gap-2">
+                    {activeQuestion.tagNames?.slice(0, 4).map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full bg-surface-muted px-3 py-1 text-xs font-semibold text-text-muted"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                    {activeQuestion.tagNames?.length > 4 && (
+                      <span className="rounded-full bg-surface-muted px-3 py-1 text-xs font-semibold text-text-muted">
+                        +{activeQuestion.tagNames.length - 4}
+                      </span>
+                    )}
+                  </div>
 
-              <div className="mb-5 flex flex-wrap gap-2">
-                {SAMPLE_QUESTION.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-full bg-surface-muted px-3 py-1 text-xs font-semibold text-text-muted"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+                  <div className="flex items-center gap-4 border-t border-border pt-4 text-sm font-bold text-text-muted">
+                    <span className="flex items-center gap-1.5">
+                      <FiEye size={16} />
+                      조회 {activeQuestion.viewCount}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <FiHeart size={16} />
+                      좋아요 {activeQuestion.likeCount}
+                    </span>
+                    <span className="flex items-center gap-1.5 text-primary">
+                      <FiMessageCircle size={16} />
+                      답변 {activeQuestion.answerCount}
+                    </span>
+                  </div>
+                </Link>
 
-              <div className="flex items-center gap-4 border-t border-border pt-4 text-sm font-bold text-text-muted">
-                <span className="flex items-center gap-1.5">
-                  <FiEye size={16} />
-                  조회 {SAMPLE_QUESTION.viewCount}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <FiHeart size={16} />
-                  좋아요 {SAMPLE_QUESTION.likeCount}
-                </span>
-                <span className="flex items-center gap-1.5 text-primary">
-                  <FiMessageCircle size={16} />
-                  답변 {SAMPLE_QUESTION.answerCount}
-                </span>
+                {questions.length > 1 && (
+                  <div className="mt-3 flex justify-center gap-1.5">
+                    {questions.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setActiveIndex(i)}
+                        className={`h-1.5 rounded-full transition-all ${
+                          i === activeIndex ? "w-4 bg-primary" : "w-1.5 bg-border"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* 특징 카드 */}
       <div className="app-container max-w-[1040px] px-4 py-16">
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
           {FEATURES.map(({ icon: Icon, title, description }) => (
@@ -159,14 +185,12 @@ const HomePage = () => {
                 <Icon size={22} />
               </span>
               <p className="mb-2 text-lg font-bold text-text">{title}</p>
-              <p className="text-sm leading-relaxed text-text-muted">
-                {description}
-              </p>
+              <p className="text-sm leading-relaxed text-text-muted">{description}</p>
             </div>
           ))}
         </div>
       </div>
-      {/* 비로그인 질문 작성 시도 시 로그인 유도 모달 */}
+
       {showLoginModal && (
         <LikeLoginModal
           onGoLogin={() => navigate(ROUTES.LOGIN)}
