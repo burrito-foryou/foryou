@@ -20,6 +20,3 @@ backend/src/main/resources/application-dev.yaml
 frontend/.env
 /.idea/
 
-# Local Query Test
-/docs
-
